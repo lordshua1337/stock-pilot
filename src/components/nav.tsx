@@ -11,8 +11,8 @@ export function Nav() {
     { href: "/research", label: "Research" },
     { href: "/sectors", label: "Sectors" },
     { href: "/compare", label: "Compare" },
+    { href: "/watchlist", label: "Watchlist" },
     { href: "/personality", label: "Personality" },
-    { href: "/portfolio", label: "Portfolio" },
   ];
 
   return (
@@ -65,6 +65,13 @@ export function Nav() {
                 {link.label}
               </Link>
             ))}
+            <Link
+              href="/portfolio"
+              onClick={() => setIsOpen(false)}
+              className="text-base bg-green text-black px-4 py-2 rounded-lg font-medium text-center mt-2"
+            >
+              Build Portfolio
+            </Link>
           </div>
         </div>
       )}
