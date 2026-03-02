@@ -176,10 +176,30 @@ export default function StockDetailPage() {
               {stock.changePercent.toFixed(2)}%)
             </span>
           </div>
-          <p className="text-xs text-text-muted mt-2">
-            52-Week Range: ${stock.fiftyTwoLow.toFixed(2)} - $
-            {stock.fiftyTwoHigh.toFixed(2)}
-          </p>
+          {/* 52-week range bar */}
+          <div className="mt-4">
+            <div className="flex items-center justify-between text-xs text-text-muted mb-1">
+              <span>${stock.fiftyTwoLow.toFixed(2)}</span>
+              <span className="text-text-secondary">52-Week Range</span>
+              <span>${stock.fiftyTwoHigh.toFixed(2)}</span>
+            </div>
+            <div className="relative h-2 bg-surface-alt rounded-full overflow-hidden">
+              <div
+                className="absolute inset-y-0 left-0 bg-gradient-to-r from-red to-green rounded-full opacity-30"
+                style={{ width: "100%" }}
+              />
+              <div
+                className="absolute top-1/2 -translate-y-1/2 w-3 h-3 bg-text-primary rounded-full border-2 border-background"
+                style={{
+                  left: `${Math.min(100, Math.max(0, ((stock.price - stock.fiftyTwoLow) / (stock.fiftyTwoHigh - stock.fiftyTwoLow)) * 100))}%`,
+                  transform: "translate(-50%, -50%)",
+                }}
+              />
+            </div>
+            <p className="text-xs text-text-muted mt-1 text-center">
+              {((stock.price - stock.fiftyTwoLow) / (stock.fiftyTwoHigh - stock.fiftyTwoLow) * 100).toFixed(0)}% of range
+            </p>
+          </div>
         </div>
 
         {/* Key Metrics */}
@@ -217,6 +237,86 @@ export default function StockDetailPage() {
           <p className="text-text-secondary leading-relaxed">
             {stock.thesis}
           </p>
+        </div>
+
+        {/* Quick Valuation */}
+        <div className="bg-surface rounded-xl border border-border p-5 sm:p-6 mb-6">
+          <div className="flex items-center gap-2 mb-4">
+            <BarChart3 className="w-4 h-4 text-green" />
+            <h2 className="text-sm font-semibold uppercase tracking-wider">
+              Quick Valuation Snapshot
+            </h2>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <p className="text-xs text-text-muted mb-1">P/E vs Sector Avg</p>
+              {(() => {
+                const sectorPeers = getStocksBySector(stock.sector);
+                const avgPE = sectorPeers.reduce((s, st) => s + st.peRatio, 0) / sectorPeers.length;
+                const diff = stock.peRatio - avgPE;
+                const label = diff > 5 ? "Premium" : diff < -5 ? "Discount" : "Inline";
+                const color = diff > 5 ? "text-gold" : diff < -5 ? "text-green" : "text-text-secondary";
+                return (
+                  <div>
+                    <p className="text-sm font-mono font-medium">
+                      {stock.peRatio.toFixed(1)}x vs {avgPE.toFixed(1)}x avg
+                    </p>
+                    <p className={`text-xs ${color}`}>
+                      {label} ({diff > 0 ? "+" : ""}{diff.toFixed(1)}x)
+                    </p>
+                  </div>
+                );
+              })()}
+            </div>
+            <div>
+              <p className="text-xs text-text-muted mb-1">Dividend vs Sector Avg</p>
+              {(() => {
+                const sectorPeers = getStocksBySector(stock.sector);
+                const avgDiv = sectorPeers.reduce((s, st) => s + st.dividendYield, 0) / sectorPeers.length;
+                return (
+                  <div>
+                    <p className="text-sm font-mono font-medium">
+                      {stock.dividendYield.toFixed(2)}% vs {avgDiv.toFixed(2)}% avg
+                    </p>
+                    <p className="text-xs text-text-secondary">
+                      {stock.dividendYield > 0 ? `$${(stock.price * stock.dividendYield / 100).toFixed(2)}/share annually` : "No dividend"}
+                    </p>
+                  </div>
+                );
+              })()}
+            </div>
+            <div>
+              <p className="text-xs text-text-muted mb-1">AI Score vs Sector</p>
+              {(() => {
+                const sectorPeers = getStocksBySector(stock.sector);
+                const avgScore = Math.round(sectorPeers.reduce((s, st) => s + st.aiScore, 0) / sectorPeers.length);
+                const rank = [...sectorPeers].sort((a, b) => b.aiScore - a.aiScore).findIndex(s => s.ticker === stock.ticker) + 1;
+                return (
+                  <div>
+                    <p className="text-sm font-mono font-medium">
+                      {stock.aiScore} vs {avgScore} avg
+                    </p>
+                    <p className="text-xs text-text-secondary">
+                      Rank #{rank} of {sectorPeers.length} in {stock.sector}
+                    </p>
+                  </div>
+                );
+              })()}
+            </div>
+            <div>
+              <p className="text-xs text-text-muted mb-1">Price vs 52-Week</p>
+              <p className="text-sm font-mono font-medium">
+                {((stock.price / stock.fiftyTwoHigh) * 100).toFixed(0)}% of high
+              </p>
+              <p className="text-xs text-text-secondary">
+                {stock.price >= stock.fiftyTwoHigh * 0.95
+                  ? "Near 52-week high"
+                  : stock.price <= stock.fiftyTwoLow * 1.05
+                    ? "Near 52-week low"
+                    : `${((1 - stock.price / stock.fiftyTwoHigh) * 100).toFixed(0)}% below high`}
+              </p>
+            </div>
+          </div>
         </div>
 
         {/* Catalysts and Risks side by side */}
