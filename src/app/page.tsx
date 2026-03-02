@@ -9,7 +9,7 @@ import {
   Zap,
   Shield,
 } from "lucide-react";
-import { stocks } from "@/lib/stock-data";
+import { stocks, sectors } from "@/lib/stock-data";
 
 function StockRow({ stock }: { stock: (typeof stocks)[0] }) {
   const isUp = stock.change >= 0;
@@ -166,6 +166,43 @@ export default function HomePage() {
               </span>
             </div>
           ))}
+        </div>
+      </section>
+
+      {/* Stats */}
+      <section className="py-8 px-4 bg-surface">
+        <div className="max-w-4xl mx-auto grid grid-cols-2 sm:grid-cols-4 gap-6">
+          <div className="text-center">
+            <p className="text-2xl sm:text-3xl font-semibold text-green font-mono">
+              {stocks.length}
+            </p>
+            <p className="text-xs text-text-muted mt-1">Stocks Analyzed</p>
+          </div>
+          <div className="text-center">
+            <p className="text-2xl sm:text-3xl font-semibold font-mono">
+              {new Set(stocks.map((s) => s.sector)).size}
+            </p>
+            <p className="text-xs text-text-muted mt-1">
+              <Link
+                href="/sectors"
+                className="hover:text-green transition-colors"
+              >
+                Sectors Covered
+              </Link>
+            </p>
+          </div>
+          <div className="text-center">
+            <p className="text-2xl sm:text-3xl font-semibold text-green font-mono">
+              {Math.round(
+                stocks.reduce((sum, s) => sum + s.aiScore, 0) / stocks.length
+              )}
+            </p>
+            <p className="text-xs text-text-muted mt-1">Avg AI Score</p>
+          </div>
+          <div className="text-center">
+            <p className="text-2xl sm:text-3xl font-semibold font-mono">$0</p>
+            <p className="text-xs text-text-muted mt-1">Cost to Use</p>
+          </div>
         </div>
       </section>
 

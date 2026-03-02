@@ -557,3 +557,52 @@ export function getStockByTicker(ticker: string): Stock | undefined {
 export function getStocksBySector(sector: string): Stock[] {
   return stocks.filter((s) => s.sector === sector);
 }
+
+export interface SectorMetrics {
+  name: string;
+  color: string;
+  stockCount: number;
+  avgAiScore: number;
+  avgPE: number;
+  avgDividend: number;
+  topStock: Stock;
+  totalMarketCap: string;
+  avgChange: number;
+}
+
+export function getSectorMetrics(): SectorMetrics[] {
+  return sectors
+    .map((sector) => {
+      const sectorStocks = getStocksBySector(sector.name);
+      if (sectorStocks.length === 0) {
+        return null;
+      }
+
+      const avgAiScore =
+        sectorStocks.reduce((sum, s) => sum + s.aiScore, 0) / sectorStocks.length;
+      const avgPE =
+        sectorStocks.reduce((sum, s) => sum + s.peRatio, 0) / sectorStocks.length;
+      const avgDividend =
+        sectorStocks.reduce((sum, s) => sum + s.dividendYield, 0) /
+        sectorStocks.length;
+      const avgChange =
+        sectorStocks.reduce((sum, s) => sum + s.changePercent, 0) /
+        sectorStocks.length;
+      const topStock = [...sectorStocks].sort(
+        (a, b) => b.aiScore - a.aiScore
+      )[0];
+
+      return {
+        name: sector.name,
+        color: sector.color,
+        stockCount: sectorStocks.length,
+        avgAiScore: Math.round(avgAiScore),
+        avgPE: Number(avgPE.toFixed(1)),
+        avgDividend: Number(avgDividend.toFixed(2)),
+        topStock,
+        totalMarketCap: sectorStocks[0].marketCap,
+        avgChange: Number(avgChange.toFixed(2)),
+      };
+    })
+    .filter((m): m is SectorMetrics => m !== null);
+}

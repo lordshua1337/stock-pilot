@@ -8,8 +8,9 @@ export function Nav() {
   const [isOpen, setIsOpen] = useState(false);
 
   const links = [
-    { href: "/portfolio", label: "Portfolio" },
     { href: "/research", label: "Research" },
+    { href: "/sectors", label: "Sectors" },
+    { href: "/portfolio", label: "Portfolio" },
   ];
 
   return (
