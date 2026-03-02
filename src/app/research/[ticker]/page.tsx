@@ -65,7 +65,7 @@ function PeerCard({ stock }: { stock: Stock }) {
   const isUp = stock.changePercent >= 0;
   return (
     <Link
-      href={`/research/${stock.ticker}`}
+      href={`/research/${stock.ticker.toLowerCase()}`}
       className="bg-surface rounded-lg border border-border p-3 card-hover block"
     >
       <div className="flex items-center justify-between mb-1">

@@ -11,6 +11,7 @@ import {
   TrendingUp,
   DollarSign,
   PieChart,
+  Search,
 } from "lucide-react";
 import { stocks, sectors, type Stock } from "@/lib/stock-data";
 
@@ -30,6 +31,7 @@ function formatCurrency(amount: number): string {
 export default function PortfolioPage() {
   const [portfolio, setPortfolio] = useState<PortfolioItem[]>([]);
   const [totalInvestment, setTotalInvestment] = useState(10000);
+  const [stockSearch, setStockSearch] = useState("");
 
   const addStock = (ticker: string) => {
     if (portfolio.some((p) => p.ticker === ticker)) return;
@@ -122,9 +124,17 @@ export default function PortfolioPage() {
     };
   }, [portfolio, totalAllocation]);
 
-  const availableStocks = stocks.filter(
-    (s) => !portfolio.some((p) => p.ticker === s.ticker)
-  );
+  const availableStocks = stocks
+    .filter((s) => !portfolio.some((p) => p.ticker === s.ticker))
+    .filter((s) => {
+      if (!stockSearch.trim()) return true;
+      const q = stockSearch.toLowerCase();
+      return (
+        s.ticker.toLowerCase().includes(q) ||
+        s.name.toLowerCase().includes(q) ||
+        s.sector.toLowerCase().includes(q)
+      );
+    });
 
   return (
     <div className="min-h-screen pt-24 pb-16 px-4">
@@ -201,9 +211,12 @@ export default function PortfolioPage() {
                             <Minus className="w-3.5 h-3.5 text-red" />
                           </button>
                           <div>
-                            <p className="font-mono font-medium text-sm">
+                            <Link
+                              href={`/research/${stock.ticker.toLowerCase()}`}
+                              className="font-mono font-medium text-sm text-green hover:text-green-light transition-colors"
+                            >
                               {stock.ticker}
-                            </p>
+                            </Link>
                             <p className="text-xs text-text-muted">
                               {stock.name}
                             </p>
@@ -269,8 +282,18 @@ export default function PortfolioPage() {
 
             {/* Add stocks */}
             <div className="bg-surface border border-border rounded-xl overflow-hidden">
-              <div className="p-4 border-b border-border">
+              <div className="p-4 border-b border-border space-y-3">
                 <h3 className="text-sm font-semibold">Add Stocks</h3>
+                <div className="relative">
+                  <Search className="w-4 h-4 text-text-muted absolute left-3 top-1/2 -translate-y-1/2" />
+                  <input
+                    type="text"
+                    value={stockSearch}
+                    onChange={(e) => setStockSearch(e.target.value)}
+                    placeholder="Search by ticker, name, or sector..."
+                    className="w-full bg-surface-alt border border-border rounded-lg pl-10 pr-4 py-2 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:border-green/40 transition-colors"
+                  />
+                </div>
               </div>
               <div className="divide-y divide-border">
                 {availableStocks.map((stock) => (
