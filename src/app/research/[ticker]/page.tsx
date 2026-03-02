@@ -227,7 +227,9 @@ export default function StockDetailPage() {
         </div>
 
         {/* Full Insight Card */}
-        <HoldingInsightCard stock={stock} variant="expanded" />
+        <div className="mb-6">
+          <HoldingInsightCard stock={stock} variant="expanded" />
+        </div>
 
         {/* Sector Peers */}
         {peers.length > 0 && (
