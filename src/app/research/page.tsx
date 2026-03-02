@@ -12,7 +12,7 @@ import {
   ChevronDown,
   ChevronUp,
 } from "lucide-react";
-import { stocks, type Stock } from "@/lib/stock-data";
+import { stocks, sectors, type Stock } from "@/lib/stock-data";
 
 function StockDetail({
   stock,
@@ -189,17 +189,31 @@ function StockDetail({
 export default function ResearchPage() {
   const [expanded, setExpanded] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [sectorFilter, setSectorFilter] = useState<string>("all");
   const [sortBy, setSortBy] = useState<"aiScore" | "changePercent" | "peRatio">(
     "aiScore"
   );
 
+  const sectorNames = [...new Set(stocks.map((s) => s.sector))].sort();
+
+  const avgScore = Math.round(
+    stocks.reduce((sum, s) => sum + s.aiScore, 0) / stocks.length
+  );
+  const strongBuys = stocks.filter(
+    (s) => s.analystRating === "Strong Buy"
+  ).length;
+
   const filtered = stocks
-    .filter(
-      (s) =>
-        s.ticker.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        s.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        s.sector.toLowerCase().includes(searchQuery.toLowerCase())
-    )
+    .filter((s) => {
+      if (sectorFilter !== "all" && s.sector !== sectorFilter) return false;
+      if (!searchQuery.trim()) return true;
+      const q = searchQuery.toLowerCase();
+      return (
+        s.ticker.toLowerCase().includes(q) ||
+        s.name.toLowerCase().includes(q) ||
+        s.sector.toLowerCase().includes(q)
+      );
+    })
     .sort((a, b) => {
       if (sortBy === "aiScore") return b.aiScore - a.aiScore;
       if (sortBy === "changePercent")
@@ -229,6 +243,64 @@ export default function ResearchPage() {
             AI-generated research for each stock. Thesis, catalysts, risks,
             and a score from 1-100.
           </p>
+        </div>
+
+        {/* Quick stats */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+          <div className="bg-surface border border-border rounded-lg p-3 text-center">
+            <p className="text-lg font-mono font-bold">{stocks.length}</p>
+            <p className="text-xs text-text-muted">Stocks</p>
+          </div>
+          <div className="bg-surface border border-border rounded-lg p-3 text-center">
+            <p className={`text-lg font-mono font-bold ${avgScore >= 70 ? "text-green" : "text-gold"}`}>
+              {avgScore}
+            </p>
+            <p className="text-xs text-text-muted">Avg AI Score</p>
+          </div>
+          <div className="bg-surface border border-border rounded-lg p-3 text-center">
+            <p className="text-lg font-mono font-bold text-green">{strongBuys}</p>
+            <p className="text-xs text-text-muted">Strong Buys</p>
+          </div>
+          <div className="bg-surface border border-border rounded-lg p-3 text-center">
+            <p className="text-lg font-mono font-bold">{sectorNames.length}</p>
+            <p className="text-xs text-text-muted">Sectors</p>
+          </div>
+        </div>
+
+        {/* Sector filter */}
+        <div className="flex flex-wrap gap-1.5 mb-4">
+          <button
+            onClick={() => setSectorFilter("all")}
+            className={`text-xs px-3 py-1.5 rounded-lg transition-colors ${
+              sectorFilter === "all"
+                ? "bg-green-bg text-green font-medium"
+                : "text-text-muted hover:text-text-secondary"
+            }`}
+          >
+            All ({stocks.length})
+          </button>
+          {sectorNames.map((name) => {
+            const count = stocks.filter((s) => s.sector === name).length;
+            const sector = sectors.find((s) => s.name === name);
+            return (
+              <button
+                key={name}
+                onClick={() => setSectorFilter(name)}
+                className={`text-xs px-3 py-1.5 rounded-lg transition-colors ${
+                  sectorFilter === name
+                    ? "font-medium"
+                    : "text-text-muted hover:text-text-secondary"
+                }`}
+                style={
+                  sectorFilter === name && sector
+                    ? { backgroundColor: `${sector.color}15`, color: sector.color }
+                    : undefined
+                }
+              >
+                {name} ({count})
+              </button>
+            );
+          })}
         </div>
 
         {/* Search + Sort */}
