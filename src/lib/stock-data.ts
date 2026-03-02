@@ -729,7 +729,7 @@ export const stocks: Stock[] = [
     price: 112.38,
     change: -0.22,
     changePercent: -0.20,
-    marketCap: "$ 87B",
+    marketCap: "$87B",
     peRatio: 19.8,
     dividendYield: 3.62,
     fiftyTwoHigh: 121.55,
