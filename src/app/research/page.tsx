@@ -154,7 +154,7 @@ function StockDetail({
           </div>
 
           {/* Risks */}
-          <div>
+          <div className="mb-5">
             <div className="flex items-center gap-2 mb-2">
               <AlertTriangle className="w-4 h-4 text-red" />
               <h4 className="text-sm font-semibold">Risks</h4>
@@ -171,6 +171,15 @@ function StockDetail({
               ))}
             </ul>
           </div>
+
+          {/* Full analysis link */}
+          <Link
+            href={`/research/${stock.ticker.toLowerCase()}`}
+            className="inline-flex items-center gap-2 text-sm text-green hover:text-green-light transition-colors font-medium"
+          >
+            View Full Analysis
+            <TrendingUp className="w-3.5 h-3.5" />
+          </Link>
         </div>
       )}
     </div>
