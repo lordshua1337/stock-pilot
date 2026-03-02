@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
 import {
   ArrowLeft,
@@ -10,6 +10,8 @@ import {
   Zap,
   BarChart3,
   PieChart,
+  ArrowUpDown,
+  Table2,
 } from "lucide-react";
 import {
   getSectorMetrics,
@@ -146,8 +148,42 @@ function SectorCard({ metrics }: { metrics: SectorMetrics }) {
   );
 }
 
+type SortKey = "name" | "avgChange" | "avgAiScore" | "avgPE" | "avgDividend" | "stockCount";
+
+const SORT_OPTIONS: { key: SortKey; label: string }[] = [
+  { key: "name", label: "Name" },
+  { key: "avgAiScore", label: "AI Score" },
+  { key: "avgChange", label: "Performance" },
+  { key: "avgDividend", label: "Dividend" },
+  { key: "avgPE", label: "P/E Ratio" },
+  { key: "stockCount", label: "# Stocks" },
+];
+
 export default function SectorsPage() {
   const sectorMetrics = useMemo(() => getSectorMetrics(), []);
+  const [sortBy, setSortBy] = useState<SortKey>("avgAiScore");
+  const [sortDesc, setSortDesc] = useState(true);
+
+  const sortedMetrics = useMemo(() => {
+    const sorted = [...sectorMetrics].sort((a, b) => {
+      if (sortBy === "name") {
+        return sortDesc ? b.name.localeCompare(a.name) : a.name.localeCompare(b.name);
+      }
+      const aVal = a[sortBy];
+      const bVal = b[sortBy];
+      return sortDesc ? (bVal as number) - (aVal as number) : (aVal as number) - (bVal as number);
+    });
+    return sorted;
+  }, [sectorMetrics, sortBy, sortDesc]);
+
+  const handleSort = (key: SortKey) => {
+    if (sortBy === key) {
+      setSortDesc((prev) => !prev);
+    } else {
+      setSortBy(key);
+      setSortDesc(true);
+    }
+  };
 
   const overallAvgScore =
     sectorMetrics.reduce(
@@ -159,6 +195,9 @@ export default function SectorsPage() {
     (sum, s) => sum + s.stockCount,
     0
   );
+
+  const bestSector = [...sectorMetrics].sort((a, b) => b.avgAiScore - a.avgAiScore)[0];
+  const worstSector = [...sectorMetrics].sort((a, b) => a.avgAiScore - b.avgAiScore)[0];
 
   return (
     <div className="min-h-screen pt-24 pb-16 px-4">
@@ -251,9 +290,115 @@ export default function SectorsPage() {
           </div>
         </div>
 
+        {/* Sector comparison table */}
+        <div className="bg-surface border border-border rounded-xl overflow-hidden mb-8">
+          <div className="p-5 border-b border-border">
+            <h3 className="text-sm font-semibold flex items-center gap-2">
+              <Table2 className="w-4 h-4 text-green" />
+              Sector Comparison
+            </h3>
+            <p className="text-xs text-text-muted mt-1">
+              Click any column to sort. Best sector by AI score:{" "}
+              <span className="text-green font-medium">{bestSector.name}</span>
+              {" -- "}Weakest:{" "}
+              <span className="text-red font-medium">{worstSector.name}</span>
+            </p>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-border">
+                  {SORT_OPTIONS.map((opt) => (
+                    <th
+                      key={opt.key}
+                      className="px-4 py-3 text-left text-[10px] uppercase tracking-wider text-text-muted font-medium cursor-pointer hover:text-text-secondary transition-colors"
+                      onClick={() => handleSort(opt.key)}
+                    >
+                      <span className="inline-flex items-center gap-1">
+                        {opt.label}
+                        {sortBy === opt.key && (
+                          <ArrowUpDown className="w-3 h-3 text-green" />
+                        )}
+                      </span>
+                    </th>
+                  ))}
+                  <th className="px-4 py-3 text-left text-[10px] uppercase tracking-wider text-text-muted font-medium">
+                    Top Stock
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-border">
+                {sortedMetrics.map((s) => {
+                  const isUp = s.avgChange >= 0;
+                  return (
+                    <tr key={s.name} className="hover:bg-surface-alt transition-colors">
+                      <td className="px-4 py-3">
+                        <div className="flex items-center gap-2">
+                          <div
+                            className="w-3 h-3 rounded-sm flex-shrink-0"
+                            style={{ backgroundColor: s.color }}
+                          />
+                          <span className="font-medium text-sm">{s.name}</span>
+                        </div>
+                      </td>
+                      <td className={`px-4 py-3 font-mono text-sm ${
+                        s.avgAiScore >= 80 ? "text-green" : s.avgAiScore >= 60 ? "text-gold" : "text-red"
+                      }`}>
+                        {s.avgAiScore}
+                      </td>
+                      <td className={`px-4 py-3 font-mono text-sm ${isUp ? "text-green" : "text-red"}`}>
+                        {isUp ? "+" : ""}{s.avgChange}%
+                      </td>
+                      <td className="px-4 py-3 font-mono text-sm">
+                        {s.avgDividend}%
+                      </td>
+                      <td className="px-4 py-3 font-mono text-sm">
+                        {s.avgPE}
+                      </td>
+                      <td className="px-4 py-3 font-mono text-sm">
+                        {s.stockCount}
+                      </td>
+                      <td className="px-4 py-3">
+                        <Link
+                          href={`/research/${s.topStock.ticker.toLowerCase()}`}
+                          className="text-xs font-mono text-green hover:underline"
+                        >
+                          {s.topStock.ticker} (AI: {s.topStock.aiScore})
+                        </Link>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* Sort controls for cards */}
+        <div className="flex items-center justify-between mb-4">
+          <p className="text-xs text-text-muted">
+            Sorted by {SORT_OPTIONS.find((o) => o.key === sortBy)?.label} ({sortDesc ? "high to low" : "low to high"})
+          </p>
+          <div className="flex gap-1">
+            {SORT_OPTIONS.slice(0, 4).map((opt) => (
+              <button
+                key={opt.key}
+                onClick={() => handleSort(opt.key)}
+                className={`text-xs px-2.5 py-1 rounded-lg transition-colors ${
+                  sortBy === opt.key
+                    ? "bg-green/15 text-green font-medium"
+                    : "text-text-muted hover:text-text-secondary hover:bg-surface-alt"
+                }`}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
         {/* Sector cards */}
         <div className="space-y-4">
-          {sectorMetrics.map((metrics) => (
+          {sortedMetrics.map((metrics) => (
             <SectorCard key={metrics.name} metrics={metrics} />
           ))}
         </div>
