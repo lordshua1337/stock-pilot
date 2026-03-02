@@ -1,0 +1,9 @@
+{
+  "name": "StockPilot",
+  "short_name": "StockPilot",
+  "description": "AI-powered stock research and portfolio intelligence.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0A0F1A",
+  "theme_color": "#00C853"
+}

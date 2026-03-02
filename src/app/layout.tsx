@@ -29,6 +29,7 @@ export const metadata: Metadata = {
     description: "Build smarter portfolios with AI-driven research.",
     type: "website",
   },
+  manifest: "/manifest.json",
 };
 
 export const viewport = {
