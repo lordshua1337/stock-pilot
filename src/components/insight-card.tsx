@@ -17,7 +17,7 @@ import {
   Shield,
 } from "lucide-react";
 import type { Stock } from "@/lib/stock-data";
-import { generateStockInsight, type StockInsight, type StanceLabel } from "@/lib/insight-data";
+import { generateStockInsight, getPersonalizedInsight, type StockInsight, type StanceLabel } from "@/lib/insight-data";
 
 // ─── Tooltip Component ──────────────────────────────────────────────────
 function Tooltip({ content }: { content: string }) {
@@ -195,6 +195,7 @@ export function HoldingInsightCard({ stock, variant = "standard" }: {
   const [activeTab, setActiveTab] = useState<"signals" | "redteam">("signals");
 
   const insight = useMemo(() => generateStockInsight(stock), [stock]);
+  const dnaPersonalization = useMemo(() => getPersonalizedInsight(stock, insight), [stock, insight]);
   const isUp = stock.changePercent >= 0;
   const impliedReturn = ((insight.analystConsensus.avgPriceTarget - stock.price) / stock.price * 100);
 
@@ -642,9 +643,40 @@ export function HoldingInsightCard({ stock, variant = "standard" }: {
     </div>
   );
 
+  // ─── DNA Personalization Block ──────────────────────────────────────
+  const dnaBlock = dnaPersonalization.hasProfile ? (
+    <div className="mt-4 space-y-2">
+      {dnaPersonalization.archetypeName && (
+        <div className="flex items-center gap-2 text-xs text-text-muted">
+          <Shield className="w-3 h-3 text-green" />
+          <span>Personalized for your <span className="text-green font-medium">{dnaPersonalization.archetypeName}</span> profile</span>
+        </div>
+      )}
+      {dnaPersonalization.riskWarning && (
+        <div className="bg-red-bg border border-red/20 rounded-lg p-3 text-xs text-text-secondary flex items-start gap-2">
+          <AlertTriangle className="w-3.5 h-3.5 text-red flex-shrink-0 mt-0.5" />
+          {dnaPersonalization.riskWarning}
+        </div>
+      )}
+      {dnaPersonalization.biasAlert && (
+        <div className="bg-[rgba(255,215,64,0.08)] border border-[rgba(255,215,64,0.2)] rounded-lg p-3 text-xs text-text-secondary flex items-start gap-2">
+          <Eye className="w-3.5 h-3.5 text-[#FFD740] flex-shrink-0 mt-0.5" />
+          {dnaPersonalization.biasAlert}
+        </div>
+      )}
+      {dnaPersonalization.personalNote && (
+        <div className="bg-green-bg border border-green/20 rounded-lg p-3 text-xs text-text-secondary flex items-start gap-2">
+          <Shield className="w-3.5 h-3.5 text-green flex-shrink-0 mt-0.5" />
+          {dnaPersonalization.personalNote}
+        </div>
+      )}
+    </div>
+  ) : null;
+
   return (
     <div className="bg-surface rounded-xl border border-border p-5 sm:p-6">
       {headline}
+      {dnaBlock}
       {ratingsPanel}
       {signalBreakdown}
     </div>

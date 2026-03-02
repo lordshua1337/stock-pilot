@@ -3,6 +3,9 @@
 // Licensed source blocks show "Data pending" per the build spec.
 
 import type { Stock } from "./stock-data";
+import { loadDNAProfile } from "./dna-storage";
+import { ARCHETYPE_INFO } from "./dna-scoring";
+import type { BiasKey } from "./financial-dna";
 
 export type StanceLabel =
   | "Strong Conviction"
@@ -434,5 +437,94 @@ export function generateStockInsight(stock: Stock): StockInsight {
     bearCase: redTeam.bear,
     skepticVerdict: redTeam.skeptic,
     whatWouldChangeMyMind: redTeam.changeMyMind,
+  };
+}
+
+// ---------------------------------------------------------------------------
+// DNA Personalization Layer
+// Wraps stock insights with behavioral context from the user's Financial DNA
+// ---------------------------------------------------------------------------
+
+export interface DNAPersonalization {
+  hasProfile: boolean;
+  archetypeName: string | null;
+  personalNote: string | null;   // Personalized insight based on DNA
+  riskWarning: string | null;    // If stock doesn't fit their risk profile
+  biasAlert: string | null;      // If a detected bias might affect this decision
+  communicationTip: string | null; // How to frame this for their archetype
+}
+
+export function getPersonalizedInsight(
+  stock: Stock,
+  insight: StockInsight
+): DNAPersonalization {
+  const profile = loadDNAProfile();
+
+  if (!profile) {
+    return {
+      hasProfile: false,
+      archetypeName: null,
+      personalNote: null,
+      riskWarning: null,
+      biasAlert: null,
+      communicationTip: null,
+    };
+  }
+
+  const dims = profile.dimensions;
+  const archetype = ARCHETYPE_INFO[profile.communicationArchetype];
+  const biasMap = Object.fromEntries(
+    profile.biasFlags.map((f) => [f.bias, f.severity])
+  ) as Record<BiasKey, number>;
+
+  let personalNote: string | null = null;
+  let riskWarning: string | null = null;
+  let biasAlert: string | null = null;
+
+  // Risk profile mismatch detection
+  const isHighVolatility =
+    stock.changePercent !== undefined &&
+    Math.abs(stock.changePercent) > 5;
+  const isSpeculative = stock.aiScore < 50;
+
+  if (isHighVolatility && dims.R < 40) {
+    riskWarning = `This stock has shown ${Math.abs(stock.changePercent).toFixed(1)}% recent movement. With your risk orientation score of ${dims.R}, high-volatility positions may cause stress. Consider a smaller position size.`;
+  }
+
+  if (isSpeculative && dims.D < 45) {
+    riskWarning =
+      riskWarning ??
+      `This stock has an AI score of ${stock.aiScore}, suggesting higher uncertainty. Your execution discipline score of ${dims.D} means you may struggle to hold through volatility.`;
+  }
+
+  // Bias alerts based on stock context
+  if (stock.changePercent > 15 && (biasMap.fomo ?? 0) >= 1) {
+    biasAlert = `This stock is up ${stock.changePercent.toFixed(1)}%. Your FOMO sensitivity is elevated -- consider whether you're drawn to the momentum or the thesis.`;
+  } else if (stock.changePercent < -10 && (biasMap.loss_aversion ?? 0) >= 1) {
+    biasAlert = `This stock is down ${Math.abs(stock.changePercent).toFixed(1)}%. Your loss aversion may amplify the urge to sell. Focus on thesis validity, not the number.`;
+  } else if (
+    insight.stance === "Strong Conviction" &&
+    (biasMap.confirmation_bias ?? 0) >= 1
+  ) {
+    biasAlert =
+      "Strong Conviction rating aligns with what you might want to hear. Your confirmation bias flag suggests actively seeking the bear case before committing.";
+  }
+
+  // Archetype-specific notes
+  if (dims.H >= 70 && stock.dividendYield > 0) {
+    personalNote = `With your long-term horizon (${dims.H}/100), this ${stock.dividendYield.toFixed(1)}% dividend yield compounds significantly over your time frame.`;
+  } else if (dims.C >= 70) {
+    personalNote = `As a high-autonomy investor (Control: ${dims.C}/100), you'll want to verify this analysis independently. The raw data is in the fundamentals and technicals sections below.`;
+  } else if (dims.E < 40) {
+    personalNote = `Given your emotional regulation score of ${dims.E}, consider setting a stop-loss or position limit before entering this trade. Pre-commitment protects against reactive decisions.`;
+  }
+
+  return {
+    hasProfile: true,
+    archetypeName: archetype?.name ?? null,
+    personalNote,
+    riskWarning,
+    biasAlert,
+    communicationTip: archetype?.communicationRule ?? null,
   };
 }

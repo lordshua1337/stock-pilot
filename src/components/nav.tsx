@@ -12,7 +12,7 @@ export function Nav() {
     { href: "/sectors", label: "Sectors" },
     { href: "/compare", label: "Compare" },
     { href: "/watchlist", label: "Watchlist" },
-    { href: "/personality", label: "Personality" },
+    { href: "/personality", label: "Financial DNA" },
   ];
 
   return (
