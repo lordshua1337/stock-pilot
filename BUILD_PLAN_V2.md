@@ -106,7 +106,33 @@ interface Sector {
 
 ---
 
-## Phase 6: Polish and Deploy
+## Phase 6: Getting Started / Onboarding
+
+### New: `/onboard` page -> Getting Started Flow
+Multi-step onboarding wizard that prompts new users through:
+1. **Sign Up**: Name, email, display name (localStorage-based, no backend yet)
+2. **Profile Setup**: Investment experience level, goals (growth/income/balanced), time horizon, risk comfort
+3. **Financial DNA Assessment**: Deep personality quiz (expand existing `/personality` quiz into full "Financial DNA" report)
+   - 20-30 question assessment covering: risk tolerance, emotional investing tendencies, sector biases, time horizon mindset, loss aversion
+   - Generates a PDF report (html2pdf.js) with:
+     - Investor archetype (e.g., "The Calculated Growth Seeker")
+     - Risk profile score (1-10) with visual gauge
+     - Recommended sector allocation based on personality
+     - Behavioral insights ("You tend to panic-sell during 10%+ drawdowns")
+     - Suggested portfolio preset matching their DNA
+     - "Your Financial DNA" branding with premium feel
+   - Store results in localStorage for portfolio recommendations
+4. **Suggested Portfolio**: Based on DNA results, pre-populate portfolio builder with recommended allocation
+5. **Dashboard redirect**: Send them to home with personalized greeting
+
+### Design Reference
+- Financial DNA report style: professional PDF like personality assessments (Myers-Briggs, DISC, StrengthsFinder)
+- Quiz UX: one question at a time, progress bar, engaging micro-animations
+- PDF: cover page with name + archetype, 4-6 pages of analysis, charts, recommendations
+
+---
+
+## Phase 7: Polish and Deploy
 
 - Mobile-responsive all pages
 - Dark mode polish (Robinhood aesthetic)
@@ -117,13 +143,26 @@ interface Sector {
 
 ---
 
+## Completed Work
+
+| Item | Status |
+|------|--------|
+| Stock universe expanded to 85+ stocks | DONE |
+| Market benchmarks (S&P 500, DJIA, NASDAQ, Russell 2000, VIX, etc.) | DONE |
+| `src/lib/stock-data-extended.ts` -- 45 new stocks | DONE |
+| `src/lib/portfolio-utils.ts` -- portfolio metrics calculations | DONE |
+| Benchmark interface + 12 benchmark entries in stock-data.ts | DONE |
+
+---
+
 ## Files to Create/Modify
 
 | File | Action |
 |------|--------|
-| `src/lib/stock-data.ts` | UPDATE - 30+ stocks with expanded fields |
-| `src/lib/sectors.ts` | NEW - 11 GICS sectors |
-| `src/lib/portfolio-utils.ts` | NEW - Portfolio metrics calculations |
+| `src/lib/stock-data.ts` | DONE - 85+ stocks, benchmarks, extended import |
+| `src/lib/stock-data-extended.ts` | DONE - 45 additional stocks |
+| `src/lib/portfolio-utils.ts` | DONE - Portfolio metrics calculations |
+| `src/lib/financial-dna.ts` | NEW - Assessment questions, scoring, archetype engine |
 | `src/app/page.tsx` | UPDATE - Enhanced home |
 | `src/app/research/page.tsx` | UPDATE - Search, filter, sort |
 | `src/app/research/[ticker]/page.tsx` | NEW - Stock detail |
@@ -132,6 +171,10 @@ interface Sector {
 | `src/app/sectors/page.tsx` | NEW - Sector analysis |
 | `src/app/watchlist/page.tsx` | NEW - Watchlist |
 | `src/app/ask/page.tsx` | NEW or UPDATE - AI research assistant |
+| `src/app/onboard/page.tsx` | NEW - Getting started wizard |
+| `src/app/onboard/assessment/page.tsx` | NEW - Financial DNA quiz |
+| `src/app/onboard/results/page.tsx` | NEW - DNA results + PDF generation |
 | `src/components/nav.tsx` | UPDATE - New routes |
 | `src/lib/system-prompt.ts` | NEW - AI context |
+| `src/lib/financial-dna.ts` | NEW - Assessment engine |
 | `src/app/globals.css` | UPDATE |

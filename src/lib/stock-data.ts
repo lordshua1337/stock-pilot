@@ -1,3 +1,5 @@
+import { extendedStocks } from "./stock-data-extended";
+
 export interface Stock {
   ticker: string;
   name: string;
@@ -1207,6 +1209,129 @@ export const stocks: Stock[] = [
       "International same-store sales growing faster than domestic",
       "E-commerce penetration still low with significant digital growth runway",
     ],
+  },
+  ...extendedStocks,
+];
+
+// ─── Market Benchmarks ────────────────────────────────────────────────
+export interface Benchmark {
+  ticker: string;
+  name: string;
+  value: number;
+  ytdReturn: number; // percentage
+  change: number;
+  changePercent: number;
+  description: string;
+}
+
+export const benchmarks: Benchmark[] = [
+  {
+    ticker: "SPX",
+    name: "S&P 500",
+    value: 5998.74,
+    ytdReturn: 8.2,
+    change: 32.45,
+    changePercent: 0.54,
+    description: "500 largest US companies by market cap. The most-watched US equity benchmark.",
+  },
+  {
+    ticker: "DJI",
+    name: "Dow Jones Industrial Average",
+    value: 43842.67,
+    ytdReturn: 5.8,
+    change: 178.32,
+    changePercent: 0.41,
+    description: "30 blue-chip US stocks. Price-weighted index of established industrial leaders.",
+  },
+  {
+    ticker: "IXIC",
+    name: "NASDAQ Composite",
+    value: 19285.31,
+    ytdReturn: 10.4,
+    change: 112.68,
+    changePercent: 0.59,
+    description: "All NASDAQ-listed stocks. Tech-heavy, growth-oriented benchmark.",
+  },
+  {
+    ticker: "RUT",
+    name: "Russell 2000",
+    value: 2198.45,
+    ytdReturn: 2.1,
+    change: 8.92,
+    changePercent: 0.41,
+    description: "2,000 small-cap US stocks. Gauge of domestic economic health and small business.",
+  },
+  {
+    ticker: "RUA",
+    name: "Russell 3000",
+    value: 3182.56,
+    ytdReturn: 7.4,
+    change: 18.34,
+    changePercent: 0.58,
+    description: "3,000 largest US stocks covering 98% of the investable US equity market.",
+  },
+  {
+    ticker: "VIX",
+    name: "CBOE Volatility Index",
+    value: 16.42,
+    ytdReturn: -12.8,
+    change: -0.84,
+    changePercent: -4.87,
+    description: "Market fear gauge. Measures expected S&P 500 volatility over next 30 days.",
+  },
+  {
+    ticker: "TNX",
+    name: "10-Year Treasury Yield",
+    value: 4.28,
+    ytdReturn: 0,
+    change: -0.02,
+    changePercent: -0.47,
+    description: "US 10-year government bond yield. Key rate for mortgages and corporate borrowing.",
+  },
+  {
+    ticker: "DXY",
+    name: "US Dollar Index",
+    value: 104.82,
+    ytdReturn: 1.6,
+    change: 0.24,
+    changePercent: 0.23,
+    description: "Dollar strength vs basket of 6 major currencies (EUR, JPY, GBP, CAD, SEK, CHF).",
+  },
+  {
+    ticker: "CL=F",
+    name: "Crude Oil (WTI)",
+    value: 78.34,
+    ytdReturn: 8.8,
+    change: 1.12,
+    changePercent: 1.45,
+    description: "West Texas Intermediate crude oil futures. Key energy and inflation indicator.",
+  },
+  {
+    ticker: "GC=F",
+    name: "Gold",
+    value: 2648.50,
+    ytdReturn: 14.2,
+    change: 18.40,
+    changePercent: 0.70,
+    description: "Gold futures. Safe-haven asset and inflation hedge.",
+  },
+  {
+    ticker: "BTC-USD",
+    name: "Bitcoin",
+    value: 97842.0,
+    ytdReturn: 42.6,
+    change: 2145.0,
+    changePercent: 2.24,
+    description: "Bitcoin in USD. Leading cryptocurrency and digital store of value.",
+  },
+  {
+    ticker: "ETH-USD",
+    name: "Ethereum",
+    value: 3842.0,
+    ytdReturn: 28.4,
+    change: 86.5,
+    changePercent: 2.30,
+    description: "Ethereum in USD. Smart contract platform powering DeFi and NFTs.",
   },
 ];
 
