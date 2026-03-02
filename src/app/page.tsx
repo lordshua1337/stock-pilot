@@ -8,6 +8,7 @@ import {
   Search,
   Zap,
   Shield,
+  Brain,
 } from "lucide-react";
 import { stocks, sectors } from "@/lib/stock-data";
 
@@ -261,16 +262,15 @@ export default function HomePage() {
             <h2 className="text-2xl font-semibold">Research-Driven Investing</h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
             <div className="bg-surface border border-border rounded-xl p-5">
               <div className="w-10 h-10 rounded-lg bg-green-bg flex items-center justify-center mb-4">
                 <Search className="w-5 h-5 text-green" />
               </div>
               <h3 className="text-base font-semibold mb-2">AI Research</h3>
               <p className="text-sm text-text-secondary leading-relaxed">
-                Every stock gets an AI-generated thesis, risk assessment, and
-                catalyst analysis. Scores from 1-100 based on fundamentals,
-                sentiment, and momentum.
+                Every stock gets an AI thesis, risk assessment, and
+                catalyst analysis. Scores from 1-100.
               </p>
             </div>
 
@@ -280,9 +280,8 @@ export default function HomePage() {
               </div>
               <h3 className="text-base font-semibold mb-2">Portfolio Builder</h3>
               <p className="text-sm text-text-secondary leading-relaxed">
-                Build a diversified portfolio with sector allocation guidance.
-                See risk exposure, concentration warnings, and dividend yield
-                projections.
+                Build a diversified portfolio with sector allocation,
+                risk exposure, and dividend projections.
               </p>
             </div>
 
@@ -292,10 +291,27 @@ export default function HomePage() {
               </div>
               <h3 className="text-base font-semibold mb-2">Risk Analysis</h3>
               <p className="text-sm text-text-secondary leading-relaxed">
-                Every recommendation includes specific risks and what could go
-                wrong. No pump and dump. No hype. Just honest analysis.
+                Every pick includes specific risks and what could go
+                wrong. No hype. Just honest analysis.
               </p>
             </div>
+
+            <Link
+              href="/personality"
+              className="bg-surface border border-border rounded-xl p-5 card-hover block group"
+            >
+              <div className="w-10 h-10 rounded-lg bg-green-bg flex items-center justify-center mb-4">
+                <Brain className="w-5 h-5 text-green" />
+              </div>
+              <h3 className="text-base font-semibold mb-2">Investor DNA</h3>
+              <p className="text-sm text-text-secondary leading-relaxed">
+                20 questions to discover your investor personality type.
+                6 archetypes. 3 minutes.
+              </p>
+              <span className="text-green text-xs font-medium mt-2 inline-flex items-center gap-1 group-hover:gap-2 transition-all">
+                Take the Quiz <ArrowRight className="w-3 h-3" />
+              </span>
+            </Link>
           </div>
         </div>
       </section>

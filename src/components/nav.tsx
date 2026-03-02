@@ -11,6 +11,7 @@ export function Nav() {
     { href: "/research", label: "Research" },
     { href: "/sectors", label: "Sectors" },
     { href: "/compare", label: "Compare" },
+    { href: "/personality", label: "Personality" },
     { href: "/portfolio", label: "Portfolio" },
   ];
 
