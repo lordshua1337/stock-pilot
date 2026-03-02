@@ -7,7 +7,6 @@ import {
   ArrowLeft,
   TrendingUp,
   TrendingDown,
-  AlertTriangle,
   Zap,
   Shield,
   BarChart3,
@@ -15,6 +14,7 @@ import {
   ArrowUpDown,
 } from "lucide-react";
 import { getStockByTicker, getStocksBySector, type Stock } from "@/lib/stock-data";
+import { HoldingInsightCard } from "@/components/insight-card";
 
 function ScoreRing({ score }: { score: number }) {
   const color =
@@ -226,143 +226,8 @@ export default function StockDetailPage() {
           />
         </div>
 
-        {/* AI Thesis */}
-        <div className="bg-surface rounded-xl border border-border p-5 sm:p-6 mb-6">
-          <div className="flex items-center gap-2 mb-3">
-            <Zap className="w-4 h-4 text-green" />
-            <h2 className="text-sm font-semibold uppercase tracking-wider">
-              AI Investment Thesis
-            </h2>
-          </div>
-          <p className="text-text-secondary leading-relaxed">
-            {stock.thesis}
-          </p>
-        </div>
-
-        {/* Quick Valuation */}
-        <div className="bg-surface rounded-xl border border-border p-5 sm:p-6 mb-6">
-          <div className="flex items-center gap-2 mb-4">
-            <BarChart3 className="w-4 h-4 text-green" />
-            <h2 className="text-sm font-semibold uppercase tracking-wider">
-              Quick Valuation Snapshot
-            </h2>
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <p className="text-xs text-text-muted mb-1">P/E vs Sector Avg</p>
-              {(() => {
-                const sectorPeers = getStocksBySector(stock.sector);
-                const avgPE = sectorPeers.reduce((s, st) => s + st.peRatio, 0) / sectorPeers.length;
-                const diff = stock.peRatio - avgPE;
-                const label = diff > 5 ? "Premium" : diff < -5 ? "Discount" : "Inline";
-                const color = diff > 5 ? "text-gold" : diff < -5 ? "text-green" : "text-text-secondary";
-                return (
-                  <div>
-                    <p className="text-sm font-mono font-medium">
-                      {stock.peRatio.toFixed(1)}x vs {avgPE.toFixed(1)}x avg
-                    </p>
-                    <p className={`text-xs ${color}`}>
-                      {label} ({diff > 0 ? "+" : ""}{diff.toFixed(1)}x)
-                    </p>
-                  </div>
-                );
-              })()}
-            </div>
-            <div>
-              <p className="text-xs text-text-muted mb-1">Dividend vs Sector Avg</p>
-              {(() => {
-                const sectorPeers = getStocksBySector(stock.sector);
-                const avgDiv = sectorPeers.reduce((s, st) => s + st.dividendYield, 0) / sectorPeers.length;
-                return (
-                  <div>
-                    <p className="text-sm font-mono font-medium">
-                      {stock.dividendYield.toFixed(2)}% vs {avgDiv.toFixed(2)}% avg
-                    </p>
-                    <p className="text-xs text-text-secondary">
-                      {stock.dividendYield > 0 ? `$${(stock.price * stock.dividendYield / 100).toFixed(2)}/share annually` : "No dividend"}
-                    </p>
-                  </div>
-                );
-              })()}
-            </div>
-            <div>
-              <p className="text-xs text-text-muted mb-1">AI Score vs Sector</p>
-              {(() => {
-                const sectorPeers = getStocksBySector(stock.sector);
-                const avgScore = Math.round(sectorPeers.reduce((s, st) => s + st.aiScore, 0) / sectorPeers.length);
-                const rank = [...sectorPeers].sort((a, b) => b.aiScore - a.aiScore).findIndex(s => s.ticker === stock.ticker) + 1;
-                return (
-                  <div>
-                    <p className="text-sm font-mono font-medium">
-                      {stock.aiScore} vs {avgScore} avg
-                    </p>
-                    <p className="text-xs text-text-secondary">
-                      Rank #{rank} of {sectorPeers.length} in {stock.sector}
-                    </p>
-                  </div>
-                );
-              })()}
-            </div>
-            <div>
-              <p className="text-xs text-text-muted mb-1">Price vs 52-Week</p>
-              <p className="text-sm font-mono font-medium">
-                {((stock.price / stock.fiftyTwoHigh) * 100).toFixed(0)}% of high
-              </p>
-              <p className="text-xs text-text-secondary">
-                {stock.price >= stock.fiftyTwoHigh * 0.95
-                  ? "Near 52-week high"
-                  : stock.price <= stock.fiftyTwoLow * 1.05
-                    ? "Near 52-week low"
-                    : `${((1 - stock.price / stock.fiftyTwoHigh) * 100).toFixed(0)}% below high`}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Catalysts and Risks side by side */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-          {/* Catalysts */}
-          <div className="bg-surface rounded-xl border border-border p-5">
-            <div className="flex items-center gap-2 mb-3">
-              <TrendingUp className="w-4 h-4 text-green" />
-              <h3 className="text-sm font-semibold uppercase tracking-wider">
-                Catalysts
-              </h3>
-            </div>
-            <ul className="space-y-2">
-              {stock.catalysts.map((catalyst, i) => (
-                <li
-                  key={i}
-                  className="text-sm text-text-secondary flex items-start gap-2"
-                >
-                  <span className="text-green mt-0.5 flex-shrink-0">+</span>
-                  {catalyst}
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Risks */}
-          <div className="bg-surface rounded-xl border border-border p-5">
-            <div className="flex items-center gap-2 mb-3">
-              <AlertTriangle className="w-4 h-4 text-red" />
-              <h3 className="text-sm font-semibold uppercase tracking-wider">
-                Risks
-              </h3>
-            </div>
-            <ul className="space-y-2">
-              {stock.risks.map((risk, i) => (
-                <li
-                  key={i}
-                  className="text-sm text-text-secondary flex items-start gap-2"
-                >
-                  <span className="text-red mt-0.5 flex-shrink-0">-</span>
-                  {risk}
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
+        {/* Full Insight Card */}
+        <HoldingInsightCard stock={stock} variant="expanded" />
 
         {/* Sector Peers */}
         {peers.length > 0 && (

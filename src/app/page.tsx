@@ -11,6 +11,7 @@ import {
   Brain,
 } from "lucide-react";
 import { stocks, sectors, getSectorMetrics } from "@/lib/stock-data";
+import { BenchmarkTape } from "@/components/benchmark-tape";
 
 function StockRow({ stock }: { stock: (typeof stocks)[0] }) {
   const isUp = stock.change >= 0;
@@ -143,32 +144,8 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Market overview ticker strip */}
-      <section className="border-y border-border bg-surface py-3 px-4 overflow-x-auto">
-        <div className="max-w-6xl mx-auto flex items-center gap-8 min-w-max">
-          {stocks.slice(0, 6).map((s) => (
-            <div key={s.ticker} className="flex items-center gap-2 text-sm">
-              <span className="font-mono font-medium">{s.ticker}</span>
-              <span className="font-mono text-text-muted">
-                ${s.price.toFixed(2)}
-              </span>
-              <span
-                className={`font-mono text-xs flex items-center gap-0.5 ${
-                  s.change >= 0 ? "text-green" : "text-red"
-                }`}
-              >
-                {s.change >= 0 ? (
-                  <TrendingUp className="w-3 h-3" />
-                ) : (
-                  <TrendingDown className="w-3 h-3" />
-                )}
-                {s.change >= 0 ? "+" : ""}
-                {s.changePercent.toFixed(2)}%
-              </span>
-            </div>
-          ))}
-        </div>
-      </section>
+      {/* Benchmark ticker tape */}
+      <BenchmarkTape />
 
       {/* Stats */}
       <section className="py-8 px-4 bg-surface">

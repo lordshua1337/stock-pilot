@@ -1214,123 +1214,76 @@ export const stocks: Stock[] = [
 ];
 
 // ─── Market Benchmarks ────────────────────────────────────────────────
+export type BenchmarkPeriod = "YTD" | "QTR" | "MONTH" | "WEEK" | "DAY" | "LIVE";
+
 export interface Benchmark {
   ticker: string;
   name: string;
+  shortName: string; // compact label for ticker tape
   value: number;
-  ytdReturn: number; // percentage
-  change: number;
-  changePercent: number;
+  returns: Record<BenchmarkPeriod, number>; // percentage return per period
   description: string;
 }
 
 export const benchmarks: Benchmark[] = [
   {
-    ticker: "SPX",
-    name: "S&P 500",
-    value: 5998.74,
-    ytdReturn: 8.2,
-    change: 32.45,
-    changePercent: 0.54,
+    ticker: "SPX", name: "S&P 500", shortName: "S&P 500", value: 5998.74,
+    returns: { YTD: 8.2, QTR: 3.1, MONTH: 1.8, WEEK: 0.9, DAY: 0.54, LIVE: 0.54 },
     description: "500 largest US companies by market cap. The most-watched US equity benchmark.",
   },
   {
-    ticker: "DJI",
-    name: "Dow Jones Industrial Average",
-    value: 43842.67,
-    ytdReturn: 5.8,
-    change: 178.32,
-    changePercent: 0.41,
+    ticker: "DJI", name: "Dow Jones Industrial Average", shortName: "Dow Jones", value: 43842.67,
+    returns: { YTD: 5.8, QTR: 2.4, MONTH: 1.2, WEEK: 0.6, DAY: 0.41, LIVE: 0.41 },
     description: "30 blue-chip US stocks. Price-weighted index of established industrial leaders.",
   },
   {
-    ticker: "IXIC",
-    name: "NASDAQ Composite",
-    value: 19285.31,
-    ytdReturn: 10.4,
-    change: 112.68,
-    changePercent: 0.59,
+    ticker: "IXIC", name: "NASDAQ Composite", shortName: "NASDAQ", value: 19285.31,
+    returns: { YTD: 10.4, QTR: 4.2, MONTH: 2.6, WEEK: 1.2, DAY: 0.59, LIVE: 0.59 },
     description: "All NASDAQ-listed stocks. Tech-heavy, growth-oriented benchmark.",
   },
   {
-    ticker: "RUT",
-    name: "Russell 2000",
-    value: 2198.45,
-    ytdReturn: 2.1,
-    change: 8.92,
-    changePercent: 0.41,
+    ticker: "RUT", name: "Russell 2000", shortName: "Russell 2K", value: 2198.45,
+    returns: { YTD: 2.1, QTR: -0.8, MONTH: 0.4, WEEK: 0.3, DAY: 0.41, LIVE: 0.41 },
     description: "2,000 small-cap US stocks. Gauge of domestic economic health and small business.",
   },
   {
-    ticker: "RUA",
-    name: "Russell 3000",
-    value: 3182.56,
-    ytdReturn: 7.4,
-    change: 18.34,
-    changePercent: 0.58,
+    ticker: "RUA", name: "Russell 3000", shortName: "Russell 3K", value: 3182.56,
+    returns: { YTD: 7.4, QTR: 2.8, MONTH: 1.6, WEEK: 0.8, DAY: 0.58, LIVE: 0.58 },
     description: "3,000 largest US stocks covering 98% of the investable US equity market.",
   },
   {
-    ticker: "VIX",
-    name: "CBOE Volatility Index",
-    value: 16.42,
-    ytdReturn: -12.8,
-    change: -0.84,
-    changePercent: -4.87,
+    ticker: "VIX", name: "CBOE Volatility Index", shortName: "VIX", value: 16.42,
+    returns: { YTD: -12.8, QTR: -8.4, MONTH: -5.2, WEEK: -2.1, DAY: -4.87, LIVE: -4.87 },
     description: "Market fear gauge. Measures expected S&P 500 volatility over next 30 days.",
   },
   {
-    ticker: "TNX",
-    name: "10-Year Treasury Yield",
-    value: 4.28,
-    ytdReturn: 0,
-    change: -0.02,
-    changePercent: -0.47,
+    ticker: "TNX", name: "10-Year Treasury Yield", shortName: "10Y Yield", value: 4.28,
+    returns: { YTD: -2.4, QTR: -1.1, MONTH: -0.6, WEEK: -0.3, DAY: -0.47, LIVE: -0.47 },
     description: "US 10-year government bond yield. Key rate for mortgages and corporate borrowing.",
   },
   {
-    ticker: "DXY",
-    name: "US Dollar Index",
-    value: 104.82,
-    ytdReturn: 1.6,
-    change: 0.24,
-    changePercent: 0.23,
+    ticker: "DXY", name: "US Dollar Index", shortName: "Dollar", value: 104.82,
+    returns: { YTD: 1.6, QTR: 0.8, MONTH: 0.4, WEEK: 0.2, DAY: 0.23, LIVE: 0.23 },
     description: "Dollar strength vs basket of 6 major currencies (EUR, JPY, GBP, CAD, SEK, CHF).",
   },
   {
-    ticker: "CL=F",
-    name: "Crude Oil (WTI)",
-    value: 78.34,
-    ytdReturn: 8.8,
-    change: 1.12,
-    changePercent: 1.45,
+    ticker: "CL=F", name: "Crude Oil (WTI)", shortName: "Crude Oil", value: 78.34,
+    returns: { YTD: 8.8, QTR: 4.2, MONTH: 2.8, WEEK: 1.8, DAY: 1.45, LIVE: 1.45 },
     description: "West Texas Intermediate crude oil futures. Key energy and inflation indicator.",
   },
   {
-    ticker: "GC=F",
-    name: "Gold",
-    value: 2648.50,
-    ytdReturn: 14.2,
-    change: 18.40,
-    changePercent: 0.70,
+    ticker: "GC=F", name: "Gold", shortName: "Gold", value: 2648.50,
+    returns: { YTD: 14.2, QTR: 6.8, MONTH: 3.4, WEEK: 1.2, DAY: 0.70, LIVE: 0.70 },
     description: "Gold futures. Safe-haven asset and inflation hedge.",
   },
   {
-    ticker: "BTC-USD",
-    name: "Bitcoin",
-    value: 97842.0,
-    ytdReturn: 42.6,
-    change: 2145.0,
-    changePercent: 2.24,
+    ticker: "BTC-USD", name: "Bitcoin", shortName: "BTC", value: 97842.0,
+    returns: { YTD: 42.6, QTR: 18.4, MONTH: 8.2, WEEK: 4.6, DAY: 2.24, LIVE: 2.24 },
     description: "Bitcoin in USD. Leading cryptocurrency and digital store of value.",
   },
   {
-    ticker: "ETH-USD",
-    name: "Ethereum",
-    value: 3842.0,
-    ytdReturn: 28.4,
-    change: 86.5,
-    changePercent: 2.30,
+    ticker: "ETH-USD", name: "Ethereum", shortName: "ETH", value: 3842.0,
+    returns: { YTD: 28.4, QTR: 12.6, MONTH: 5.8, WEEK: 3.2, DAY: 2.30, LIVE: 2.30 },
     description: "Ethereum in USD. Smart contract platform powering DeFi and NFTs.",
   },
 ];
