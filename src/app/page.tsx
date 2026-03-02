@@ -15,7 +15,7 @@ function StockRow({ stock }: { stock: (typeof stocks)[0] }) {
   const isUp = stock.change >= 0;
   return (
     <Link
-      href={`/research#${stock.ticker}`}
+      href={`/research/${stock.ticker.toLowerCase()}`}
       className="flex items-center justify-between py-3 px-4 card-hover rounded-lg group"
     >
       <div className="flex items-center gap-3">
@@ -53,7 +53,7 @@ function AIScoreCard({ stock }: { stock: (typeof stocks)[0] }) {
 
   return (
     <Link
-      href={`/research#${stock.ticker}`}
+      href={`/research/${stock.ticker.toLowerCase()}`}
       className="bg-surface border border-border rounded-xl p-4 card-hover block"
     >
       <div className="flex items-center justify-between mb-3">
