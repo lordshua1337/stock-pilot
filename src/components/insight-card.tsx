@@ -335,34 +335,168 @@ export function HoldingInsightCard({ stock, variant = "standard" }: {
         </div>
       </RatingBlock>
 
-      {/* Licensed source placeholders */}
-      <DataPendingBlock
+      {/* S&P Global / CFRA */}
+      <RatingBlock
         title="S&P Global / CFRA"
         icon={<Shield className="w-4 h-4" />}
-        tooltip="S&P Global's CFRA Research provides independent equity research using a quantitative and fundamental methodology. Their STARS system (1-5) predicts total return relative to the S&P 500 over the next 12 months. The Quality Ranking measures the growth and stability of earnings and dividends over the past 10 years."
-        fields={["STARS Rating (1-5)", "12-Month Price Target", "Quality Ranking (A+ to D)", "Recommendation"]}
-      />
+        tooltip="S&P Global's CFRA Research provides independent equity research using a quantitative and fundamental methodology. Their STARS system (1-5) predicts total return relative to the S&P 500 over the next 12 months. 5 STARS = expected to significantly outperform. The Quality Ranking is distinct from the recommendation -- it measures the growth and stability of earnings and dividends over the past 10 years. A company can have a strong Buy recommendation with a low Quality Ranking."
+      >
+        <div className="flex items-center justify-between mb-2">
+          <span className={`text-xs font-medium px-2 py-0.5 rounded ${
+            insight.spCfra.recommendation === "Strong Buy" || insight.spCfra.recommendation === "Buy"
+              ? "bg-green-bg text-green"
+              : insight.spCfra.recommendation === "Hold"
+                ? "bg-[rgba(255,215,64,0.1)] text-gold"
+                : "bg-red-bg text-red"
+          }`}>
+            {insight.spCfra.recommendation}
+          </span>
+          <div className="flex gap-0.5">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <span key={i} className={`text-sm ${i < insight.spCfra.starsScore ? "text-gold" : "text-text-muted"}`}>
+                *
+              </span>
+            ))}
+          </div>
+        </div>
+        <div className="flex justify-between text-[11px]">
+          <span className="text-text-muted">
+            PT: <span className="text-text-secondary font-mono">${insight.spCfra.priceTarget.toFixed(2)}</span>
+          </span>
+          <span className="text-text-muted">
+            Quality: <span className="text-text-secondary font-mono">{insight.spCfra.qualityRanking}</span>
+          </span>
+        </div>
+      </RatingBlock>
 
-      <DataPendingBlock
+      {/* Refinitiv StarMine */}
+      <RatingBlock
         title="Refinitiv StarMine"
         icon={<Activity className="w-4 h-4" />}
-        tooltip="StarMine weights analyst estimates by their historical accuracy. The SmartEstimate is usually a better predictor of actual results than the simple consensus average. Predicted Surprise shows whether StarMine expects the company to beat or miss expectations. Analyst Revision Momentum tracks whether analysts have been raising or lowering estimates recently."
-        fields={["SmartEstimate", "Predicted Surprise %", "Analyst Revision Momentum (1-100)", "Earnings Quality (1-100)"]}
-      />
+        tooltip="StarMine weights analyst estimates by their historical accuracy. An analyst who has consistently made accurate estimates for this company gets more weight. The SmartEstimate is usually a better predictor of actual results than the simple consensus average. Predicted Surprise shows whether StarMine expects the company to beat or miss expectations. Analyst Revision Momentum tracks whether analysts have been raising or lowering estimates recently -- rising estimates (score > 50) suggest improving fundamentals."
+      >
+        <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-[11px]">
+          <div>
+            <span className="text-text-muted">SmartEstimate</span>
+            <p className="text-text-secondary font-mono font-medium">${insight.starMine.smartEstimate.toFixed(2)}</p>
+          </div>
+          <div>
+            <span className="text-text-muted">Predicted Surprise</span>
+            <p className={`font-mono font-medium ${insight.starMine.predictedSurprise >= 0 ? "text-green" : "text-red"}`}>
+              {insight.starMine.predictedSurprise >= 0 ? "+" : ""}{insight.starMine.predictedSurprise}%
+            </p>
+          </div>
+          <div>
+            <span className="text-text-muted">Revision Momentum</span>
+            <div className="flex items-center gap-1.5">
+              <div className="flex-1 h-1.5 bg-surface rounded-full overflow-hidden">
+                <div
+                  className={`h-full rounded-full ${insight.starMine.revisionMomentum > 50 ? "bg-green" : "bg-red"}`}
+                  style={{ width: `${insight.starMine.revisionMomentum}%` }}
+                />
+              </div>
+              <span className="text-text-secondary font-mono">{insight.starMine.revisionMomentum}</span>
+            </div>
+          </div>
+          <div>
+            <span className="text-text-muted">Earnings Quality</span>
+            <div className="flex items-center gap-1.5">
+              <div className="flex-1 h-1.5 bg-surface rounded-full overflow-hidden">
+                <div
+                  className={`h-full rounded-full ${insight.starMine.earningsQuality > 60 ? "bg-green" : insight.starMine.earningsQuality > 40 ? "bg-gold" : "bg-red"}`}
+                  style={{ width: `${insight.starMine.earningsQuality}%` }}
+                />
+              </div>
+              <span className="text-text-secondary font-mono">{insight.starMine.earningsQuality}</span>
+            </div>
+          </div>
+        </div>
+      </RatingBlock>
 
-      <DataPendingBlock
+      {/* Congressional Disclosures */}
+      <RatingBlock
         title="Congressional Disclosures"
         icon={<Landmark className="w-4 h-4" />}
-        tooltip="Members of Congress are required to disclose stock trades within 30-45 days under the STOCK Act. By the time this is disclosed, the trade is at minimum 30 days old. This data is useful as confirming context, not as a primary trading input."
-        fields={["Recent Trades (180d)", "Committee Relevance", "Direction & Amount Range"]}
-      />
+        tooltip="Members of Congress are required to disclose stock trades within 30-45 days under the STOCK Act. Some investors track these disclosures because certain members sit on committees that oversee industries they trade in. Critical limitation: By the time this is disclosed, the trade is at minimum 30 days old and often 45+ days old. This data is useful as confirming context -- interesting if it aligns with other signals -- not as a primary trading input."
+      >
+        <p className="text-[11px] text-gold mb-2 flex items-center gap-1">
+          <AlertTriangle className="w-3 h-3" />
+          Congressional trades are reported 30-45 days after execution. This data is historical context, not a real-time signal.
+        </p>
+        {insight.congressional.trades.length > 0 ? (
+          <div className="space-y-2">
+            {insight.congressional.trades.map((t, i) => (
+              <div key={i} className="flex items-start justify-between text-[11px] py-1.5 border-b border-border last:border-0">
+                <div>
+                  <p className="text-text-secondary font-medium">{t.member}</p>
+                  <p className="text-text-muted">{t.committee}</p>
+                </div>
+                <div className="text-right">
+                  <span className={`font-medium ${t.direction === "Buy" ? "text-green" : "text-red"}`}>
+                    {t.direction}
+                  </span>
+                  <p className="text-text-muted">{t.amountRange}</p>
+                  <p className="text-text-muted">{t.daysSinceTrade}d ago</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-[11px] text-text-muted italic">No congressional trades reported in past 180 days.</p>
+        )}
+      </RatingBlock>
 
-      <DataPendingBlock
+      {/* Options Market Sentiment */}
+      <RatingBlock
         title="Options Market Sentiment"
         icon={<Activity className="w-4 h-4" />}
-        tooltip="The Put/Call ratio compares bearish to bullish options volume. Implied Volatility Rank tells you whether options are currently cheap or expensive relative to the past year. Unusual options activity -- large blocks at far strikes -- sometimes precedes news."
-        fields={["Put/Call Ratio", "IV Rank (0-100)", "Unusual Activity Flag", "Smart Money Flow"]}
-      />
+        tooltip="The Put/Call ratio compares the volume of put options (bets the stock will fall) to call options (bets it will rise). A ratio above 1.0 means more bearish options activity. Below 1.0 means more bullish. Implied Volatility Rank (IVR) tells you whether options are currently cheap or expensive relative to the past year. IVR of 80 means options are pricing in more uncertainty than 80% of the past year. Unusual options activity -- large blocks at far strikes -- sometimes precedes news."
+      >
+        <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-[11px] mb-2">
+          <div>
+            <span className="text-text-muted">Put/Call Ratio</span>
+            <p className={`font-mono font-medium ${insight.options.putCallRatio < 0.7 ? "text-green" : insight.options.putCallRatio > 1.0 ? "text-red" : "text-text-secondary"}`}>
+              {insight.options.putCallRatio.toFixed(2)}
+              <span className="text-text-muted font-normal ml-1">
+                ({insight.options.putCallVs30dAvg.toFixed(1)}x avg)
+              </span>
+            </p>
+          </div>
+          <div>
+            <span className="text-text-muted">IV Rank (0-100)</span>
+            <div className="flex items-center gap-1.5">
+              <div className="flex-1 h-1.5 bg-surface rounded-full overflow-hidden">
+                <div
+                  className={`h-full rounded-full ${insight.options.ivRank > 60 ? "bg-gold" : "bg-text-muted"}`}
+                  style={{ width: `${insight.options.ivRank}%` }}
+                />
+              </div>
+              <span className="text-text-secondary font-mono">{insight.options.ivRank}</span>
+            </div>
+          </div>
+          <div>
+            <span className="text-text-muted">Smart Money Flow</span>
+            <p className={`font-medium ${
+              insight.options.smartMoneyFlow === "Bullish" ? "text-green"
+                : insight.options.smartMoneyFlow === "Bearish" ? "text-red"
+                : "text-text-secondary"
+            }`}>
+              {insight.options.smartMoneyFlow}
+            </p>
+          </div>
+          <div>
+            <span className="text-text-muted">Unusual Activity</span>
+            <p className={`font-medium ${insight.options.unusualActivity ? "text-gold" : "text-text-muted"}`}>
+              {insight.options.unusualActivity ? "Detected" : "None"}
+            </p>
+          </div>
+        </div>
+        {insight.options.unusualActivity && insight.options.unusualDetail && (
+          <p className="text-[11px] text-gold pt-2 border-t border-border">
+            {insight.options.unusualDetail}
+          </p>
+        )}
+      </RatingBlock>
     </div>
   );
 

@@ -59,6 +59,45 @@ export interface TechnicalSignal {
   tooltip: string;
 }
 
+export interface SPCFRARating {
+  recommendation: "Strong Buy" | "Buy" | "Hold" | "Sell" | "Strong Sell";
+  starsScore: number; // 1-5
+  priceTarget: number;
+  qualityRanking: string; // A+ through D
+}
+
+export interface StarMineData {
+  smartEstimate: number;
+  predictedSurprise: number; // percentage
+  revisionMomentum: number; // 1-100
+  earningsQuality: number; // 1-100
+}
+
+export interface CongressionalTrade {
+  member: string;
+  chamber: "Senate" | "House";
+  committee: string;
+  direction: "Buy" | "Sell";
+  amountRange: string;
+  tradeDate: string;
+  filingDate: string;
+  daysSinceTrade: number;
+}
+
+export interface CongressionalData {
+  trades: CongressionalTrade[];
+  totalTrades180d: number;
+}
+
+export interface OptionsData {
+  putCallRatio: number;
+  putCallVs30dAvg: number; // ratio vs average
+  ivRank: number; // 0-100
+  unusualActivity: boolean;
+  unusualDetail?: string;
+  smartMoneyFlow: "Bullish" | "Bearish" | "Neutral";
+}
+
 export interface RedTeamCase {
   thesis: string;
   claims: string[];
@@ -70,6 +109,10 @@ export interface StockInsight {
   stance: StanceLabel;
   analystConsensus: AnalystConsensus;
   morningstar: MorningstarRating;
+  spCfra: SPCFRARating;
+  starMine: StarMineData;
+  congressional: CongressionalData;
+  options: OptionsData;
   shortInterest: ShortInterestData;
   insiderActivity: InsiderActivity;
   fundamentals: FundamentalSignal[];
@@ -232,6 +275,118 @@ function generateTechnicals(stock: Stock): TechnicalSignal[] {
   ];
 }
 
+// Generate S&P Global / CFRA rating
+function generateSPCFRA(stock: Stock): SPCFRARating {
+  const recMap: Record<string, SPCFRARating["recommendation"]> = {
+    "Strong Buy": "Strong Buy",
+    "Buy": "Buy",
+    "Hold": "Hold",
+    "Sell": "Sell",
+  };
+  const rec = recMap[stock.analystRating] ?? "Hold";
+  const starsMap: Record<string, number> = { "Strong Buy": 5, "Buy": 4, "Hold": 3, "Sell": 2 };
+  const stars = starsMap[stock.analystRating] ?? 3;
+  const upside = stock.aiScore >= 70 ? 1.15 : stock.aiScore >= 50 ? 1.06 : 0.92;
+  const qualityMap: Record<string, string> = { "Strong Buy": "A+", "Buy": "A", "Hold": "B+", "Sell": "B-" };
+  const quality = qualityMap[stock.analystRating] ?? "B";
+
+  return {
+    recommendation: rec,
+    starsScore: stars,
+    priceTarget: Math.round(stock.price * upside * 100) / 100,
+    qualityRanking: quality,
+  };
+}
+
+// Generate Refinitiv StarMine data
+function generateStarMine(stock: Stock): StarMineData {
+  const bullish = stock.aiScore >= 65;
+  const eps = stock.price / stock.peRatio;
+  const smartEst = Math.round((eps * (bullish ? 1.03 : 0.97)) * 100) / 100;
+  const surprise = bullish ? 2 + Math.round(Math.random() * 4 * 10) / 10 : -1 + Math.round(Math.random() * 3 * 10) / 10;
+  const momentum = bullish ? 60 + Math.floor(Math.random() * 30) : 20 + Math.floor(Math.random() * 35);
+  const quality = stock.aiScore >= 70 ? 65 + Math.floor(Math.random() * 25) : 30 + Math.floor(Math.random() * 35);
+
+  return {
+    smartEstimate: smartEst,
+    predictedSurprise: Math.round(surprise * 10) / 10,
+    revisionMomentum: momentum,
+    earningsQuality: quality,
+  };
+}
+
+// Generate Congressional disclosure data
+function generateCongressional(stock: Stock): CongressionalData {
+  const committees: Record<string, string[]> = {
+    "Technology": ["Commerce Committee", "Intelligence Committee"],
+    "Healthcare": ["HELP Committee", "Finance Committee"],
+    "Financial Services": ["Banking Committee", "Finance Committee"],
+    "Consumer Cyclical": ["Commerce Committee"],
+    "Communication Services": ["Commerce Committee", "Judiciary Committee"],
+    "Energy": ["Energy & Natural Resources Committee"],
+    "Industrials": ["Armed Services Committee", "Commerce Committee"],
+    "Consumer Defensive": ["Agriculture Committee"],
+  };
+
+  const sectorCommittees = committees[stock.sector] ?? ["Commerce Committee"];
+  const membersBySentiment: { name: string; chamber: "Senate" | "House" }[] = stock.aiScore >= 60
+    ? [
+        { name: "Sen. T. Tuberville", chamber: "Senate" },
+        { name: "Rep. M. Garcia", chamber: "House" },
+        { name: "Sen. J. Hagerty", chamber: "Senate" },
+      ]
+    : [
+        { name: "Rep. N. Pelosi", chamber: "House" },
+        { name: "Sen. R. Wyden", chamber: "Senate" },
+      ];
+
+  const tradeCount = 1 + Math.floor(Math.random() * 3);
+  const trades: CongressionalTrade[] = membersBySentiment.slice(0, tradeCount).map((m, i) => {
+    const daysAgo = 35 + Math.floor(Math.random() * 80);
+    const tradeDate = new Date(Date.now() - daysAgo * 86400000);
+    const filingDate = new Date(tradeDate.getTime() + (32 + Math.floor(Math.random() * 13)) * 86400000);
+    const amounts = ["$1,001 - $15,000", "$15,001 - $50,000", "$50,001 - $100,000", "$100,001 - $250,000"];
+
+    return {
+      member: m.name,
+      chamber: m.chamber,
+      committee: sectorCommittees[i % sectorCommittees.length],
+      direction: stock.aiScore >= 55 ? "Buy" as const : "Sell" as const,
+      amountRange: amounts[Math.floor(Math.random() * amounts.length)],
+      tradeDate: tradeDate.toISOString().split("T")[0],
+      filingDate: filingDate.toISOString().split("T")[0],
+      daysSinceTrade: daysAgo,
+    };
+  });
+
+  return {
+    trades,
+    totalTrades180d: tradeCount,
+  };
+}
+
+// Generate Options market sentiment
+function generateOptions(stock: Stock): OptionsData {
+  const bullish = stock.aiScore >= 65;
+  const bigMove = Math.abs(stock.changePercent) > 3;
+  const pcRatio = bullish ? 0.6 + Math.random() * 0.3 : 0.9 + Math.random() * 0.5;
+  const pcVsAvg = bigMove ? 1.3 + Math.random() * 0.5 : 0.8 + Math.random() * 0.4;
+  const ivr = bigMove ? 60 + Math.floor(Math.random() * 30) : 20 + Math.floor(Math.random() * 40);
+  const unusual = bigMove && Math.random() > 0.4;
+  const flow: OptionsData["smartMoneyFlow"] = bullish ? "Bullish" : stock.aiScore >= 50 ? "Neutral" : "Bearish";
+
+  return {
+    putCallRatio: Math.round(pcRatio * 100) / 100,
+    putCallVs30dAvg: Math.round(pcVsAvg * 100) / 100,
+    ivRank: ivr,
+    unusualActivity: unusual,
+    unusualDetail: unusual
+      ? `Large ${bullish ? "call" : "put"} block at $${(stock.price * (bullish ? 1.1 : 0.9)).toFixed(0)} strike, ${Math.floor(2000 + Math.random() * 8000)} contracts`
+      : undefined,
+    smartMoneyFlow: flow,
+  };
+}
+
 // Generate red team analysis
 function generateRedTeam(stock: Stock): { bull: RedTeamCase; bear: RedTeamCase; skeptic: string; changeMyMind: string[] } {
   const bull: RedTeamCase = {
@@ -267,6 +422,10 @@ export function generateStockInsight(stock: Stock): StockInsight {
     stance: deriveStance(stock),
     analystConsensus: generateAnalystConsensus(stock),
     morningstar: generateMorningstar(stock),
+    spCfra: generateSPCFRA(stock),
+    starMine: generateStarMine(stock),
+    congressional: generateCongressional(stock),
+    options: generateOptions(stock),
     shortInterest: generateShortInterest(stock),
     insiderActivity: generateInsiderActivity(stock),
     fundamentals: generateFundamentals(stock),
