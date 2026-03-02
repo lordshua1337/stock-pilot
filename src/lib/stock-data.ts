@@ -548,6 +548,207 @@ export const stocks: Stock[] = [
       "Data Cloud becoming competitive with Snowflake",
     ],
   },
+
+  // ─── Energy ─────────────────────────────────────────────────────────────
+
+  {
+    ticker: "NEE",
+    name: "NextEra Energy Inc.",
+    sector: "Energy",
+    price: 76.83,
+    change: 0.92,
+    changePercent: 1.21,
+    marketCap: "$157B",
+    peRatio: 22.4,
+    dividendYield: 2.68,
+    fiftyTwoHigh: 87.31,
+    fiftyTwoLow: 53.95,
+    analystRating: "Buy",
+    aiScore: 79,
+    thesis:
+      "World's largest generator of wind and solar energy. Regulated utility provides stable cash flow while renewables segment drives growth. 10% annual dividend growth target through 2026.",
+    risks: [
+      "Rising interest rates increase borrowing costs for capital-intensive projects",
+      "Regulatory changes could reduce renewable energy tax credits",
+      "Execution risk on massive backlog of renewable projects",
+    ],
+    catalysts: [
+      "AI data center power demand driving massive utility investment",
+      "IRA tax credits extending runway for renewable builds",
+      "Rate base growth from Florida Power & Light",
+    ],
+  },
+
+  // ─── Industrial ─────────────────────────────────────────────────────────
+
+  {
+    ticker: "CAT",
+    name: "Caterpillar Inc.",
+    sector: "Industrial",
+    price: 372.15,
+    change: -2.84,
+    changePercent: -0.76,
+    marketCap: "$179B",
+    peRatio: 17.8,
+    dividendYield: 1.52,
+    fiftyTwoHigh: 418.07,
+    fiftyTwoLow: 298.0,
+    analystRating: "Hold",
+    aiScore: 72,
+    thesis:
+      "Global leader in construction and mining equipment. Benefits from infrastructure spending globally. Strong pricing power and services revenue growing as installed base expands.",
+    risks: [
+      "Cyclical business sensitive to construction and mining downturns",
+      "China slowdown reducing demand in key growth market",
+      "Inventory buildup at dealers could signal demand peak",
+    ],
+    catalysts: [
+      "U.S. infrastructure bill driving multi-year demand cycle",
+      "Autonomous mining and construction technology leadership",
+      "Services revenue reaching 25% of total, improving margin mix",
+    ],
+  },
+  {
+    ticker: "HON",
+    name: "Honeywell International",
+    sector: "Industrial",
+    price: 214.67,
+    change: 1.33,
+    changePercent: 0.62,
+    marketCap: "$139B",
+    peRatio: 22.6,
+    dividendYield: 1.98,
+    fiftyTwoHigh: 242.89,
+    fiftyTwoLow: 185.24,
+    analystRating: "Buy",
+    aiScore: 75,
+    thesis:
+      "Diversified industrial with aerospace, building tech, and energy transition exposure. Portfolio simplification strategy unlocking value. Aerospace aftermarket provides high-margin recurring revenue.",
+    risks: [
+      "Conglomerate discount persists despite simplification efforts",
+      "Commercial aerospace recovery pace uncertain",
+      "Process automation segment facing competitive pressure",
+    ],
+    catalysts: [
+      "Planned spin-off to unlock sum-of-parts value",
+      "Aerospace aftermarket growing double digits",
+      "Quantum computing and AI integration in industrial processes",
+    ],
+  },
+
+  // ─── Real Estate ────────────────────────────────────────────────────────
+
+  {
+    ticker: "AMT",
+    name: "American Tower Corp.",
+    sector: "Real Estate",
+    price: 198.42,
+    change: 2.15,
+    changePercent: 1.10,
+    marketCap: "$92B",
+    peRatio: 38.5,
+    dividendYield: 3.28,
+    fiftyTwoHigh: 243.8,
+    fiftyTwoLow: 172.44,
+    analystRating: "Buy",
+    aiScore: 74,
+    thesis:
+      "Largest global REIT owning 225,000+ cell towers. Essential infrastructure for 5G rollout. Long-term contracts with built-in escalators provide predictable cash flow growth. International expansion adds growth runway.",
+    risks: [
+      "Rising rates pressure REIT valuations and increase debt costs",
+      "Carrier consolidation could reduce tenant demand",
+      "Emerging satellite and fixed wireless could reduce tower demand long-term",
+    ],
+    catalysts: [
+      "5G densification requiring more small cells and tower upgrades",
+      "AI and IoT driving explosive data demand and network investment",
+      "India expansion as 5G rollout accelerates",
+    ],
+  },
+  {
+    ticker: "PLD",
+    name: "Prologis Inc.",
+    sector: "Real Estate",
+    price: 112.56,
+    change: -0.78,
+    changePercent: -0.69,
+    marketCap: "$104B",
+    peRatio: 32.1,
+    dividendYield: 3.45,
+    fiftyTwoHigh: 134.8,
+    fiftyTwoLow: 96.2,
+    analystRating: "Buy",
+    aiScore: 71,
+    thesis:
+      "World's largest logistics REIT with 1.2B sq ft of warehouse space. E-commerce tailwind drives demand for distribution centers. Mark-to-market rent upside as below-market leases expire.",
+    risks: [
+      "Warehouse overbuilding in some markets compressing rents",
+      "Economic slowdown reducing industrial space demand",
+      "Higher cap rates from rising interest rates",
+    ],
+    catalysts: [
+      "AI data center conversions creating new demand driver",
+      "30%+ mark-to-market rent spread on lease renewals",
+      "Near-shoring trends driving domestic warehouse demand",
+    ],
+  },
+
+  // ─── Utilities ──────────────────────────────────────────────────────────
+
+  {
+    ticker: "SO",
+    name: "Southern Company",
+    sector: "Utilities",
+    price: 88.94,
+    change: 0.45,
+    changePercent: 0.51,
+    marketCap: "$97B",
+    peRatio: 21.2,
+    dividendYield: 3.18,
+    fiftyTwoHigh: 94.75,
+    fiftyTwoLow: 68.38,
+    analystRating: "Buy",
+    aiScore: 68,
+    thesis:
+      "One of the largest U.S. electric utilities serving 9M customers. Regulated business model provides predictable earnings growth. Vogtle nuclear plant completion removes major overhang and adds clean baseload power.",
+    risks: [
+      "Regulatory lag could compress returns in inflationary environment",
+      "Natural gas price volatility impacts fuel costs",
+      "Slow growth profile limits upside in bull markets",
+    ],
+    catalysts: [
+      "Data center demand in Southeast driving rate base growth",
+      "Vogtle nuclear units now operational, removing execution risk",
+      "6-8% annual EPS growth target with reliable dividend",
+    ],
+  },
+  {
+    ticker: "DUK",
+    name: "Duke Energy Corp.",
+    sector: "Utilities",
+    price: 112.38,
+    change: -0.22,
+    changePercent: -0.20,
+    marketCap: "$ 87B",
+    peRatio: 19.8,
+    dividendYield: 3.62,
+    fiftyTwoHigh: 121.55,
+    fiftyTwoLow: 90.12,
+    analystRating: "Hold",
+    aiScore: 65,
+    thesis:
+      "Major regulated utility serving Carolinas, Florida, and Midwest. Predictable regulated returns with 5-7% EPS growth. Significant investment in grid modernization and renewable transition.",
+    risks: [
+      "Coal plant retirement costs could pressure near-term earnings",
+      "Hurricane exposure in Carolinas and Florida",
+      "Large capital program increases debt load",
+    ],
+    catalysts: [
+      "Grid hardening investment post-hurricane driving rate base growth",
+      "Clean energy transition unlocking new capital deployment",
+      "AI data center demand in North Carolina service territory",
+    ],
+  },
 ];
 
 export function getStockByTicker(ticker: string): Stock | undefined {
