@@ -10,7 +10,7 @@ import {
   Shield,
   Brain,
 } from "lucide-react";
-import { stocks, sectors } from "@/lib/stock-data";
+import { stocks, sectors, getSectorMetrics } from "@/lib/stock-data";
 
 function StockRow({ stock }: { stock: (typeof stocks)[0] }) {
   const isUp = stock.change >= 0;
@@ -207,6 +207,52 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Sector Heatmap */}
+      <section className="py-8 px-4">
+        <div className="max-w-5xl mx-auto">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <p className="text-xs text-green uppercase tracking-widest font-medium">
+                Market Map
+              </p>
+              <h2 className="text-xl font-semibold">Sector Heatmap</h2>
+            </div>
+            <Link
+              href="/sectors"
+              className="text-xs text-text-muted hover:text-text-secondary transition-colors flex items-center gap-1"
+            >
+              Full analysis <ArrowRight className="w-3 h-3" />
+            </Link>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
+            {getSectorMetrics().map((s) => {
+              const isUp = s.avgChange >= 0;
+              return (
+                <Link
+                  key={s.name}
+                  href="/sectors"
+                  className="rounded-lg p-3 card-hover block text-center"
+                  style={{
+                    backgroundColor: isUp
+                      ? `rgba(0, 255, 136, ${Math.min(0.15, s.avgChange / 20)})`
+                      : `rgba(255, 59, 48, ${Math.min(0.15, Math.abs(s.avgChange) / 20)})`,
+                    border: `1px solid ${isUp ? "rgba(0,255,136,0.15)" : "rgba(255,59,48,0.15)"}`,
+                  }}
+                >
+                  <p className="text-xs font-medium truncate">{s.name}</p>
+                  <p className={`text-lg font-mono font-bold ${isUp ? "text-green" : "text-red"}`}>
+                    {isUp ? "+" : ""}{s.avgChange}%
+                  </p>
+                  <p className="text-[10px] text-text-muted">
+                    AI: {s.avgAiScore} | {s.stockCount} stocks
+                  </p>
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
       {/* Top AI scores + Movers */}
       <section className="py-12 px-4">
         <div className="max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-5 gap-8">
@@ -312,6 +358,48 @@ export default function HomePage() {
                 Take the Quiz <ArrowRight className="w-3 h-3" />
               </span>
             </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Dividend Leaders */}
+      <section className="py-10 px-4 border-t border-border">
+        <div className="max-w-4xl mx-auto">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <p className="text-xs text-green uppercase tracking-widest font-medium">
+                Income
+              </p>
+              <h2 className="text-xl font-semibold">Top Dividend Yields</h2>
+            </div>
+            <Link
+              href="/research"
+              className="text-xs text-text-muted hover:text-text-secondary transition-colors flex items-center gap-1"
+            >
+              All stocks <ArrowRight className="w-3 h-3" />
+            </Link>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+            {[...stocks]
+              .filter((s) => s.dividendYield > 0)
+              .sort((a, b) => b.dividendYield - a.dividendYield)
+              .slice(0, 5)
+              .map((stock) => (
+                <Link
+                  key={stock.ticker}
+                  href={`/research/${stock.ticker.toLowerCase()}`}
+                  className="bg-surface border border-border rounded-lg p-4 card-hover block text-center"
+                >
+                  <p className="text-sm font-mono font-bold">{stock.ticker}</p>
+                  <p className="text-xl font-mono font-bold text-green mt-1">
+                    {stock.dividendYield.toFixed(2)}%
+                  </p>
+                  <p className="text-[10px] text-text-muted mt-1">
+                    ${(stock.price * stock.dividendYield / 100).toFixed(2)}/share
+                  </p>
+                  <p className="text-xs text-text-muted mt-1 truncate">{stock.name}</p>
+                </Link>
+              ))}
           </div>
         </div>
       </section>
