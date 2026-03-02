@@ -10,6 +10,7 @@ export function Nav() {
   const links = [
     { href: "/research", label: "Research" },
     { href: "/sectors", label: "Sectors" },
+    { href: "/compare", label: "Compare" },
     { href: "/portfolio", label: "Portfolio" },
   ];
 
