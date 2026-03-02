@@ -404,6 +404,74 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Gainers vs Losers */}
+      <section className="py-10 px-4 border-t border-border">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-6">
+            <p className="text-xs text-green uppercase tracking-widest font-medium mb-1">
+              Today
+            </p>
+            <h2 className="text-xl font-semibold">Gainers vs. Losers</h2>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {/* Gainers */}
+            <div className="bg-surface border border-green/10 rounded-xl overflow-hidden">
+              <div className="px-4 py-3 border-b border-border flex items-center gap-2">
+                <TrendingUp className="w-4 h-4 text-green" />
+                <span className="text-sm font-semibold text-green">Top Gainers</span>
+              </div>
+              <div className="divide-y divide-border">
+                {[...stocks]
+                  .sort((a, b) => b.changePercent - a.changePercent)
+                  .slice(0, 3)
+                  .map((stock) => (
+                    <Link
+                      key={stock.ticker}
+                      href={`/research/${stock.ticker.toLowerCase()}`}
+                      className="flex items-center justify-between px-4 py-3 card-hover"
+                    >
+                      <div className="flex items-center gap-3">
+                        <span className="font-mono font-bold text-sm">{stock.ticker}</span>
+                        <span className="text-xs text-text-muted truncate max-w-[100px]">{stock.name}</span>
+                      </div>
+                      <span className="font-mono text-sm font-medium text-green">
+                        +{stock.changePercent.toFixed(2)}%
+                      </span>
+                    </Link>
+                  ))}
+              </div>
+            </div>
+            {/* Losers */}
+            <div className="bg-surface border border-red/10 rounded-xl overflow-hidden">
+              <div className="px-4 py-3 border-b border-border flex items-center gap-2">
+                <TrendingDown className="w-4 h-4 text-red" />
+                <span className="text-sm font-semibold text-red">Top Losers</span>
+              </div>
+              <div className="divide-y divide-border">
+                {[...stocks]
+                  .sort((a, b) => a.changePercent - b.changePercent)
+                  .slice(0, 3)
+                  .map((stock) => (
+                    <Link
+                      key={stock.ticker}
+                      href={`/research/${stock.ticker.toLowerCase()}`}
+                      className="flex items-center justify-between px-4 py-3 card-hover"
+                    >
+                      <div className="flex items-center gap-3">
+                        <span className="font-mono font-bold text-sm">{stock.ticker}</span>
+                        <span className="text-xs text-text-muted truncate max-w-[100px]">{stock.name}</span>
+                      </div>
+                      <span className="font-mono text-sm font-medium text-red">
+                        {stock.changePercent.toFixed(2)}%
+                      </span>
+                    </Link>
+                  ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* CTA */}
       <section className="py-16 px-4 border-t border-border">
         <div className="max-w-xl mx-auto text-center">
