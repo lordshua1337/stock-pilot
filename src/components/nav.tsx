@@ -11,6 +11,7 @@ const links = [
   { href: "/sectors", label: "Sectors" },
   { href: "/compare", label: "Compare" },
   { href: "/pipeline", label: "Pipeline" },
+  { href: "/simulator", label: "Simulator" },
   { href: "/watchlist", label: "Watchlist" },
   { href: "/personality", label: "Identity" },
 ];
