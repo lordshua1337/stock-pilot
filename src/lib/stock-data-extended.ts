@@ -19,6 +19,8 @@ export const extendedStocks: Stock[] = [
     fiftyTwoLow: 120.83,
     analystRating: "Buy",
     aiScore: 79,
+    beta: 1.68,
+    description: "AI and data center chip challenger competing with NVIDIA and Intel",
     thesis:
       "AI accelerator business ramping with MI300X competing directly against NVIDIA. Data center GPU revenue tripling. CPU market share gains continue vs Intel.",
     risks: [
@@ -46,6 +48,8 @@ export const extendedStocks: Stock[] = [
     fiftyTwoLow: 18.51,
     analystRating: "Hold",
     aiScore: 35,
+    beta: 1.05,
+    description: "Legacy chip giant pursuing foundry turnaround under new leadership",
     thesis:
       "Turnaround story under new leadership. Foundry ambitions with 18A process node. Government CHIPS Act subsidies provide cash runway but execution risks are significant.",
     risks: [
@@ -73,6 +77,8 @@ export const extendedStocks: Stock[] = [
     fiftyTwoLow: 112.88,
     analystRating: "Buy",
     aiScore: 74,
+    beta: 1.08,
+    description: "Enterprise database and cloud infrastructure provider attracting AI workloads",
     thesis:
       "Cloud infrastructure revenue growing 50%+ as Oracle Cloud attracts AI workloads. Database monopoly provides stable cash flow. Cerner healthcare integration expanding TAM.",
     risks: [
@@ -100,6 +106,8 @@ export const extendedStocks: Stock[] = [
     fiftyTwoLow: 162.35,
     analystRating: "Hold",
     aiScore: 58,
+    beta: 0.82,
+    description: "Enterprise IT services and hybrid cloud company with WatsonX AI platform",
     thesis:
       "Hybrid cloud and AI consulting business stabilizing after years of decline. WatsonX AI platform targeting enterprise. Strong dividend provides income floor.",
     risks: [
@@ -127,6 +135,8 @@ export const extendedStocks: Stock[] = [
     fiftyTwoLow: 44.01,
     analystRating: "Hold",
     aiScore: 55,
+    beta: 0.88,
+    description: "Network infrastructure leader benefiting from AI data center buildout",
     thesis:
       "Network infrastructure leader benefiting from AI data center buildout. Splunk acquisition adding security and observability revenue. Transition to recurring software model progressing.",
     risks: [
@@ -154,6 +164,8 @@ export const extendedStocks: Stock[] = [
     fiftyTwoLow: 142.81,
     analystRating: "Buy",
     aiScore: 68,
+    beta: 1.35,
+    description: "Mobile chip leader driving on-device AI in smartphones, PCs, and vehicles",
     thesis:
       "On-device AI driving premium smartphone upgrade cycle. Snapdragon X Elite competing in PC market. Automotive design wins providing multi-year revenue visibility.",
     risks: [
@@ -181,6 +193,8 @@ export const extendedStocks: Stock[] = [
     fiftyTwoLow: 155.46,
     analystRating: "Hold",
     aiScore: 62,
+    beta: 0.95,
+    description: "Analog semiconductor leader with 80,000+ products and wide moat",
     thesis:
       "Analog semiconductor leader with wide moat and 80,000+ products. Investing in 300mm fab capacity for long-term cost advantage. Consistent capital return program.",
     risks: [
@@ -208,6 +222,8 @@ export const extendedStocks: Stock[] = [
     fiftyTwoLow: 20.33,
     analystRating: "Hold",
     aiScore: 71,
+    beta: 1.85,
+    description: "AI and data analytics platform for government and enterprise customers",
     thesis:
       "AI Platform (AIP) driving commercial revenue acceleration. Government contracts provide stable base. Unique positioning at intersection of AI and national security.",
     risks: [
@@ -235,6 +251,8 @@ export const extendedStocks: Stock[] = [
     fiftyTwoLow: 58.01,
     analystRating: "Buy",
     aiScore: 76,
+    beta: 1.72,
+    description: "E-commerce platform powering online stores for SMBs and enterprises",
     thesis:
       "E-commerce platform of choice for SMBs and increasingly enterprise. Merchant Solutions growing faster than Subscription. AI tools making it easier for merchants to sell.",
     risks: [
@@ -262,6 +280,8 @@ export const extendedStocks: Stock[] = [
     fiftyTwoLow: 637.0,
     analystRating: "Strong Buy",
     aiScore: 85,
+    beta: 1.15,
+    description: "Enterprise workflow automation platform with near-monopoly in ITSM",
     thesis:
       "Enterprise workflow automation platform with near-monopoly in ITSM. AI agents and GenAI features driving upsell. 97%+ renewal rates show extreme stickiness.",
     risks: [
@@ -290,6 +310,8 @@ export const extendedStocks: Stock[] = [
     fiftyTwoLow: 32.38,
     analystRating: "Buy",
     aiScore: 65,
+    beta: 1.42,
+    description: "Largest US consumer bank with massive deposit base and digital platform",
     thesis:
       "Largest US consumer bank with massive deposit base. Net interest income benefiting from higher rates. Digital banking platform Erica with 2B+ interactions.",
     risks: [
@@ -317,6 +339,8 @@ export const extendedStocks: Stock[] = [
     fiftyTwoLow: 47.85,
     analystRating: "Buy",
     aiScore: 60,
+    beta: 1.18,
+    description: "Major US bank in turnaround mode with asset cap removal as catalyst",
     thesis:
       "Turnaround story with asset cap removal as catalyst. Aggressive cost-cutting improving efficiency ratio. Strong mortgage business benefits from rate normalization.",
     risks: [
@@ -344,6 +368,8 @@ export const extendedStocks: Stock[] = [
     fiftyTwoLow: 46.82,
     analystRating: "Hold",
     aiScore: 52,
+    beta: 1.45,
+    description: "Global bank with unmatched international presence and deep value discount",
     thesis:
       "Deep value play on transformation under CEO Jane Fraser. Global presence unmatched. Services business (treasury, securities) is hidden gem generating consistent fees.",
     risks: [
@@ -371,6 +397,8 @@ export const extendedStocks: Stock[] = [
     fiftyTwoLow: 80.29,
     analystRating: "Buy",
     aiScore: 72,
+    beta: 1.38,
+    description: "Wealth management powerhouse with E*TRADE integration and trading expertise",
     thesis:
       "Wealth management transformation successful -- now 50%+ of revenue from recurring sources. E*TRADE integration adds massive retail client base. Capital-light model reduces volatility.",
     risks: [
@@ -398,6 +426,8 @@ export const extendedStocks: Stock[] = [
     fiftyTwoLow: 416.72,
     analystRating: "Strong Buy",
     aiScore: 84,
+    beta: 1.05,
+    description: "Global payments duopoly with Visa processing cross-border transactions",
     thesis:
       "Duopoly with Visa in global payments. Cross-border travel recovery driving premium revenue. Value-added services (fraud, analytics, consulting) growing 20%+.",
     risks: [
@@ -425,6 +455,8 @@ export const extendedStocks: Stock[] = [
     fiftyTwoLow: 208.25,
     analystRating: "Buy",
     aiScore: 74,
+    beta: 1.15,
+    description: "Premium card network with affluent customer base and closed-loop data advantage",
     thesis:
       "Premium brand with affluent customer base spending more per card. Gen Z and Millennial card acquisition accelerating. Closed-loop network gives unique data advantage.",
     risks: [
@@ -452,6 +484,8 @@ export const extendedStocks: Stock[] = [
     fiftyTwoLow: 56.18,
     analystRating: "Hold",
     aiScore: 54,
+    beta: 1.42,
+    description: "Digital payments platform with 400M+ accounts and Venmo consumer app",
     thesis:
       "Turnaround under new CEO Alex Chriss. Venmo monetization improving. Unbranded processing (Braintree) gaining share but low margin. 400M+ accounts is massive distribution.",
     risks: [
@@ -479,6 +513,8 @@ export const extendedStocks: Stock[] = [
     fiftyTwoLow: 55.48,
     analystRating: "Buy",
     aiScore: 61,
+    beta: 1.78,
+    description: "Dual ecosystem connecting Square merchants with Cash App consumers",
     thesis:
       "Dual ecosystem: Square (merchants) and Cash App (consumers) creating a closed loop. Cash App 55M+ monthly actives. BNPL via Afterpay integration ongoing.",
     risks: [
@@ -506,6 +542,8 @@ export const extendedStocks: Stock[] = [
     fiftyTwoLow: 114.51,
     analystRating: "Buy",
     aiScore: 66,
+    beta: 2.25,
+    description: "Only major US public crypto exchange with institutional custody services",
     thesis:
       "Only major US publicly traded crypto exchange. Regulatory clarity improving. Subscription and services revenue diversifying beyond volatile trading fees.",
     risks: [
@@ -534,6 +572,8 @@ export const extendedStocks: Stock[] = [
     fiftyTwoLow: 70.75,
     analystRating: "Hold",
     aiScore: 56,
+    beta: 1.08,
+    description: "Iconic global athletic brand executing DTC and wholesale strategy reset",
     thesis:
       "Iconic global brand executing DTC transformation. Nike Direct growing but wholesale channel disruption caused inventory issues. New CEO refocusing on sport and wholesale relationships.",
     risks: [
@@ -561,6 +601,8 @@ export const extendedStocks: Stock[] = [
     fiftyTwoLow: 71.55,
     analystRating: "Hold",
     aiScore: 59,
+    beta: 0.85,
+    description: "Global coffee chain with 38,000+ stores and 34M loyalty members",
     thesis:
       "Global coffee brand with 38,000+ stores. Turnaround under new CEO Brian Niccol focused on simplifying operations. Loyalty program (34M members) drives repeat purchases.",
     risks: [
@@ -588,6 +630,8 @@ export const extendedStocks: Stock[] = [
     fiftyTwoLow: 243.53,
     analystRating: "Buy",
     aiScore: 72,
+    beta: 0.68,
+    description: "Global QSR leader with franchise model generating predictable royalty income",
     thesis:
       "Global QSR leader with franchised business model generating predictable high-margin royalty income. Digital ordering now 40%+ of sales in top markets. Dividend aristocrat.",
     risks: [
@@ -615,6 +659,8 @@ export const extendedStocks: Stock[] = [
     fiftyTwoLow: 83.91,
     analystRating: "Buy",
     aiScore: 68,
+    beta: 1.22,
+    description: "Entertainment conglomerate with irreplaceable IP, parks, and streaming",
     thesis:
       "Irreplaceable IP portfolio (Marvel, Star Wars, Pixar, Disney). Streaming turning profitable. Parks generating record revenue. ESPN digital transformation underway.",
     risks: [
@@ -642,6 +688,8 @@ export const extendedStocks: Stock[] = [
     fiftyTwoLow: 54.85,
     analystRating: "Strong Buy",
     aiScore: 78,
+    beta: 1.45,
+    description: "Dominant ride-sharing and delivery platform with network effects moat",
     thesis:
       "Dominant ride-sharing and delivery platform with network effects. Advertising business scaling rapidly. Autonomous vehicle partnerships position Uber as platform layer.",
     risks: [
@@ -669,6 +717,8 @@ export const extendedStocks: Stock[] = [
     fiftyTwoLow: 110.4,
     analystRating: "Buy",
     aiScore: 73,
+    beta: 1.52,
+    description: "Short-term rental marketplace with asset-light model and 45%+ margins",
     thesis:
       "Category creator in short-term rentals with massive brand recognition. Asset-light marketplace model with 45%+ EBITDA margins. International expansion still early.",
     risks: [
@@ -696,6 +746,8 @@ export const extendedStocks: Stock[] = [
     fiftyTwoLow: 206.14,
     analystRating: "Buy",
     aiScore: 64,
+    beta: 1.02,
+    description: "Second-largest home improvement retailer growing Pro customer segment",
     thesis:
       "Second-largest home improvement retailer benefiting from aging housing stock driving repair demand. Pro customer segment growing. Margin expansion from Total Home strategy.",
     risks: [
@@ -723,6 +775,8 @@ export const extendedStocks: Stock[] = [
     fiftyTwoLow: 120.21,
     analystRating: "Hold",
     aiScore: 52,
+    beta: 0.92,
+    description: "Differentiated mass retailer with strong private labels and same-day delivery",
     thesis:
       "Differentiated mass retailer with strong private labels and curated brand partnerships. Same-day delivery via Shipt. Attractive dividend yield for retail sector.",
     risks: [
@@ -751,6 +805,8 @@ export const extendedStocks: Stock[] = [
     fiftyTwoLow: 24.48,
     analystRating: "Hold",
     aiScore: 48,
+    beta: 0.62,
+    description: "Mega-cap pharma deploying COVID windfall into oncology via Seagen acquisition",
     thesis:
       "Mega-cap pharma with massive COVID cash windfall deployed into $43B Seagen oncology acquisition. Pipeline diversification into oncology, obesity, and rare disease. Highest dividend yield in pharma.",
     risks: [
@@ -778,6 +834,8 @@ export const extendedStocks: Stock[] = [
     fiftyTwoLow: 98.61,
     analystRating: "Buy",
     aiScore: 70,
+    beta: 0.48,
+    description: "Pharma giant behind Keytruda, the world's best-selling drug",
     thesis:
       "Keytruda is the best-selling drug globally ($25B+ revenue) with expanding indications. Strong vaccine business (Gardasil, PNEUMOVAX). Active M&A to build beyond Keytruda.",
     risks: [
@@ -805,6 +863,8 @@ export const extendedStocks: Stock[] = [
     fiftyTwoLow: 454.73,
     analystRating: "Buy",
     aiScore: 75,
+    beta: 0.92,
+    description: "Life sciences tools leader providing instruments and reagents to biotech",
     thesis:
       "Life sciences tools leader -- the picks and shovels of biotech. Diversified across instruments, reagents, and services. Acquisitive growth strategy with strong integration track record.",
     risks: [
@@ -833,6 +893,8 @@ export const extendedStocks: Stock[] = [
     fiftyTwoLow: 96.24,
     analystRating: "Buy",
     aiScore: 64,
+    beta: 1.25,
+    description: "Pure-play E&P with lowest cost of supply in the oil industry",
     thesis:
       "Pure-play E&P with lowest cost of supply in the industry. Marathon Oil acquisition adds low-decline assets. Disciplined capital allocation with 30%+ return of capital to shareholders.",
     risks: [
@@ -861,6 +923,8 @@ export const extendedStocks: Stock[] = [
     fiftyTwoLow: 124.37,
     analystRating: "Strong Buy",
     aiScore: 82,
+    beta: 1.18,
+    description: "Pure-play aerospace company dominant in jet engine aftermarket services",
     thesis:
       "Pure-play aerospace after spinning off GE Vernova. Dominant in jet engine aftermarket services (LEAP, GEnx). Multi-decade installed base creates recurring revenue. Defense segment benefiting from global rearmament.",
     risks: [
@@ -888,6 +952,8 @@ export const extendedStocks: Stock[] = [
     fiftyTwoLow: 413.92,
     analystRating: "Buy",
     aiScore: 70,
+    beta: 0.68,
+    description: "Largest US defense contractor with F-35, missiles, and space systems",
     thesis:
       "Largest US defense contractor with F-35, missile defense, and space systems. Geopolitical tensions driving global defense spending increases. Massive backlog provides multi-year revenue visibility.",
     risks: [
@@ -915,6 +981,8 @@ export const extendedStocks: Stock[] = [
     fiftyTwoLow: 123.12,
     analystRating: "Hold",
     aiScore: 55,
+    beta: 0.92,
+    description: "Global logistics leader with dense US delivery network and healthcare focus",
     thesis:
       "Global logistics leader with dense US delivery network. Healthcare logistics growing rapidly. Highest dividend yield in industrials. New labor contract removes overhang.",
     risks: [
@@ -942,6 +1010,8 @@ export const extendedStocks: Stock[] = [
     fiftyTwoLow: 224.69,
     analystRating: "Buy",
     aiScore: 63,
+    beta: 1.15,
+    description: "Express delivery and freight company consolidating networks for margin expansion",
     thesis:
       "Network consolidation from DRIVE program merging Ground and Express into unified system. Cost savings of $4B creating margin expansion. Freight spin-off simplifying business.",
     risks: [
@@ -970,6 +1040,8 @@ export const extendedStocks: Stock[] = [
     fiftyTwoLow: 9.49,
     analystRating: "Hold",
     aiScore: 44,
+    beta: 1.32,
+    description: "Iconic automaker with strong truck franchise and Ford Pro commercial business",
     thesis:
       "Iconic American automaker with strong truck franchise (F-150). EV strategy being right-sized after massive losses. Ford Pro (commercial fleet) is the hidden value driver with 15%+ margins.",
     risks: [
@@ -997,6 +1069,8 @@ export const extendedStocks: Stock[] = [
     fiftyTwoLow: 33.44,
     analystRating: "Buy",
     aiScore: 62,
+    beta: 1.28,
+    description: "Value-priced automaker scaling Ultium EV platform with strong truck mix",
     thesis:
       "Trades at lowest PE in auto industry despite strong execution. Ultium EV platform scaling. Cruise autonomous division restructured. GM Financial provides captive lending profit.",
     risks: [
@@ -1024,6 +1098,8 @@ export const extendedStocks: Stock[] = [
     fiftyTwoLow: 8.26,
     analystRating: "Hold",
     aiScore: 42,
+    beta: 2.15,
+    description: "Premium EV truck startup with Amazon delivery van contract and VW partnership",
     thesis:
       "Premium EV truck maker with strong brand and Amazon delivery van contract. R2 platform (smaller, cheaper) targeting mass market. VW joint venture provides capital and technology.",
     risks: [
@@ -1052,6 +1128,8 @@ export const extendedStocks: Stock[] = [
     fiftyTwoLow: 280.42,
     analystRating: "Buy",
     aiScore: 75,
+    beta: 1.55,
+    description: "Dominant audio streaming platform with 640M+ users across music and podcasts",
     thesis:
       "Dominant audio streaming platform with 640M+ users. Podcast and audiobook investments creating platform stickiness. Finally achieving sustainable profitability after years of losses.",
     risks: [
@@ -1080,6 +1158,8 @@ export const extendedStocks: Stock[] = [
     fiftyTwoLow: 390.57,
     analystRating: "Buy",
     aiScore: 76,
+    beta: 0.82,
+    description: "Largest industrial gas company with recession-resistant take-or-pay contracts",
     thesis:
       "Largest industrial gas company globally. Essential supplier to every major industry. Long-term take-or-pay contracts provide recession-resistant revenue. Clean hydrogen positioned for energy transition.",
     risks: [
@@ -1107,6 +1187,8 @@ export const extendedStocks: Stock[] = [
     fiftyTwoLow: 140.75,
     analystRating: "Strong Buy",
     aiScore: 80,
+    beta: 1.32,
+    description: "Cybersecurity platform leader consolidating firewall, cloud, and SOC products",
     thesis:
       "Leading cybersecurity platform consolidating firewall, cloud, and SOC. Platformization strategy driving multi-product adoption. AI-driven security operations reducing analyst workload.",
     risks: [
@@ -1134,6 +1216,8 @@ export const extendedStocks: Stock[] = [
     fiftyTwoLow: 107.13,
     analystRating: "Buy",
     aiScore: 72,
+    beta: 1.65,
+    description: "Cloud data platform enabling AI and analytics workloads on unified data",
     thesis:
       "Cloud data platform enabling AI/ML workloads on unified data. Consumption model means revenue grows with customer data volumes. Data sharing and marketplace creating network effects.",
     risks: [

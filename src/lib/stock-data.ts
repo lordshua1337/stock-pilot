@@ -14,6 +14,8 @@ export interface Stock {
   fiftyTwoLow: number;
   analystRating: "Strong Buy" | "Buy" | "Hold" | "Sell";
   aiScore: number; // 1-100
+  beta: number; // market sensitivity (1.0 = moves with market)
+  description: string; // one-line company summary
   thesis: string;
   risks: string[];
   catalysts: string[];
@@ -51,6 +53,8 @@ export const stocks: Stock[] = [
     fiftyTwoLow: 164.08,
     analystRating: "Buy",
     aiScore: 82,
+    beta: 1.21,
+    description: "Consumer electronics and services giant behind iPhone, Mac, and Apple Intelligence",
     thesis:
       "Services revenue growing at 15%+ annually creates a higher-margin, more predictable revenue stream. Vision Pro opens a new product category. Massive buyback program supports share price.",
     risks: [
@@ -78,6 +82,8 @@ export const stocks: Stock[] = [
     fiftyTwoLow: 75.61,
     analystRating: "Strong Buy",
     aiScore: 91,
+    beta: 1.72,
+    description: "AI chip leader powering data centers with GPU accelerators and CUDA platform",
     thesis:
       "Dominant position in AI training and inference chips with 80%+ market share. Data center revenue tripling year-over-year. Every major tech company is a customer.",
     risks: [
@@ -105,6 +111,8 @@ export const stocks: Stock[] = [
     fiftyTwoLow: 385.58,
     analystRating: "Strong Buy",
     aiScore: 88,
+    beta: 0.98,
+    description: "Cloud computing and software leader with Azure, Office 365, and Copilot AI",
     thesis:
       "Azure cloud growing 30%+ with AI services as a key accelerant. Copilot integration across Office 365 creates new revenue stream from 400M+ users. Most diversified big tech company.",
     risks: [
@@ -132,6 +140,8 @@ export const stocks: Stock[] = [
     fiftyTwoLow: 436.38,
     analystRating: "Buy",
     aiScore: 76,
+    beta: 0.72,
+    description: "Largest US health insurer and healthcare services conglomerate",
     thesis:
       "Largest health insurer with integrated Optum services business. Healthcare spending is GDP-resistant. Aging population is a 20-year tailwind. Consistent 10%+ earnings growth.",
     risks: [
@@ -159,6 +169,8 @@ export const stocks: Stock[] = [
     fiftyTwoLow: 182.89,
     analystRating: "Buy",
     aiScore: 80,
+    beta: 1.12,
+    description: "America's largest bank by assets with investment banking and wealth management",
     thesis:
       "Best-managed large bank with dominant positions in investment banking, trading, and consumer banking. Jamie Dimon's track record of navigating crises. Net interest income benefits from higher rates.",
     risks: [
@@ -186,6 +198,8 @@ export const stocks: Stock[] = [
     fiftyTwoLow: 161.02,
     analystRating: "Strong Buy",
     aiScore: 86,
+    beta: 1.28,
+    description: "E-commerce and cloud computing giant with AWS and growing ad business",
     thesis:
       "AWS is the #1 cloud platform with AI driving reacceleration. E-commerce margin expansion from logistics optimization. Advertising is a high-margin $50B+ business growing 20%+.",
     risks: [
@@ -213,6 +227,8 @@ export const stocks: Stock[] = [
     fiftyTwoLow: 95.77,
     analystRating: "Hold",
     aiScore: 65,
+    beta: 0.88,
+    description: "Largest US integrated oil major with upstream, downstream, and chemicals",
     thesis:
       "Largest integrated oil company with low-cost Permian Basin production. Pioneer acquisition adds decades of high-quality reserves. Consistent dividend growth since 1882.",
     risks: [
@@ -240,6 +256,8 @@ export const stocks: Stock[] = [
     fiftyTwoLow: 252.7,
     analystRating: "Strong Buy",
     aiScore: 84,
+    beta: 0.96,
+    description: "Global payments network processing trillions in annual transaction volume",
     thesis:
       "Dominant payment network processing $15T+ annually. Secular shift from cash to digital payments is a multi-decade growth driver. Asset-light model generates 65%+ margins.",
     risks: [
@@ -267,6 +285,8 @@ export const stocks: Stock[] = [
     fiftyTwoLow: 689.47,
     analystRating: "Buy",
     aiScore: 72,
+    beta: 0.75,
+    description: "Membership warehouse retailer with 130M+ cardholders and 93% renewal rates",
     thesis:
       "Membership model creates predictable, high-loyalty revenue. 93% renewal rate is industry-leading. Recession-resistant as consumers trade down to bulk buying.",
     risks: [
@@ -294,6 +314,8 @@ export const stocks: Stock[] = [
     fiftyTwoLow: 130.67,
     analystRating: "Strong Buy",
     aiScore: 87,
+    beta: 1.08,
+    description: "Search and advertising leader with YouTube, Cloud, and Gemini AI",
     thesis:
       "Google Search maintains 90%+ market share with AI Overviews expanding utility. YouTube is the #2 streaming platform by watch time. Google Cloud growing 28% with AI workloads accelerating. Most undervalued of the Mag 7 on P/E basis.",
     risks: [
@@ -321,6 +343,8 @@ export const stocks: Stock[] = [
     fiftyTwoLow: 414.5,
     analystRating: "Buy",
     aiScore: 83,
+    beta: 1.32,
+    description: "Social media giant operating Facebook, Instagram, WhatsApp, and Reality Labs",
     thesis:
       "3.3 billion daily active users across family of apps. Reels monetization closing the gap with TikTok engagement. AI-driven ad targeting producing record revenue per user despite privacy changes.",
     risks: [
@@ -348,6 +372,8 @@ export const stocks: Stock[] = [
     fiftyTwoLow: 596.8,
     analystRating: "Strong Buy",
     aiScore: 89,
+    beta: 0.52,
+    description: "Pharma leader behind breakthrough GLP-1 obesity and diabetes drugs",
     thesis:
       "GLP-1 drugs (Mounjaro/Zepbound) are the biggest pharmaceutical opportunity in decades. Weight loss + diabetes addresses a $100B+ market. First-mover advantage with years of patent protection.",
     risks: [
@@ -375,6 +401,8 @@ export const stocks: Stock[] = [
     fiftyTwoLow: 390.17,
     analystRating: "Buy",
     aiScore: 78,
+    beta: 0.58,
+    description: "Diversified conglomerate with insurance, utilities, and massive equity portfolio",
     thesis:
       "Warren Buffett's conglomerate owns GEICO, BNSF railway, Berkshire Hathaway Energy, and $300B+ in public equities. Record cash position ($325B+) provides optionality for acquisitions. Insurance float provides free leverage.",
     risks: [
@@ -402,6 +430,8 @@ export const stocks: Stock[] = [
     fiftyTwoLow: 119.76,
     analystRating: "Strong Buy",
     aiScore: 85,
+    beta: 1.34,
+    description: "Semiconductor and infrastructure software leader in AI networking chips",
     thesis:
       "Second-largest AI chip company behind NVIDIA. Custom AI accelerators for Google (TPU), Meta, and Apple provide design wins that competitors can't easily replicate. VMware acquisition adds enterprise software recurring revenue.",
     risks: [
@@ -429,6 +459,8 @@ export const stocks: Stock[] = [
     fiftyTwoLow: 138.8,
     analystRating: "Hold",
     aiScore: 62,
+    beta: 2.05,
+    description: "Electric vehicle maker and energy company with autonomous driving ambitions",
     thesis:
       "The EV transition is real, and Tesla has the brand, manufacturing scale, and software ecosystem. Full Self-Driving and robotaxis represent optionality that no other automaker has. Energy storage growing 100%+ year-over-year.",
     risks: [
@@ -456,6 +488,8 @@ export const stocks: Stock[] = [
     fiftyTwoLow: 324.69,
     analystRating: "Buy",
     aiScore: 74,
+    beta: 1.02,
+    description: "Largest home improvement retailer serving Pro contractors and DIY customers",
     thesis:
       "Dominant home improvement retailer benefiting from aging US housing stock (median home age 40+ years). Pro customer segment growing faster than DIY. Housing turnover recovery will drive comp growth.",
     risks: [
@@ -483,6 +517,8 @@ export const stocks: Stock[] = [
     fiftyTwoLow: 143.16,
     analystRating: "Hold",
     aiScore: 68,
+    beta: 0.55,
+    description: "Diversified healthcare company with leading pharma and medtech portfolios",
     thesis:
       "62 consecutive years of dividend increases (Dividend King). MedTech and pharmaceutical segments provide diversified healthcare exposure. Post-Kenvue spinoff, now a pure healthcare company.",
     risks: [
@@ -510,6 +546,8 @@ export const stocks: Stock[] = [
     fiftyTwoLow: 153.51,
     analystRating: "Buy",
     aiScore: 71,
+    beta: 0.42,
+    description: "Consumer staples giant with 20+ billion-dollar brands including Tide and Pampers",
     thesis:
       "World's largest consumer staples company with 70+ billion-dollar brands. Pricing power proven through inflation. Consistent 5-6% organic growth from mix shift to premium products.",
     risks: [
@@ -537,6 +575,8 @@ export const stocks: Stock[] = [
     fiftyTwoLow: 212.0,
     analystRating: "Buy",
     aiScore: 77,
+    beta: 1.28,
+    description: "Cloud CRM leader expanding into AI-powered enterprise automation with Einstein",
     thesis:
       "Dominant CRM platform with 23% market share. Agentforce AI product represents the next growth vector. Margin expansion story: operating margins expanded from 5% to 20%+ in two years.",
     risks: [
@@ -567,6 +607,8 @@ export const stocks: Stock[] = [
     fiftyTwoLow: 53.95,
     analystRating: "Buy",
     aiScore: 79,
+    beta: 0.48,
+    description: "Largest US utility and world leader in wind and solar energy generation",
     thesis:
       "World's largest generator of wind and solar energy. Regulated utility provides stable cash flow while renewables segment drives growth. 10% annual dividend growth target through 2026.",
     risks: [
@@ -597,6 +639,8 @@ export const stocks: Stock[] = [
     fiftyTwoLow: 298.0,
     analystRating: "Hold",
     aiScore: 72,
+    beta: 1.05,
+    description: "Heavy equipment leader for construction, mining, and infrastructure projects",
     thesis:
       "Global leader in construction and mining equipment. Benefits from infrastructure spending globally. Strong pricing power and services revenue growing as installed base expands.",
     risks: [
@@ -624,6 +668,8 @@ export const stocks: Stock[] = [
     fiftyTwoLow: 185.24,
     analystRating: "Buy",
     aiScore: 75,
+    beta: 1.02,
+    description: "Industrial conglomerate spanning aerospace, building tech, and automation",
     thesis:
       "Diversified industrial with aerospace, building tech, and energy transition exposure. Portfolio simplification strategy unlocking value. Aerospace aftermarket provides high-margin recurring revenue.",
     risks: [
@@ -654,6 +700,8 @@ export const stocks: Stock[] = [
     fiftyTwoLow: 172.44,
     analystRating: "Buy",
     aiScore: 74,
+    beta: 0.55,
+    description: "Largest global cell tower REIT with 225,000+ wireless communication sites",
     thesis:
       "Largest global REIT owning 225,000+ cell towers. Essential infrastructure for 5G rollout. Long-term contracts with built-in escalators provide predictable cash flow growth. International expansion adds growth runway.",
     risks: [
@@ -681,6 +729,8 @@ export const stocks: Stock[] = [
     fiftyTwoLow: 96.2,
     analystRating: "Buy",
     aiScore: 71,
+    beta: 0.82,
+    description: "Largest industrial REIT with 1.2B sq ft of logistics warehouses worldwide",
     thesis:
       "World's largest logistics REIT with 1.2B sq ft of warehouse space. E-commerce tailwind drives demand for distribution centers. Mark-to-market rent upside as below-market leases expire.",
     risks: [
@@ -711,6 +761,8 @@ export const stocks: Stock[] = [
     fiftyTwoLow: 68.38,
     analystRating: "Buy",
     aiScore: 68,
+    beta: 0.38,
+    description: "Regulated utility serving 9M+ customers across the southeastern United States",
     thesis:
       "One of the largest U.S. electric utilities serving 9M customers. Regulated business model provides predictable earnings growth. Vogtle nuclear plant completion removes major overhang and adds clean baseload power.",
     risks: [
@@ -738,6 +790,8 @@ export const stocks: Stock[] = [
     fiftyTwoLow: 90.12,
     analystRating: "Hold",
     aiScore: 65,
+    beta: 0.42,
+    description: "Largest US electric utility by customer count with nuclear and renewable fleet",
     thesis:
       "Major regulated utility serving Carolinas, Florida, and Midwest. Predictable regulated returns with 5-7% EPS growth. Significant investment in grid modernization and renewable transition.",
     risks: [
@@ -765,6 +819,8 @@ export const stocks: Stock[] = [
     fiftyTwoLow: 138.97,
     analystRating: "Buy",
     aiScore: 76,
+    beta: 0.62,
+    description: "Biopharma company with immunology franchise and Botox aesthetics portfolio",
     thesis:
       "Post-Humira transition progressing better than feared. Skyrizi and Rinvoq combined revenue now exceeding Humira at peak. Strong aesthetics portfolio via Allergan. Aggressive dividend raiser with 50+ years of increases.",
     risks: [
@@ -792,6 +848,8 @@ export const stocks: Stock[] = [
     fiftyTwoLow: 388.87,
     analystRating: "Buy",
     aiScore: 79,
+    beta: 1.38,
+    description: "Premier investment bank and trading firm expanding into asset management",
     thesis:
       "Capital markets recovery driving M&A advisory and underwriting fees. Asset/wealth management pivot creating more durable revenue streams. Trading desk consistently outperforming. Marcus consumer exit removes drag.",
     risks: [
@@ -819,6 +877,8 @@ export const stocks: Stock[] = [
     fiftyTwoLow: 135.37,
     analystRating: "Buy",
     aiScore: 71,
+    beta: 0.92,
+    description: "Second-largest US oil major with growing Permian Basin and LNG presence",
     thesis:
       "Permian Basin dominance with industry-lowest production costs. Capital discipline keeping FCF yields above 6%. Hess acquisition adds Guyana growth asset. 37 consecutive years of dividend increases.",
     risks: [
@@ -846,6 +906,8 @@ export const stocks: Stock[] = [
     fiftyTwoLow: 93.71,
     analystRating: "Buy",
     aiScore: 74,
+    beta: 0.78,
+    description: "Aerospace and defense giant with Pratt & Whitney engines and missile systems",
     thesis:
       "Dual exposure to commercial aerospace recovery and defense spending growth. Pratt & Whitney GTF engine installed base driving decades of aftermarket revenue. Record defense backlog of $206B provides visibility.",
     risks: [
@@ -873,6 +935,8 @@ export const stocks: Stock[] = [
     fiftyTwoLow: 545.68,
     analystRating: "Strong Buy",
     aiScore: 84,
+    beta: 1.42,
+    description: "Dominant streaming platform with 260M+ subscribers and growing ad tier",
     thesis:
       "Password sharing crackdown added 50M+ subscribers in 2024. Ad-tier growing rapidly with premium CPMs. Live events (NFL, WWE) expanding total addressable market. Operating margins expanding toward 30%.",
     risks: [
@@ -900,6 +964,8 @@ export const stocks: Stock[] = [
     fiftyTwoLow: 59.87,
     analystRating: "Strong Buy",
     aiScore: 81,
+    beta: 0.52,
+    description: "World's largest retailer with massive grocery, e-commerce, and ad businesses",
     thesis:
       "E-commerce and advertising revenue transforming the margin profile. Walmart+ membership growing 25%+ annually. Automation investments lowering cost-to-serve. Market share gains from all income demographics.",
     risks: [
@@ -927,6 +993,8 @@ export const stocks: Stock[] = [
     fiftyTwoLow: 335.88,
     analystRating: "Hold",
     aiScore: 68,
+    beta: 1.08,
+    description: "Agricultural and construction equipment leader with precision farming tech",
     thesis:
       "Precision agriculture technology creating recurring software revenue stream. Smart Industrial strategy embedding AI and autonomy into farming equipment. Cyclical downturn priced in, setting up recovery play.",
     risks: [
@@ -954,6 +1022,8 @@ export const stocks: Stock[] = [
     fiftyTwoLow: 362.09,
     analystRating: "Strong Buy",
     aiScore: 85,
+    beta: 1.18,
+    description: "Robotic surgery pioneer with da Vinci systems in 70+ countries",
     thesis:
       "Da Vinci robotic surgery systems create a razor/blade model: install the system, then sell instruments and accessories for every procedure. Installed base of 9,200+ systems generates predictable recurring revenue. New Da Vinci 5 platform extending into earlier-stage procedures.",
     risks: [
@@ -981,6 +1051,8 @@ export const stocks: Stock[] = [
     fiftyTwoLow: 403.75,
     analystRating: "Buy",
     aiScore: 72,
+    beta: 1.25,
+    description: "Creative and digital experience software leader with Firefly generative AI",
     thesis:
       "Creative Cloud and Document Cloud remain industry standards with deep workflow integration. Firefly generative AI is being embedded across the entire product suite, creating a new monetization layer on top of the existing subscription base. Enterprise digital experience business growing steadily.",
     risks: [
@@ -1008,6 +1080,8 @@ export const stocks: Stock[] = [
     fiftyTwoLow: 57.93,
     analystRating: "Buy",
     aiScore: 70,
+    beta: 0.58,
+    description: "World's largest beverage company with 200+ brands across 200+ countries",
     thesis:
       "Ultimate defensive stock with 62 consecutive years of dividend increases. Global distribution network is a moat no competitor can replicate. Pricing power proven through inflation cycles. Portfolio diversification beyond carbonated drinks into energy, coffee, and sports drinks.",
     risks: [
@@ -1035,6 +1109,8 @@ export const stocks: Stock[] = [
     fiftyTwoLow: 128.88,
     analystRating: "Hold",
     aiScore: 45,
+    beta: 1.48,
+    description: "Global aerospace giant manufacturing commercial jets and defense systems",
     thesis:
       "Duopoly with Airbus in commercial aviation gives long-term pricing power. Massive backlog of 5,600+ aircraft provides years of revenue visibility. Defense and space segments provide diversification. Recovery from production and quality issues is the key bet.",
     risks: [
@@ -1062,6 +1138,8 @@ export const stocks: Stock[] = [
     fiftyTwoLow: 56.27,
     analystRating: "Buy",
     aiScore: 76,
+    beta: 1.22,
+    description: "Largest US discount brokerage with $9T+ client assets after Ameritrade merger",
     thesis:
       "Largest retail brokerage with $8.5 trillion in client assets. TD Ameritrade integration unlocking massive cost synergies. Net interest revenue from client cash sweeps creates a quasi-bank earnings stream. Scale advantages make it nearly impossible for new entrants to compete on cost.",
     risks: [
@@ -1089,6 +1167,8 @@ export const stocks: Stock[] = [
     fiftyTwoLow: 16.58,
     analystRating: "Buy",
     aiScore: 63,
+    beta: 0.65,
+    description: "Largest US telecom provider with wireless, fiber, and HBO Max streaming",
     thesis:
       "Post-transformation AT&T is a focused connectivity company with industry-leading fiber and 5G networks. Dividend yield above 5% with a sustainable payout ratio after the cut. Free cash flow generation improving as capital-intensive 5G build moderates. Deep value at 10x earnings.",
     risks: [
@@ -1116,6 +1196,8 @@ export const stocks: Stock[] = [
     fiftyTwoLow: 175.20,
     analystRating: "Buy",
     aiScore: 74,
+    beta: 0.55,
+    description: "Largest global cell tower REIT with 225,000+ wireless communication sites",
     thesis:
       "American Tower is the global leader in wireless tower infrastructure with 224K+ sites across 25 countries. 5G densification and emerging market mobile adoption create a multi-decade demand runway. Long-term contracts with built-in escalators provide highly predictable revenue. The data center expansion through CoreSite adds a second growth vector.",
     risks: [
@@ -1143,6 +1225,8 @@ export const stocks: Stock[] = [
     fiftyTwoLow: 44.30,
     analystRating: "Strong Buy",
     aiScore: 71,
+    beta: 1.15,
+    description: "Largest oilfield services company providing drilling and production technology",
     thesis:
       "Schlumberger is the world's largest oilfield services company benefiting from a multi-year upstream spending upcycle. International and offshore activity is the strongest in a decade, where SLB has dominant market share. Digital transformation initiatives driving margin expansion beyond traditional services. Trading at a reasonable 16x earnings for a company with double-digit growth.",
     risks: [
@@ -1170,6 +1254,8 @@ export const stocks: Stock[] = [
     fiftyTwoLow: 392.40,
     analystRating: "Buy",
     aiScore: 73,
+    beta: 0.68,
+    description: "Major US health insurer operating Anthem Blue Cross and Carelon services",
     thesis:
       "Elevance Health (formerly Anthem) is the largest Blue Cross Blue Shield licensee serving 47M+ medical members. The Carelon health services segment is transforming the company from a pure payer into an integrated care delivery platform. Trading at only 15x earnings -- a significant discount to UnitedHealth -- despite similar growth trajectory and improving margins.",
     risks: [
@@ -1197,6 +1283,8 @@ export const stocks: Stock[] = [
     fiftyTwoLow: 672.50,
     analystRating: "Buy",
     aiScore: 77,
+    beta: 0.75,
+    description: "Membership warehouse retailer with 130M+ cardholders and 93% renewal rates",
     thesis:
       "Costco's membership model creates a moat that competitors cannot replicate -- 93% renewal rates and 130M+ cardholders generate predictable high-margin revenue. The treasure hunt shopping experience and Kirkland brand loyalty drive traffic that no e-commerce threat has dented. International expansion in Japan, Korea, and China still early. The membership fee increase cadence provides periodic earnings step-ups.",
     risks: [

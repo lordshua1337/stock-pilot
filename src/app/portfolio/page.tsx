@@ -1,66 +1,65 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import Link from "next/link";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowLeft,
-  Plus,
-  Minus,
   Briefcase,
-  AlertTriangle,
-  TrendingUp,
-  DollarSign,
-  PieChart,
-  Search,
+  Hammer,
+  LineChart,
+  Lightbulb,
+  Shield,
+  FileText,
+  Lock,
 } from "lucide-react";
-import { stocks, sectors, type Stock } from "@/lib/stock-data";
+import { stocks, type Stock } from "@/lib/stock-data";
+import {
+  generateStockSignal,
+  type StockSignal,
+} from "@/lib/portfolio-signals";
+import {
+  savePortfolio,
+  loadPortfolio,
+} from "@/lib/portfolio-storage";
+import { BuildTab } from "./_components/build-tab";
+import { SimulateTab } from "./_components/simulate-tab";
+import { InsightsTab } from "./_components/insights-tab";
+import { ScenariosTab } from "./_components/scenarios-tab";
+import { ReportTab } from "./_components/report-tab";
+import { ConfirmationModal } from "./_components/confirmation-modal";
 
-interface PortfolioItem {
+// ─── Types ─────────────────────────────────────────────────────────────
+
+export interface PortfolioItem {
   ticker: string;
-  allocation: number; // percentage
+  allocation: number; // percentage 1-50
 }
 
-const PRESET_PORTFOLIOS: { name: string; desc: string; items: PortfolioItem[] }[] = [
-  {
-    name: "AI Growth",
-    desc: "Heavy on AI and tech leaders",
-    items: [
-      { ticker: "NVDA", allocation: 25 },
-      { ticker: "MSFT", allocation: 20 },
-      { ticker: "GOOGL", allocation: 20 },
-      { ticker: "META", allocation: 15 },
-      { ticker: "CRM", allocation: 10 },
-      { ticker: "ADBE", allocation: 10 },
-    ],
-  },
-  {
-    name: "Dividend Income",
-    desc: "Yield-focused for passive income",
-    items: [
-      { ticker: "T", allocation: 20 },
-      { ticker: "KO", allocation: 20 },
-      { ticker: "JNJ", allocation: 20 },
-      { ticker: "JPM", allocation: 15 },
-      { ticker: "AMT", allocation: 15 },
-      { ticker: "XOM", allocation: 10 },
-    ],
-  },
-  {
-    name: "Balanced",
-    desc: "Mix of growth and value across sectors",
-    items: [
-      { ticker: "AAPL", allocation: 15 },
-      { ticker: "NVDA", allocation: 15 },
-      { ticker: "JNJ", allocation: 15 },
-      { ticker: "JPM", allocation: 15 },
-      { ticker: "COST", allocation: 15 },
-      { ticker: "XOM", allocation: 10 },
-      { ticker: "AMT", allocation: 15 },
-    ],
-  },
+type TabId = "build" | "simulate" | "insights" | "scenarios" | "report";
+
+interface TabDef {
+  id: TabId;
+  label: string;
+  icon: React.ReactNode;
+  minStocks: number; // stocks needed to unlock
+}
+
+// ─── Constants ─────────────────────────────────────────────────────────
+
+const TABS: TabDef[] = [
+  { id: "build", label: "Build", icon: <Hammer className="w-4 h-4" />, minStocks: 1 },
+  { id: "simulate", label: "Simulate", icon: <LineChart className="w-4 h-4" />, minStocks: 3 },
+  { id: "insights", label: "Insights", icon: <Lightbulb className="w-4 h-4" />, minStocks: 2 },
+  { id: "scenarios", label: "Scenarios", icon: <Shield className="w-4 h-4" />, minStocks: 3 },
+  { id: "report", label: "Report", icon: <FileText className="w-4 h-4" />, minStocks: 3 },
 ];
 
-function formatCurrency(amount: number): string {
+const INVESTMENT_PILLS = [1000, 5000, 10000, 25000, 50000, 100000];
+
+// ─── Helpers ───────────────────────────────────────────────────────────
+
+export function formatCurrency(amount: number): string {
   return new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: "USD",
@@ -68,447 +67,284 @@ function formatCurrency(amount: number): string {
   }).format(amount);
 }
 
+function resolveStock(ticker: string): Stock | undefined {
+  return stocks.find((s) => s.ticker === ticker);
+}
+
+// ─── Page Component ────────────────────────────────────────────────────
+
 export default function PortfolioPage() {
   const [portfolio, setPortfolio] = useState<PortfolioItem[]>([]);
   const [totalInvestment, setTotalInvestment] = useState(10000);
-  const [stockSearch, setStockSearch] = useState("");
+  const [activeTab, setActiveTab] = useState<TabId>("build");
+  const [pendingTicker, setPendingTicker] = useState<string | null>(null);
+  const [recentlyUnlocked, setRecentlyUnlocked] = useState<TabId | null>(null);
 
-  const addStock = (ticker: string) => {
+  // ── Restore from localStorage on mount ──
+  useEffect(() => {
+    const stored = loadPortfolio();
+    if (stored && stored.items.length > 0) {
+      setPortfolio(stored.items.map((i) => ({ ...i })));
+      setTotalInvestment(stored.investment);
+    }
+  }, []);
+
+  // ── Auto-save on changes ──
+  useEffect(() => {
+    if (portfolio.length > 0) {
+      savePortfolio(portfolio, totalInvestment);
+    }
+  }, [portfolio, totalInvestment]);
+
+  // ── Track progressive disclosure unlocks ──
+  const prevCountRef = useMemo(() => ({ current: 0 }), []);
+  useEffect(() => {
+    const count = portfolio.length;
+    const prev = prevCountRef.current;
+    prevCountRef.current = count;
+
+    // Check if any tab just unlocked
+    for (const tab of TABS) {
+      if (count >= tab.minStocks && prev < tab.minStocks && prev > 0) {
+        setRecentlyUnlocked(tab.id);
+        const timer = setTimeout(() => setRecentlyUnlocked(null), 2000);
+        return () => clearTimeout(timer);
+      }
+    }
+  }, [portfolio.length, prevCountRef]);
+
+  // ── Resolve portfolio stocks and signals ──
+  const portfolioStocks = useMemo(() => {
+    return portfolio.flatMap((item) => {
+      const stock = resolveStock(item.ticker);
+      return stock ? [stock] : [];
+    });
+  }, [portfolio]);
+
+  const signals = useMemo(() => {
+    return portfolioStocks.map((s) => generateStockSignal(s));
+  }, [portfolioStocks]);
+
+  const signalMap = useMemo(() => {
+    const map: Record<string, StockSignal> = {};
+    for (const sig of signals) {
+      map[sig.ticker] = sig;
+    }
+    return map;
+  }, [signals]);
+
+  // ── Portfolio mutation callbacks ──
+  const requestAddStock = useCallback((ticker: string) => {
     if (portfolio.some((p) => p.ticker === ticker)) return;
-    const remaining =
-      100 - portfolio.reduce((sum, p) => sum + p.allocation, 0);
+    setPendingTicker(ticker);
+  }, [portfolio]);
+
+  const confirmAddStock = useCallback(() => {
+    if (!pendingTicker) return;
+    const remaining = 100 - portfolio.reduce((sum, p) => sum + p.allocation, 0);
+    if (remaining < 1) {
+      setPendingTicker(null);
+      return;
+    }
     const defaultAlloc = Math.min(remaining, 10);
-    if (defaultAlloc <= 0) return;
+    setPortfolio((prev) => [...prev, { ticker: pendingTicker, allocation: defaultAlloc }]);
+    setPendingTicker(null);
+  }, [pendingTicker, portfolio]);
 
-    setPortfolio([...portfolio, { ticker, allocation: defaultAlloc }]);
-  };
+  const cancelAddStock = useCallback(() => {
+    setPendingTicker(null);
+  }, []);
 
-  const removeStock = (ticker: string) => {
-    setPortfolio(portfolio.filter((p) => p.ticker !== ticker));
-  };
+  const removeStock = useCallback((ticker: string) => {
+    setPortfolio((prev) => prev.filter((p) => p.ticker !== ticker));
+  }, []);
 
-  const updateAllocation = (ticker: string, newAlloc: number) => {
-    const clamped = Math.max(0, Math.min(100, newAlloc));
-    setPortfolio(
-      portfolio.map((p) =>
-        p.ticker === ticker ? { ...p, allocation: clamped } : p
-      )
+  const updateAllocation = useCallback((ticker: string, newAlloc: number) => {
+    const clamped = Math.max(1, Math.min(50, newAlloc));
+    setPortfolio((prev) =>
+      prev.map((p) => (p.ticker === ticker ? { ...p, allocation: clamped } : p))
     );
-  };
+  }, []);
+
+  const loadPreset = useCallback((items: PortfolioItem[]) => {
+    setPortfolio(items.map((i) => ({ ...i })));
+  }, []);
 
   const totalAllocation = portfolio.reduce((sum, p) => sum + p.allocation, 0);
 
-  const portfolioMetrics = useMemo(() => {
-    if (portfolio.length === 0) {
-      return {
-        avgAiScore: 0,
-        avgPE: 0,
-        avgDividend: 0,
-        sectorBreakdown: [] as { name: string; allocation: number }[],
-        warnings: [] as string[],
-      };
-    }
+  // ── Pending stock data for confirmation modal ──
+  const pendingStock = pendingTicker ? resolveStock(pendingTicker) : null;
+  const pendingSignal = pendingStock ? generateStockSignal(pendingStock) : null;
 
-    let weightedScore = 0;
-    let weightedPE = 0;
-    let weightedDiv = 0;
-    const sectorMap: Record<string, number> = {};
-    const warnings: string[] = [];
+  // ── Empty state ──
+  if (portfolio.length === 0 && !pendingTicker) {
+    return (
+      <div className="min-h-screen pt-24 pb-16 px-4">
+        <div className="max-w-4xl mx-auto">
+          <Link
+            href="/"
+            className="inline-flex items-center gap-1 text-sm text-text-muted hover:text-text-secondary mb-8 transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Home
+          </Link>
 
-    for (const item of portfolio) {
-      const stock = stocks.find((s) => s.ticker === item.ticker);
-      if (!stock) continue;
+          <BuildTab
+            portfolio={portfolio}
+            totalInvestment={totalInvestment}
+            setTotalInvestment={setTotalInvestment}
+            totalAllocation={totalAllocation}
+            signals={signalMap}
+            onAddStock={requestAddStock}
+            onRemoveStock={removeStock}
+            onUpdateAllocation={updateAllocation}
+            onLoadPreset={loadPreset}
+            investmentPills={INVESTMENT_PILLS}
+            isEmpty
+          />
+        </div>
+      </div>
+    );
+  }
 
-      const weight = item.allocation / 100;
-      weightedScore += stock.aiScore * weight;
-      weightedPE += stock.peRatio * weight;
-      weightedDiv += stock.dividendYield * weight;
-
-      sectorMap[stock.sector] =
-        (sectorMap[stock.sector] || 0) + item.allocation;
-    }
-
-    // Warnings
-    if (totalAllocation > 100) {
-      warnings.push("Total allocation exceeds 100%");
-    }
-    if (totalAllocation < 100 && portfolio.length > 0) {
-      warnings.push(`${100 - totalAllocation}% unallocated`);
-    }
-    if (portfolio.length < 3) {
-      warnings.push("Low diversification: consider adding more stocks");
-    }
-
-    for (const [sector, alloc] of Object.entries(sectorMap)) {
-      if (alloc > 40) {
-        warnings.push(`High concentration: ${sector} at ${alloc}%`);
-      }
-    }
-
-    for (const item of portfolio) {
-      if (item.allocation > 30) {
-        warnings.push(`${item.ticker} at ${item.allocation}% -- high single-stock risk`);
-      }
-    }
-
-    const sectorBreakdown = Object.entries(sectorMap)
-      .map(([name, allocation]) => ({ name, allocation }))
-      .sort((a, b) => b.allocation - a.allocation);
-
-    return {
-      avgAiScore: weightedScore * (100 / Math.max(totalAllocation, 1)),
-      avgPE: weightedPE * (100 / Math.max(totalAllocation, 1)),
-      avgDividend: weightedDiv * (100 / Math.max(totalAllocation, 1)),
-      sectorBreakdown,
-      warnings,
-    };
-  }, [portfolio, totalAllocation]);
-
-  const availableStocks = stocks
-    .filter((s) => !portfolio.some((p) => p.ticker === s.ticker))
-    .filter((s) => {
-      if (!stockSearch.trim()) return true;
-      const q = stockSearch.toLowerCase();
-      return (
-        s.ticker.toLowerCase().includes(q) ||
-        s.name.toLowerCase().includes(q) ||
-        s.sector.toLowerCase().includes(q)
-      );
-    });
-
+  // ── Tab bar + active content ──
   return (
     <div className="min-h-screen pt-24 pb-16 px-4">
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-6xl mx-auto">
         <Link
           href="/"
-          className="inline-flex items-center gap-1 text-sm text-text-muted hover:text-text-secondary mb-8 transition-colors"
+          className="inline-flex items-center gap-1 text-sm text-text-muted hover:text-text-secondary mb-6 transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
           Home
         </Link>
 
-        <div className="mb-8">
+        {/* Header */}
+        <div className="mb-6">
           <div className="flex items-center gap-2 text-green mb-2">
             <Briefcase className="w-4 h-4" />
             <p className="text-xs uppercase tracking-widest font-medium">
               Portfolio Builder
             </p>
           </div>
-          <h1 className="text-3xl font-semibold tracking-tight mb-3">
-            Build Your Portfolio
+          <h1 className="text-3xl font-semibold tracking-tight mb-1">
+            Your Portfolio
           </h1>
           <p className="text-text-secondary text-sm">
-            Select stocks, set allocations, and see real-time portfolio metrics.
+            {portfolio.length} position{portfolio.length !== 1 ? "s" : ""} &middot; {formatCurrency(totalInvestment)} invested
           </p>
         </div>
 
-        {/* Preset portfolios */}
-        {portfolio.length === 0 && (
-          <div className="mb-6">
-            <p className="text-xs text-text-muted mb-3">
-              Quick start with a preset, or build from scratch below.
-            </p>
-            <div className="flex flex-wrap gap-2">
-              {PRESET_PORTFOLIOS.map((preset) => (
-                <button
-                  key={preset.name}
-                  onClick={() => setPortfolio(preset.items)}
-                  className="bg-surface border border-border rounded-lg px-4 py-2.5 text-left hover:border-green/40 transition-colors group"
-                >
-                  <p className="text-sm font-semibold group-hover:text-green transition-colors">
-                    {preset.name}
-                  </p>
-                  <p className="text-xs text-text-muted">{preset.desc}</p>
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
+        {/* Tab bar */}
+        <div className="flex gap-1 mb-6 border-b border-border overflow-x-auto pb-px">
+          {TABS.map((tab) => {
+            const unlocked = portfolio.length >= tab.minStocks;
+            const isActive = activeTab === tab.id;
+            const justUnlocked = recentlyUnlocked === tab.id;
+            const needed = tab.minStocks - portfolio.length;
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Left: Stock picker + portfolio */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* Investment amount */}
-            <div className="bg-surface border border-border rounded-xl p-4">
-              <label className="text-xs text-text-muted mb-1 block">
-                Total Investment Amount
-              </label>
-              <div className="flex items-center gap-2">
-                <DollarSign className="w-4 h-4 text-green" />
-                <input
-                  type="number"
-                  value={totalInvestment}
-                  onChange={(e) =>
-                    setTotalInvestment(Math.max(0, Number(e.target.value)))
+            return (
+              <button
+                key={tab.id}
+                onClick={() => unlocked && setActiveTab(tab.id)}
+                disabled={!unlocked}
+                className={`
+                  relative flex items-center gap-2 px-4 py-2.5 text-sm font-medium
+                  transition-colors whitespace-nowrap
+                  ${isActive
+                    ? "text-green border-b-2 border-green -mb-px"
+                    : unlocked
+                      ? "text-text-secondary hover:text-text-primary"
+                      : "text-text-muted/40 cursor-not-allowed"
                   }
-                  className="bg-transparent border-none text-xl font-mono font-bold focus:outline-none w-full"
-                />
-              </div>
-            </div>
-
-            {/* Current portfolio */}
-            {portfolio.length > 0 && (
-              <div className="bg-surface border border-border rounded-xl overflow-hidden">
-                <div className="p-4 border-b border-border">
-                  <h3 className="text-sm font-semibold">Your Portfolio</h3>
-                </div>
-                <div className="divide-y divide-border">
-                  {portfolio.map((item) => {
-                    const stock = stocks.find(
-                      (s) => s.ticker === item.ticker
-                    );
-                    if (!stock) return null;
-                    const dollarAmount =
-                      (item.allocation / 100) * totalInvestment;
-
-                    return (
-                      <div
-                        key={item.ticker}
-                        className="p-4 flex items-center justify-between"
-                      >
-                        <div className="flex items-center gap-3">
-                          <button
-                            onClick={() => removeStock(item.ticker)}
-                            className="w-7 h-7 rounded-full bg-red-bg flex items-center justify-center hover:bg-red/20 transition-colors"
-                          >
-                            <Minus className="w-3.5 h-3.5 text-red" />
-                          </button>
-                          <div>
-                            <Link
-                              href={`/research/${stock.ticker.toLowerCase()}`}
-                              className="font-mono font-medium text-sm text-green hover:text-green-light transition-colors"
-                            >
-                              {stock.ticker}
-                            </Link>
-                            <p className="text-xs text-text-muted">
-                              {stock.name}
-                            </p>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-4">
-                          <span className="text-xs text-text-muted font-mono">
-                            {formatCurrency(dollarAmount)}
-                          </span>
-                          <div className="flex items-center gap-1">
-                            <input
-                              type="number"
-                              value={item.allocation}
-                              onChange={(e) =>
-                                updateAllocation(
-                                  item.ticker,
-                                  Number(e.target.value)
-                                )
-                              }
-                              className="w-14 bg-surface-alt border border-border rounded px-2 py-1 text-sm font-mono text-right focus:outline-none focus:border-green/40"
-                            />
-                            <span className="text-xs text-text-muted">%</span>
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-
-                {/* Allocation bar */}
-                <div className="p-4 border-t border-border">
-                  <div className="flex items-center justify-between text-xs mb-2">
-                    <span className="text-text-muted">Total Allocation</span>
-                    <span
-                      className={`font-mono font-medium ${
-                        totalAllocation === 100
-                          ? "text-green"
-                          : totalAllocation > 100
-                            ? "text-red"
-                            : "text-gold"
-                      }`}
-                    >
-                      {totalAllocation}%
-                    </span>
-                  </div>
-                  <div className="w-full h-2 bg-surface-alt rounded-full overflow-hidden">
-                    <div
-                      className={`h-full rounded-full transition-all ${
-                        totalAllocation === 100
-                          ? "bg-green"
-                          : totalAllocation > 100
-                            ? "bg-red"
-                            : "bg-gold"
-                      }`}
-                      style={{
-                        width: `${Math.min(totalAllocation, 100)}%`,
-                      }}
-                    />
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Add stocks */}
-            <div className="bg-surface border border-border rounded-xl overflow-hidden">
-              <div className="p-4 border-b border-border space-y-3">
-                <h3 className="text-sm font-semibold">Add Stocks</h3>
-                <div className="relative">
-                  <Search className="w-4 h-4 text-text-muted absolute left-3 top-1/2 -translate-y-1/2" />
-                  <input
-                    type="text"
-                    value={stockSearch}
-                    onChange={(e) => setStockSearch(e.target.value)}
-                    placeholder="Search by ticker, name, or sector..."
-                    className="w-full bg-surface-alt border border-border rounded-lg pl-10 pr-4 py-2 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:border-green/40 transition-colors"
+                `}
+                title={!unlocked ? `Add ${needed} more stock${needed !== 1 ? "s" : ""} to unlock` : undefined}
+              >
+                {!unlocked && <Lock className="w-3 h-3" />}
+                {tab.icon}
+                {tab.label}
+                {justUnlocked && (
+                  <motion.span
+                    initial={{ scale: 0, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    exit={{ scale: 0, opacity: 0 }}
+                    className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-green"
                   />
-                </div>
-              </div>
-              <div className="divide-y divide-border">
-                {availableStocks.map((stock) => (
-                  <button
-                    key={stock.ticker}
-                    onClick={() => addStock(stock.ticker)}
-                    className="w-full p-4 flex items-center justify-between card-hover text-left"
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-lg bg-surface-alt flex items-center justify-center text-xs font-mono font-bold">
-                        {stock.ticker.slice(0, 2)}
-                      </div>
-                      <div>
-                        <p className="text-sm font-medium">{stock.ticker}</p>
-                        <p className="text-xs text-text-muted">{stock.name}</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <span className="text-xs text-text-muted">
-                        AI: {stock.aiScore}
-                      </span>
-                      <Plus className="w-4 h-4 text-green" />
-                    </div>
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* Right: Metrics sidebar */}
-          <div className="space-y-4">
-            {/* Portfolio stats */}
-            <div className="bg-surface border border-border rounded-xl p-4">
-              <h3 className="text-sm font-semibold mb-4 flex items-center gap-2">
-                <PieChart className="w-4 h-4 text-green" />
-                Portfolio Metrics
-              </h3>
-
-              <div className="space-y-3">
-                <div className="flex justify-between text-sm">
-                  <span className="text-text-muted">Positions</span>
-                  <span className="font-mono font-medium">
-                    {portfolio.length}
-                  </span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-text-muted">Avg AI Score</span>
-                  <span
-                    className={`font-mono font-medium ${
-                      portfolioMetrics.avgAiScore >= 80
-                        ? "text-green"
-                        : portfolioMetrics.avgAiScore >= 60
-                          ? "text-gold"
-                          : "text-red"
-                    }`}
-                  >
-                    {portfolioMetrics.avgAiScore.toFixed(0)}
-                  </span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-text-muted">Weighted P/E</span>
-                  <span className="font-mono font-medium">
-                    {portfolioMetrics.avgPE.toFixed(1)}
-                  </span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-text-muted">Avg Dividend</span>
-                  <span className="font-mono font-medium">
-                    {portfolioMetrics.avgDividend.toFixed(2)}%
-                  </span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-text-muted">Est. Annual Dividends</span>
-                  <span className="font-mono font-medium text-green">
-                    {formatCurrency(
-                      totalInvestment * (portfolioMetrics.avgDividend / 100)
-                    )}
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            {/* Sector breakdown */}
-            {portfolioMetrics.sectorBreakdown.length > 0 && (
-              <div className="bg-surface border border-border rounded-xl p-4">
-                <h3 className="text-sm font-semibold mb-3">Sector Exposure</h3>
-                <div className="space-y-2">
-                  {portfolioMetrics.sectorBreakdown.map((s) => {
-                    const sectorColor =
-                      sectors.find((sec) => sec.name === s.name)?.color ||
-                      "#666";
-                    return (
-                      <div key={s.name}>
-                        <div className="flex justify-between text-xs mb-1">
-                          <span className="text-text-secondary">{s.name}</span>
-                          <span className="font-mono text-text-muted">
-                            {s.allocation}%
-                          </span>
-                        </div>
-                        <div className="w-full h-1.5 bg-surface-alt rounded-full overflow-hidden">
-                          <div
-                            className="h-full rounded-full"
-                            style={{
-                              width: `${s.allocation}%`,
-                              backgroundColor: sectorColor,
-                            }}
-                          />
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
-
-            {/* Warnings */}
-            {portfolioMetrics.warnings.length > 0 && (
-              <div className="bg-surface border border-border rounded-xl p-4">
-                <h3 className="text-sm font-semibold mb-3 flex items-center gap-2">
-                  <AlertTriangle className="w-4 h-4 text-gold" />
-                  Warnings
-                </h3>
-                <ul className="space-y-2">
-                  {portfolioMetrics.warnings.map((w, i) => (
-                    <li
-                      key={i}
-                      className="text-xs text-text-secondary flex items-start gap-2"
-                    >
-                      <span className="text-gold mt-0.5">!</span>
-                      {w}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-
-            {/* Pro tips */}
-            <div className="bg-green-bg border border-green/10 rounded-xl p-4">
-              <div className="flex items-center gap-2 mb-2">
-                <TrendingUp className="w-4 h-4 text-green" />
-                <h3 className="text-sm font-semibold text-green">Pro Tips</h3>
-              </div>
-              <ul className="space-y-2 text-xs text-text-secondary">
-                <li>Aim for 10-20 positions for diversification</li>
-                <li>Keep any single stock under 10% of portfolio</li>
-                <li>Balance high-growth (tech) with stable dividend payers</li>
-                <li>Rebalance quarterly to maintain target allocations</li>
-              </ul>
-            </div>
-          </div>
+                )}
+              </button>
+            );
+          })}
         </div>
+
+        {/* Tab content */}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={activeTab}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.2 }}
+          >
+            {activeTab === "build" && (
+              <BuildTab
+                portfolio={portfolio}
+                totalInvestment={totalInvestment}
+                setTotalInvestment={setTotalInvestment}
+                totalAllocation={totalAllocation}
+                signals={signalMap}
+                onAddStock={requestAddStock}
+                onRemoveStock={removeStock}
+                onUpdateAllocation={updateAllocation}
+                onLoadPreset={loadPreset}
+                investmentPills={INVESTMENT_PILLS}
+              />
+            )}
+            {activeTab === "simulate" && (
+              <SimulateTab
+                portfolio={portfolio}
+                portfolioStocks={portfolioStocks}
+                totalInvestment={totalInvestment}
+                signals={signals}
+              />
+            )}
+            {activeTab === "insights" && (
+              <InsightsTab
+                portfolio={portfolio}
+                portfolioStocks={portfolioStocks}
+                totalInvestment={totalInvestment}
+                signals={signals}
+                signalMap={signalMap}
+              />
+            )}
+            {activeTab === "scenarios" && (
+              <ScenariosTab
+                portfolio={portfolio}
+                portfolioStocks={portfolioStocks}
+                totalInvestment={totalInvestment}
+              />
+            )}
+            {activeTab === "report" && (
+              <ReportTab
+                portfolio={portfolio}
+                portfolioStocks={portfolioStocks}
+                totalInvestment={totalInvestment}
+                signals={signals}
+                signalMap={signalMap}
+              />
+            )}
+          </motion.div>
+        </AnimatePresence>
       </div>
+
+      {/* Confirmation modal */}
+      {pendingStock && pendingSignal && (
+        <ConfirmationModal
+          stock={pendingStock}
+          signal={pendingSignal}
+          onConfirm={confirmAddStock}
+          onCancel={cancelAddStock}
+        />
+      )}
     </div>
   );
 }
