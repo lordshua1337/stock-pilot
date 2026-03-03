@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { stocks, sectors, getSectorMetrics } from "@/lib/stock-data";
 import { BenchmarkTape } from "@/components/benchmark-tape";
+import GettingStarted from "@/components/getting-started";
 
 function StockRow({ stock }: { stock: (typeof stocks)[0] }) {
   const isUp = stock.change >= 0;
@@ -103,6 +104,8 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen">
+      <GettingStarted />
+
       {/* Hero */}
       <section className="pt-28 pb-16 px-4">
         <div className="max-w-4xl mx-auto text-center">
