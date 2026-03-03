@@ -5,8 +5,9 @@ import { Download, Loader2 } from "lucide-react";
 import { ARCHETYPE_INFO, DIMENSION_LABELS } from "@/lib/dna-scoring";
 import type { BiasFlag, MicroModuleKey } from "@/lib/dna-scoring";
 import type { StoredDNAProfile } from "@/lib/dna-storage";
-import type { CoreDimensions, DimKey } from "@/lib/financial-dna";
+import type { CoreDimensions, DimKey, ArchetypeKey } from "@/lib/financial-dna";
 import { matchStocksToDNA } from "@/lib/dna-stock-matcher";
+import { ARCHETYPE_CONTENT } from "@/lib/archetype-content";
 
 // ---------------------------------------------------------------------------
 // CSS class prefix: dna-pdf-* for container, dnapd-* for body elements
@@ -18,11 +19,15 @@ const PDF_STYLES = `
   width: 816px;
   margin: 0;
   padding: 0;
-  display: inline-block;
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  display: block;
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
   line-height: 1.6;
   color: #1a1a2e;
   background: #fff;
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  box-sizing: border-box;
 }
 
 .dna-pdf-cover {
@@ -673,6 +678,78 @@ function buildPdfDocument(
   `;
   doc.appendChild(page3);
 
+  // --- PAGE 4: Investor Operating System ---
+  const archetypeKeyStr = profile.communicationArchetype as ArchetypeKey;
+  const content = ARCHETYPE_CONTENT[archetypeKeyStr];
+  if (content) {
+    const page4 = document.createElement("div");
+    page4.className = "dna-pdf-page";
+
+    const famousNames = content.famousInvestors.map(inv =>
+      `<span style="display:inline-block;padding:3px 10px;border-radius:12px;border:1px solid #e0e0e0;font-size:11px;margin:2px 4px">${inv.name}</span>`
+    ).join("");
+
+    const strengthBullets = profile.strengths.slice(0, 3).map(s =>
+      `<div style="font-size:12px;color:#1a7a3c;margin-bottom:4px;padding-left:12px;position:relative"><span style="position:absolute;left:0;color:#00C853;font-weight:700">+</span>${s}</div>`
+    ).join("");
+
+    const riskBullets = profile.vulnerabilities.slice(0, 2).map(v =>
+      `<div style="font-size:12px;color:#b57a00;margin-bottom:4px;padding-left:12px;position:relative"><span style="position:absolute;left:0;color:#E5A100;font-weight:700">!</span>${v}</div>`
+    ).join("");
+
+    page4.innerHTML = `
+      <div class="dnapd-section-title" style="color:${accentColor}">Your Playbook</div>
+      <div class="dnapd-heading">Investor Operating System</div>
+
+      <div style="padding:20px;border-radius:12px;border:1px solid ${accentColor}40;background:${accentColor}05;margin-bottom:16px">
+        <div style="font-size:20px;font-weight:800;margin-bottom:4px;color:#1a1a2e">${archetypeName}</div>
+        <div style="font-size:13px;font-style:italic;color:#888;margin-bottom:12px">"${tagline}"</div>
+        <div style="font-size:12px;color:#555;line-height:1.6;margin-bottom:16px;font-style:italic;background:#f8f8f8;padding:12px;border-radius:8px">${content.metaphor}</div>
+        <div style="text-align:center;margin-bottom:16px">
+          <div style="font-size:10px;text-transform:uppercase;letter-spacing:2px;color:#888;margin-bottom:6px">Famous Investors Like You</div>
+          ${famousNames}
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
+        <div style="padding:12px;border-radius:8px;border:1px solid #e0e0e0">
+          <div style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:#888;margin-bottom:6px;font-weight:600">Core Strengths</div>
+          ${strengthBullets}
+        </div>
+        <div style="padding:12px;border-radius:8px;border:1px solid #e0e0e0">
+          <div style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:#888;margin-bottom:6px;font-weight:600">Risks to Watch</div>
+          ${riskBullets}
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
+        <div style="padding:12px;border-radius:8px;background:#f8f8f8">
+          <div style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:#888;margin-bottom:4px;font-weight:600">Portfolio Style</div>
+          <div style="font-size:12px;color:#555">${content.portfolioStyle}</div>
+        </div>
+        <div style="padding:12px;border-radius:8px;background:#f8f8f8">
+          <div style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:#888;margin-bottom:4px;font-weight:600">Ideal Allocation</div>
+          <div style="font-size:12px;color:#555">${content.idealAllocation}</div>
+        </div>
+      </div>
+
+      <div style="padding:16px;border-radius:8px;border:1px solid ${accentColor}40;background:${accentColor}08;text-align:center;margin-bottom:16px">
+        <div style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:#888;margin-bottom:6px;font-weight:600">Before Any Trade</div>
+        <div style="font-size:13px;font-weight:600;color:#1a1a2e">${content.decisionFramework}</div>
+      </div>
+
+      <div style="padding:12px;border-radius:8px;border:1px solid ${accentColor}30;background:${accentColor}06">
+        <div style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:${accentColor};margin-bottom:4px;font-weight:600">Your #1 Rule</div>
+        <div style="font-size:12px;color:#555;line-height:1.6">${profile.behavioralRule}</div>
+      </div>
+
+      <div style="text-align:center;margin-top:24px;font-size:10px;color:#bbb">
+        ${archetypeName} -- ${content.rarity}% of investors share your type
+      </div>
+    `;
+    doc.appendChild(page4);
+  }
+
   // --- Inject styles ---
   const style = document.createElement("style");
   style.textContent = PDF_STYLES;
@@ -692,13 +769,8 @@ async function generatePdf(profile: StoredDNAProfile, accentColor: string): Prom
 
   const pdfDoc = buildPdfDocument(profile, accentColor);
 
-  // Save and zero body margin/padding during capture
-  const origMargin = document.body.style.margin;
-  const origPadding = document.body.style.padding;
-  document.body.style.margin = "0";
-  document.body.style.padding = "0";
+  // Append off-screen (CSS positions it at left: -9999px)
   document.body.appendChild(pdfDoc);
-  window.scrollTo(0, 0);
 
   const dateSlug = new Date(profile.completedAt).toISOString().split("T")[0];
 
@@ -707,12 +779,14 @@ async function generatePdf(profile: StoredDNAProfile, accentColor: string): Prom
       .set({
         margin: 0,
         filename: `investor-identity-${dateSlug}.pdf`,
-        image: { type: "jpeg", quality: 0.98 },
+        image: { type: "jpeg", quality: 0.95 },
         html2canvas: {
           scale: 2,
           useCORS: true,
           letterRendering: true,
-          scrollY: -window.scrollY,
+          windowWidth: 816,
+          scrollX: 0,
+          scrollY: 0,
         },
         jsPDF: { unit: "mm", format: "letter", orientation: "portrait" },
         pagebreak: { mode: ["css"] },
@@ -721,8 +795,6 @@ async function generatePdf(profile: StoredDNAProfile, accentColor: string): Prom
       .save();
   } finally {
     document.body.removeChild(pdfDoc);
-    document.body.style.margin = origMargin;
-    document.body.style.padding = origPadding;
   }
 }
 
