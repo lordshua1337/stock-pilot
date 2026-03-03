@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback, useMemo } from "react";
 import Link from "next/link";
 import {
   ArrowLeft,
@@ -13,6 +13,12 @@ import {
   ChevronUp,
 } from "lucide-react";
 import { stocks, sectors, type Stock } from "@/lib/stock-data";
+import ScreenerPanel from "@/components/screener-panel";
+import {
+  type ScreenerFilters,
+  EMPTY_FILTERS,
+  applyScreenerFilters,
+} from "@/lib/screener-utils";
 
 function StockDetail({
   stock,
@@ -193,6 +199,14 @@ export default function ResearchPage() {
   const [sortBy, setSortBy] = useState<"aiScore" | "changePercent" | "peRatio">(
     "aiScore"
   );
+  const [screenerFilters, setScreenerFilters] = useState<ScreenerFilters>({
+    ...EMPTY_FILTERS,
+    analystRatings: new Set(),
+  });
+
+  const handleScreenerChange = useCallback((f: ScreenerFilters) => {
+    setScreenerFilters(f);
+  }, []);
 
   const sectorNames = [...new Set(stocks.map((s) => s.sector))].sort();
 
@@ -203,23 +217,26 @@ export default function ResearchPage() {
     (s) => s.analystRating === "Strong Buy"
   ).length;
 
-  const filtered = stocks
-    .filter((s) => {
-      if (sectorFilter !== "all" && s.sector !== sectorFilter) return false;
-      if (!searchQuery.trim()) return true;
-      const q = searchQuery.toLowerCase();
-      return (
-        s.ticker.toLowerCase().includes(q) ||
-        s.name.toLowerCase().includes(q) ||
-        s.sector.toLowerCase().includes(q)
-      );
-    })
-    .sort((a, b) => {
-      if (sortBy === "aiScore") return b.aiScore - a.aiScore;
-      if (sortBy === "changePercent")
-        return Math.abs(b.changePercent) - Math.abs(a.changePercent);
-      return a.peRatio - b.peRatio;
-    });
+  const filtered = useMemo(() => {
+    const screened = applyScreenerFilters(stocks, screenerFilters);
+    return screened
+      .filter((s) => {
+        if (sectorFilter !== "all" && s.sector !== sectorFilter) return false;
+        if (!searchQuery.trim()) return true;
+        const q = searchQuery.toLowerCase();
+        return (
+          s.ticker.toLowerCase().includes(q) ||
+          s.name.toLowerCase().includes(q) ||
+          s.sector.toLowerCase().includes(q)
+        );
+      })
+      .sort((a, b) => {
+        if (sortBy === "aiScore") return b.aiScore - a.aiScore;
+        if (sortBy === "changePercent")
+          return Math.abs(b.changePercent) - Math.abs(a.changePercent);
+        return a.peRatio - b.peRatio;
+      });
+  }, [screenerFilters, sectorFilter, searchQuery, sortBy]);
 
   return (
     <div className="min-h-screen pt-24 pb-16 px-4">
@@ -303,6 +320,12 @@ export default function ResearchPage() {
           })}
         </div>
 
+        {/* Screener */}
+        <ScreenerPanel
+          filters={screenerFilters}
+          onChange={handleScreenerChange}
+        />
+
         {/* Search + Sort */}
         <div className="flex flex-col sm:flex-row gap-3 mb-6">
           <div className="relative flex-1">
@@ -328,6 +351,13 @@ export default function ResearchPage() {
           </select>
         </div>
 
+        {/* Results count */}
+        {filtered.length > 0 && filtered.length < stocks.length && (
+          <div className="text-xs text-text-muted mb-3">
+            Showing {filtered.length} of {stocks.length} stocks
+          </div>
+        )}
+
         {/* Stock list */}
         <div className="space-y-3">
           {filtered.map((stock) => (
@@ -346,7 +376,7 @@ export default function ResearchPage() {
 
         {filtered.length === 0 && (
           <div className="text-center py-16 text-text-muted">
-            No stocks match your search.
+            No stocks match your filters. Try adjusting your criteria.
           </div>
         )}
       </div>
