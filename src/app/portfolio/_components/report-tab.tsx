@@ -15,7 +15,9 @@ import { sectors, type Stock } from "@/lib/stock-data";
 import type { StockSignal } from "@/lib/portfolio-signals";
 import type { PortfolioItem } from "../page";
 import { formatCurrency } from "../page";
-import { loadDNAProfile } from "@/lib/dna-storage";
+import { loadDNAProfile, type StoredDNAProfile } from "@/lib/dna-storage";
+import { ARCHETYPE_INFO, DIMENSION_LABELS } from "@/lib/dna-scoring";
+import type { DimKey } from "@/lib/financial-dna";
 
 interface ReportTabProps {
   portfolio: PortfolioItem[];
@@ -42,6 +44,102 @@ const REPORT_SECTIONS: ReportSection[] = [
   { id: "personality", label: "Investor Personality", defaultOn: true },
   { id: "recommendations", label: "Recommendations", defaultOn: true },
 ];
+
+// ─── Personality-portfolio alignment ────────────────────────────────────
+
+interface PersonalityInsight {
+  label: string;
+  detail: string;
+  type: "positive" | "warning" | "neutral";
+}
+
+function getPersonalityInsights(
+  profile: StoredDNAProfile,
+  beta: number,
+  divYield: number,
+  positions: number,
+  sectorCount: number
+): PersonalityInsight[] {
+  const insights: PersonalityInsight[] = [];
+  const dims = profile.dimensions;
+
+  // Risk alignment
+  if (dims.R < 45 && beta > 1.2) {
+    insights.push({
+      label: "Volatility Warning",
+      detail: `Your risk comfort is low (${dims.R}/100) but your portfolio beta is ${beta.toFixed(2)}. This mismatch may cause anxiety during downturns. Consider adding lower-beta positions.`,
+      type: "warning",
+    });
+  } else if (dims.R >= 60 && beta < 0.8) {
+    insights.push({
+      label: "Underutilized Risk Capacity",
+      detail: `You're comfortable with risk (${dims.R}/100) but your portfolio beta is only ${beta.toFixed(2)}. You may be leaving growth on the table.`,
+      type: "neutral",
+    });
+  } else {
+    insights.push({
+      label: "Risk Alignment",
+      detail: `Your risk orientation (${dims.R}/100) is well-matched to your portfolio beta (${beta.toFixed(2)}).`,
+      type: "positive",
+    });
+  }
+
+  // Discipline alignment
+  if (dims.D < 50 && positions > 8) {
+    insights.push({
+      label: "Complexity vs Discipline",
+      detail: `With ${positions} positions and moderate discipline (${dims.D}/100), you may struggle to monitor all holdings. Consider simplifying to 5-7 core positions.`,
+      type: "warning",
+    });
+  } else if (dims.D >= 60 && sectorCount >= 4) {
+    insights.push({
+      label: "Disciplined Diversification",
+      detail: `Your high discipline (${dims.D}/100) supports the ${sectorCount}-sector diversification in this portfolio.`,
+      type: "positive",
+    });
+  }
+
+  // Horizon alignment
+  if (dims.H < 45 && divYield < 1) {
+    insights.push({
+      label: "Income Gap",
+      detail: `Your shorter time horizon (${dims.H}/100) pairs better with income-generating stocks. Current dividend yield of ${divYield.toFixed(2)}% is low.`,
+      type: "warning",
+    });
+  } else if (dims.H >= 65) {
+    insights.push({
+      label: "Long-Term Horizon",
+      detail: `Your patience (${dims.H}/100) means short-term volatility matters less. Stay focused on quality over quarterly noise.`,
+      type: "positive",
+    });
+  }
+
+  // Emotional regulation
+  if (dims.E < 45 && beta > 1.0) {
+    insights.push({
+      label: "Emotional Risk",
+      detail: `Lower emotional regulation (${dims.E}/100) combined with above-market volatility increases panic-sell risk. Pre-set stop-loss rules or automate rebalancing.`,
+      type: "warning",
+    });
+  }
+
+  // Top biases
+  const topBiases = [...profile.biasFlags]
+    .filter((b) => b.severity >= 2)
+    .sort((a, b) => b.severity - a.severity)
+    .slice(0, 2);
+
+  if (topBiases.length > 0) {
+    const biasNames = topBiases.map((b) => b.label).join(" and ");
+    insights.push({
+      label: "Behavioral Watch",
+      detail: `Your strongest biases are ${biasNames}. Review this portfolio through that lens -- are any positions driven by these tendencies?`,
+      type: "warning",
+    });
+  }
+
+  return insights;
+}
 
 // ─── Component ─────────────────────────────────────────────────────────
 
@@ -339,13 +437,76 @@ export function ReportTab({
             </ReportSectionCard>
           )}
 
-          {effectiveSections.personality && dnaProfile && (
-            <ReportSectionCard title="Investor Personality">
-              <p className="text-text-secondary">
-                {dnaProfile.communicationArchetype} profile with dimension scores included.
-              </p>
-            </ReportSectionCard>
-          )}
+          {effectiveSections.personality && dnaProfile && (() => {
+            const archInfo = ARCHETYPE_INFO[dnaProfile.communicationArchetype];
+            const dimKeys: DimKey[] = ["R", "C", "H", "D", "E"];
+            const pInsights = getPersonalityInsights(
+              dnaProfile,
+              metrics.beta,
+              metrics.divYield,
+              metrics.positions,
+              metrics.sectorBreakdown.length
+            );
+            return (
+              <ReportSectionCard title="Investor Personality">
+                <div className="space-y-3">
+                  {/* Archetype identity */}
+                  <div className="flex items-center gap-2">
+                    <span className="text-green font-semibold text-sm">
+                      {archInfo?.name ?? dnaProfile.communicationArchetype}
+                    </span>
+                    {archInfo?.tagline && (
+                      <span className="text-text-muted text-[10px]">-- {archInfo.tagline}</span>
+                    )}
+                  </div>
+
+                  {/* Dimension scores */}
+                  <div className="grid grid-cols-5 gap-2">
+                    {dimKeys.map((k) => (
+                      <div key={k} className="text-center">
+                        <p className="text-[10px] text-text-muted">{DIMENSION_LABELS[k]}</p>
+                        <p className="font-mono font-medium text-sm">{dnaProfile.dimensions[k]}</p>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Portfolio-personality alignment */}
+                  <div className="space-y-1.5 pt-1 border-t border-border">
+                    <p className="text-[10px] text-text-muted uppercase tracking-wider font-semibold">
+                      Portfolio Alignment
+                    </p>
+                    {pInsights.map((insight, i) => (
+                      <div key={i} className="flex items-start gap-2">
+                        <span
+                          className={`mt-0.5 w-1.5 h-1.5 rounded-full flex-shrink-0 ${
+                            insight.type === "positive"
+                              ? "bg-green"
+                              : insight.type === "warning"
+                                ? "bg-gold"
+                                : "bg-text-muted"
+                          }`}
+                        />
+                        <div>
+                          <span className="font-medium text-[11px]">{insight.label}: </span>
+                          <span className="text-text-secondary text-[11px]">{insight.detail}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Behavioral rule */}
+                  {dnaProfile.behavioralRule && (
+                    <div className="bg-surface-alt rounded-lg p-2.5 mt-1">
+                      <p className="text-[10px] text-text-muted mb-0.5">Your behavioral rule:</p>
+                      <p className="text-[11px] text-text-secondary italic">
+                        "{dnaProfile.behavioralRule}"
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </ReportSectionCard>
+            );
+          })()}
 
           {effectiveSections.recommendations && (
             <ReportSectionCard title="Recommendations">
@@ -370,6 +531,22 @@ export function ReportTab({
                 {metrics.sectorBreakdown.length < 3 && (
                   <li className="text-text-secondary">
                     Only {metrics.sectorBreakdown.length} sector{metrics.sectorBreakdown.length !== 1 ? "s" : ""} represented -- diversify across more sectors
+                  </li>
+                )}
+                {/* Personality-aware recommendations */}
+                {dnaProfile && dnaProfile.dimensions.E < 45 && metrics.beta > 1.0 && (
+                  <li className="text-text-secondary">
+                    With your emotional profile, set pre-defined rebalancing triggers rather than making decisions during volatility
+                  </li>
+                )}
+                {dnaProfile && dnaProfile.dimensions.D < 50 && portfolio.length > 6 && (
+                  <li className="text-text-secondary">
+                    Simplify to 5-6 core positions -- your discipline score suggests fewer holdings will be easier to manage
+                  </li>
+                )}
+                {dnaProfile && dnaProfile.dimensions.H >= 65 && (
+                  <li className="text-text-secondary">
+                    Reduce portfolio check frequency to monthly -- your long horizon means daily noise is a distraction
                   </li>
                 )}
               </ul>
@@ -446,12 +623,53 @@ export function ReportTab({
             </div>
           )}
 
-          {effectiveSections.personality && dnaProfile && (
-            <div className="mb-6">
-              <h2 className="text-lg font-semibold border-b border-gray-200 pb-1 mb-3">Investor Personality</h2>
-              <p className="text-sm">Archetype: {dnaProfile.communicationArchetype}</p>
-            </div>
-          )}
+          {effectiveSections.personality && dnaProfile && (() => {
+            const archInfo = ARCHETYPE_INFO[dnaProfile.communicationArchetype];
+            const dimKeys: DimKey[] = ["R", "C", "H", "D", "E"];
+            const pInsights = getPersonalityInsights(
+              dnaProfile,
+              metrics.beta,
+              metrics.divYield,
+              metrics.positions,
+              metrics.sectorBreakdown.length
+            );
+            return (
+              <div className="mb-6">
+                <h2 className="text-lg font-semibold border-b border-gray-200 pb-1 mb-3">Investor Personality</h2>
+                <p className="text-sm font-medium mb-1">
+                  {archInfo?.name ?? dnaProfile.communicationArchetype}
+                  {archInfo?.tagline && <span className="text-gray-500 font-normal"> -- {archInfo.tagline}</span>}
+                </p>
+                <table className="w-full text-sm mb-3">
+                  <thead>
+                    <tr className="text-gray-500 text-xs">
+                      {dimKeys.map((k) => (
+                        <th key={k} className="pb-1 text-center font-normal">{DIMENSION_LABELS[k]}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      {dimKeys.map((k) => (
+                        <td key={k} className="text-center font-mono">{dnaProfile.dimensions[k]}</td>
+                      ))}
+                    </tr>
+                  </tbody>
+                </table>
+                <h3 className="text-sm font-medium mb-1">Portfolio Alignment</h3>
+                {pInsights.map((insight, i) => (
+                  <p key={i} className="text-sm mb-1">
+                    <span className="font-medium">{insight.label}:</span> {insight.detail}
+                  </p>
+                ))}
+                {dnaProfile.behavioralRule && (
+                  <p className="text-sm italic text-gray-600 mt-2 border-l-2 border-gray-300 pl-3">
+                    Behavioral rule: "{dnaProfile.behavioralRule}"
+                  </p>
+                )}
+              </div>
+            );
+          })()}
 
           <p className="text-xs text-gray-400 mt-8 border-t border-gray-200 pt-4">
             This report is generated by StockPilot AI analysis and is for informational purposes only.
