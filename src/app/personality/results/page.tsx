@@ -478,6 +478,7 @@ export default function DNAResultsPage() {
                 dimensions={displayDimensions}
                 biasFlags={displayBiasFlags}
                 triggeredModules={profile.triggeredModules}
+                archetypeKey={displayArchetypeKey}
                 accentColor={accentColor}
               />
             </Section>

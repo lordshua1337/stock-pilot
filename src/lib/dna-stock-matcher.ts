@@ -131,6 +131,40 @@ function applyDiversityFilter(
 }
 
 // ---------------------------------------------------------------------------
+// Anti-match reason: why a stock CLASHES with your profile
+// ---------------------------------------------------------------------------
+
+function getAntiMatchReason(stock: Stock, dims: CoreDimensions): string {
+  const reasons: string[] = [];
+
+  if (dims.R < 45 && stock.beta >= 1.5) {
+    reasons.push("Too volatile for your risk comfort zone");
+  } else if (dims.R >= 65 && stock.beta <= 0.5) {
+    reasons.push("Too conservative for your growth-oriented profile");
+  }
+
+  if (dims.H < 45 && stock.dividendYield < 0.5 && stock.beta >= 1.2) {
+    reasons.push("High-risk growth play clashes with your short horizon");
+  } else if (dims.H >= 65 && stock.aiScore < 60) {
+    reasons.push("Weak long-term thesis for a patient investor like you");
+  }
+
+  if (dims.D >= 60 && stock.analystRating === "Hold") {
+    reasons.push("Analyst ambivalence conflicts with your disciplined approach");
+  }
+
+  if (stock.aiScore < 55) {
+    reasons.push(`Low AI confidence score (${stock.aiScore}/100)`);
+  }
+
+  if (reasons.length === 0) {
+    reasons.push("Poor overall fit for your behavioral profile");
+  }
+
+  return reasons[0];
+}
+
+// ---------------------------------------------------------------------------
 // Public API
 // ---------------------------------------------------------------------------
 
@@ -145,4 +179,39 @@ export function matchStocksToDNA(dims: CoreDimensions): MatchedStock[] {
   const ranked = [...scored].sort((a, b) => b.score - a.score);
 
   return applyDiversityFilter(ranked, dims);
+}
+
+export function antiMatchStocksToDNA(dims: CoreDimensions): MatchedStock[] {
+  const scored = stocks.map((stock) => ({
+    stock,
+    score: scoreStock(stock, dims),
+    reason: getAntiMatchReason(stock, dims),
+  }));
+
+  // Sort by score ascending (worst matches first)
+  const ranked = [...scored].sort((a, b) => a.score - b.score);
+
+  // Return bottom 3, ensuring sector diversity
+  const result: MatchedStock[] = [];
+  const usedSectors = new Set<string>();
+
+  for (const match of ranked) {
+    if (result.length >= 3) break;
+    if (!usedSectors.has(match.stock.sector)) {
+      result.push(match);
+      usedSectors.add(match.stock.sector);
+    }
+  }
+
+  // Fill if diversity was too strict
+  if (result.length < 3) {
+    for (const match of ranked) {
+      if (result.length >= 3) break;
+      if (!result.includes(match)) {
+        result.push(match);
+      }
+    }
+  }
+
+  return result;
 }
