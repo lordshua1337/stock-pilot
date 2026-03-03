@@ -14,6 +14,7 @@ import { stocks, sectors, getSectorMetrics } from "@/lib/stock-data";
 import { BenchmarkTape } from "@/components/benchmark-tape";
 import { HeroChartBg } from "@/components/hero-chart-bg";
 import GettingStarted from "@/components/getting-started";
+import DailyPulseCard from "@/components/daily-pulse";
 
 function StockRow({ stock }: { stock: (typeof stocks)[0] }) {
   const isUp = stock.change >= 0;
@@ -186,6 +187,13 @@ export default function HomePage() {
             <p className="text-2xl sm:text-3xl font-semibold font-mono">$0</p>
             <p className="text-xs text-text-muted mt-1">Cost to Use</p>
           </div>
+        </div>
+      </section>
+
+      {/* Daily Market Pulse */}
+      <section className="py-8 px-4">
+        <div className="max-w-xl mx-auto">
+          <DailyPulseCard />
         </div>
       </section>
 
