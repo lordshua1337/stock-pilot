@@ -108,7 +108,7 @@ export default function HomePage() {
       <GettingStarted />
 
       {/* Hero */}
-      <section className="relative pt-28 pb-16 px-4 overflow-hidden">
+      <section className="relative pt-28 pb-16 px-4 overflow-hidden sp-hero-glow">
         <HeroChartBg />
         <div className="max-w-4xl mx-auto text-center relative z-10">
           <div className="inline-flex items-center gap-2 bg-green-bg text-green px-3 py-1 rounded-full text-xs font-medium mb-6">
@@ -153,10 +153,10 @@ export default function HomePage() {
       <BenchmarkTape />
 
       {/* Stats */}
-      <section className="py-8 px-4 bg-surface">
+      <section className="py-8 px-4 sp-section-alt">
         <div className="max-w-4xl mx-auto grid grid-cols-2 sm:grid-cols-4 gap-6">
           <div className="text-center">
-            <p className="text-2xl sm:text-3xl font-semibold text-green font-mono">
+            <p className="text-2xl sm:text-3xl font-semibold text-green font-mono sp-stat-glow">
               {stocks.length}
             </p>
             <p className="text-xs text-text-muted mt-1">Stocks Analyzed</p>
@@ -175,7 +175,7 @@ export default function HomePage() {
             </p>
           </div>
           <div className="text-center">
-            <p className="text-2xl sm:text-3xl font-semibold text-green font-mono">
+            <p className="text-2xl sm:text-3xl font-semibold text-green font-mono sp-stat-glow">
               {Math.round(
                 stocks.reduce((sum, s) => sum + s.aiScore, 0) / stocks.length
               )}
@@ -190,7 +190,7 @@ export default function HomePage() {
       </section>
 
       {/* Sector Heatmap */}
-      <section className="py-8 px-4">
+      <section className="py-8 px-4 sp-grid-dots">
         <div className="max-w-5xl mx-auto">
           <div className="flex items-center justify-between mb-4">
             <div>
@@ -280,8 +280,10 @@ export default function HomePage() {
         </div>
       </section>
 
+      <div className="sp-divider" />
+
       {/* Features */}
-      <section className="py-12 px-4 border-t border-border">
+      <section className="py-12 px-4 sp-section-alt">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-10">
             <p className="text-xs text-green uppercase tracking-widest font-medium mb-2">
@@ -344,8 +346,10 @@ export default function HomePage() {
         </div>
       </section>
 
+      <div className="sp-divider" />
+
       {/* Dividend Leaders */}
-      <section className="py-10 px-4 border-t border-border">
+      <section className="py-10 px-4 sp-grid-dots">
         <div className="max-w-4xl mx-auto">
           <div className="flex items-center justify-between mb-4">
             <div>
@@ -386,8 +390,10 @@ export default function HomePage() {
         </div>
       </section>
 
+      <div className="sp-divider" />
+
       {/* Gainers vs Losers */}
-      <section className="py-10 px-4 border-t border-border">
+      <section className="py-10 px-4 sp-section-alt">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-6">
             <p className="text-xs text-green uppercase tracking-widest font-medium mb-1">
@@ -455,7 +461,7 @@ export default function HomePage() {
       </section>
 
       {/* CTA */}
-      <section className="py-16 px-4 border-t border-border">
+      <section className="py-16 px-4 sp-cta-gradient">
         <div className="max-w-xl mx-auto text-center">
           <BarChart3 className="w-8 h-8 text-green mx-auto mb-4" />
           <h2 className="text-2xl font-semibold mb-3">
@@ -476,7 +482,7 @@ export default function HomePage() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-border py-6 px-4">
+      <footer className="sp-footer py-6 px-4">
         <div className="max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2 text-text-muted text-sm">
             <BarChart3 className="w-4 h-4" />

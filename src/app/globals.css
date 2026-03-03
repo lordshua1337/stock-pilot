@@ -82,10 +82,84 @@
 }
 
 .card-hover {
-  transition: background-color 0.15s ease;
+  transition: background-color 0.2s ease, transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease;
 }
 .card-hover:hover {
   background-color: var(--color-surface-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(0, 200, 83, 0.06);
+}
+
+/* Section rhythm -- alternate backgrounds */
+.sp-section-alt {
+  background-color: var(--color-surface);
+}
+
+/* Hero glow -- radial gradient behind hero text */
+.sp-hero-glow {
+  position: relative;
+}
+.sp-hero-glow::before {
+  content: '';
+  position: absolute;
+  top: 30%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 600px;
+  height: 400px;
+  background: radial-gradient(ellipse, rgba(0, 200, 83, 0.08) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Grid dot background pattern */
+.sp-grid-dots {
+  background-image: radial-gradient(rgba(255,255,255,0.03) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+/* Footer elevation */
+.sp-footer {
+  background: linear-gradient(to bottom, var(--color-surface), var(--color-background));
+  border-top: 1px solid var(--color-border);
+}
+
+/* Divider accent */
+.sp-divider {
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--color-green), transparent);
+  opacity: 0.15;
+  margin: 0 auto;
+  max-width: 200px;
+}
+
+/* Scroll reveal animation */
+@keyframes sp-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.sp-reveal {
+  animation: sp-reveal 0.5s ease-out both;
+}
+
+/* Stat counter glow on hover */
+.sp-stat-glow {
+  transition: text-shadow 0.3s ease;
+}
+.sp-stat-glow:hover {
+  text-shadow: 0 0 20px rgba(0, 200, 83, 0.4);
+}
+
+/* CTA section gradient */
+.sp-cta-gradient {
+  background: linear-gradient(to bottom, transparent, rgba(0, 200, 83, 0.03));
 }
 
 /* Mini sparkline chart placeholder */
@@ -94,4 +168,18 @@
 }
 .sparkline-down {
   background: linear-gradient(to right, transparent, var(--color-red-bg));
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .card-hover:hover {
+    transform: none;
+  }
+  .sp-reveal {
+    animation: none;
+    opacity: 1;
+  }
+  .sp-hero-glow::before {
+    display: none;
+  }
 }
