@@ -1,4 +1,4 @@
-// Financial DNA -- LocalStorage persistence layer
+// Investor Identity -- LocalStorage persistence layer
 // Stores the full DNA profile so it survives page refreshes
 // Structured for AI inference (buildDNAContext reads from this)
 
@@ -156,22 +156,3 @@ export function hasCompletedDNA(): boolean {
   return loadDNAProfile() !== null;
 }
 
-// ---------------------------------------------------------------------------
-// Export full profile as JSON (for user data portability)
-// ---------------------------------------------------------------------------
-
-export function exportDNAProfile(): string | null {
-  const profile = loadDNAProfile();
-  if (!profile) return null;
-
-  return JSON.stringify(
-    {
-      profile,
-      history: getDNAHistory(),
-      exportedAt: new Date().toISOString(),
-      version: "1.0",
-    },
-    null,
-    2
-  );
-}

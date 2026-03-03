@@ -8,28 +8,18 @@ import {
   ArrowLeft,
   ArrowRight,
   Brain,
-  Download,
   Shield,
   Share2,
-  Cpu,
-  ShieldCheck,
-  Search,
-  Wrench,
-  Users,
-  Telescope,
-  TrendingUp,
-  Pause,
-  Zap,
-  Heart,
 } from "lucide-react";
 import type { ArchetypeKey } from "@/lib/financial-dna";
 import { DIMENSION_KEYS } from "@/lib/financial-dna";
 import { ARCHETYPE_INFO } from "@/lib/dna-scoring";
 import {
   loadDNAProfile,
-  exportDNAProfile,
   type StoredDNAProfile,
 } from "@/lib/dna-storage";
+import { loadV2Profile, type StoredDNAProfileV2 } from "@/lib/dna-v2/storage";
+import { ARCHETYPE_CONTENT } from "@/lib/archetype-content";
 import { ARCHETYPE_COLORS } from "@/components/dna/archetype-colors";
 import { RadarChart } from "@/components/dna/radar-chart";
 import {
@@ -48,23 +38,8 @@ import {
   type SharedProfile,
 } from "@/components/dna/share-panel";
 import { DownloadPdfButton } from "@/components/dna/pdf-builder";
-
-// ---------------------------------------------------------------------------
-// Archetype icon map (lucide components)
-// ---------------------------------------------------------------------------
-
-const ARCHETYPE_ICON_MAP: Record<ArchetypeKey, React.ReactNode> = {
-  systems_builder: <Cpu className="w-6 h-6" />,
-  reassurance_seeker: <ShieldCheck className="w-6 h-6" />,
-  analytical_skeptic: <Search className="w-6 h-6" />,
-  diy_controller: <Wrench className="w-6 h-6" />,
-  collaborative_partner: <Users className="w-6 h-6" />,
-  big_picture_optimist: <Telescope className="w-6 h-6" />,
-  trend_sensitive_explorer: <TrendingUp className="w-6 h-6" />,
-  avoider_under_stress: <Pause className="w-6 h-6" />,
-  action_first_decider: <Zap className="w-6 h-6" />,
-  values_anchored_steward: <Heart className="w-6 h-6" />,
-};
+import { V2ResultsDisplay } from "./v2-results";
+import { ARCHETYPE_ICON_MAP } from "./icon-map";
 
 // ---------------------------------------------------------------------------
 // Section wrapper with alternating backgrounds and numbered headers
@@ -93,14 +68,13 @@ function Section({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: number * 0.06 }}
     >
-      {/* Accent divider */}
       <div
         className="h-0.5 rounded-full mb-6 opacity-30"
         style={{ backgroundColor: accentColor }}
       />
       <div className="mb-2">
         <span
-          className="text-xs uppercase tracking-widest font-semibold"
+          className="text-xs uppercase tracking-widest font-semibold font-mono"
           style={{ color: accentColor }}
         >
           {number}. {label}
@@ -119,6 +93,7 @@ function Section({
 export default function DNAResultsPage() {
   const router = useRouter();
   const [profile, setProfile] = useState<StoredDNAProfile | null>(null);
+  const [profileV2, setProfileV2] = useState<StoredDNAProfileV2 | null>(null);
   const [sharedProfile, setSharedProfile] = useState<SharedProfile | null>(
     null
   );
@@ -141,6 +116,15 @@ export default function DNAResultsPage() {
       }
     }
 
+    // Try V2 first
+    const storedV2 = loadV2Profile();
+    if (storedV2) {
+      setProfileV2(storedV2);
+      setLoading(false);
+      return;
+    }
+
+    // Fall back to V1
     const stored = loadDNAProfile();
     if (!stored) {
       router.push("/personality");
@@ -158,7 +142,12 @@ export default function DNAResultsPage() {
     );
   }
 
-  // Shared view vs local profile
+  // V2 Profile Display
+  if (profileV2) {
+    return <V2ResultsDisplay profileV2={profileV2} />;
+  }
+
+  // V1 Profile Display (original logic)
   const isSharedView = sharedProfile !== null && profile === null;
 
   const displayDimensions = isSharedView
@@ -205,20 +194,6 @@ export default function DNAResultsPage() {
     .filter((f) => f.severity > 0)
     .sort((a, b) => b.severity - a.severity);
 
-  const handleExport = () => {
-    const json = exportDNAProfile();
-    if (!json) return;
-    const blob = new Blob([json], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `financial-dna-${new Date().toISOString().split("T")[0]}.json`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  };
-
   return (
     <div className="min-h-screen pt-24 pb-16 px-4">
       <div className="max-w-3xl mx-auto">
@@ -252,13 +227,6 @@ export default function DNAResultsPage() {
                   <Share2 className="w-3.5 h-3.5" />
                   Share
                 </button>
-                <button
-                  onClick={handleExport}
-                  className="text-sm text-text-muted hover:text-text-secondary transition-colors inline-flex items-center gap-1"
-                >
-                  <Download className="w-3.5 h-3.5" />
-                  JSON
-                </button>
                 <DownloadPdfButton
                   profile={profile!}
                   accentColor={accentColor}
@@ -278,7 +246,8 @@ export default function DNAResultsPage() {
               background: `linear-gradient(135deg, ${accentColor}10 0%, ${accentColor}05 50%, transparent 100%)`,
             }}
           >
-            <div className="absolute top-0 right-0 w-48 h-48 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 opacity-20"
+            <div
+              className="absolute top-0 right-0 w-48 h-48 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 opacity-20"
               style={{ backgroundColor: accentColor }}
             />
 
@@ -312,16 +281,59 @@ export default function DNAResultsPage() {
               <p className="text-text-secondary text-sm leading-relaxed max-w-xl mx-auto mb-4">
                 {archetype?.description ?? ""}
               </p>
-              {secondaryArchetype && (
-                <span
-                  className="inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1 rounded-full"
-                  style={{
-                    color: ARCHETYPE_COLORS[displaySecondaryKey as ArchetypeKey] ?? "#A0A0A0",
-                    backgroundColor: `${ARCHETYPE_COLORS[displaySecondaryKey as ArchetypeKey] ?? "#A0A0A0"}15`,
-                  }}
-                >
-                  Secondary: {secondaryArchetype.name}
-                </span>
+
+              {/* Rarity badge + secondary type */}
+              <div className="flex items-center justify-center gap-3 flex-wrap mb-4">
+                {ARCHETYPE_CONTENT[displayArchetypeKey] && (
+                  <span
+                    className="text-[10px] font-mono font-semibold px-2.5 py-1 rounded-full border"
+                    style={{
+                      color: accentColor,
+                      borderColor: `${accentColor}40`,
+                      backgroundColor: `${accentColor}10`,
+                    }}
+                  >
+                    {ARCHETYPE_CONTENT[displayArchetypeKey].rarity}% of investors
+                  </span>
+                )}
+                {secondaryArchetype && (
+                  <span
+                    className="inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1 rounded-full"
+                    style={{
+                      color: ARCHETYPE_COLORS[displaySecondaryKey as ArchetypeKey] ?? "#A0A0A0",
+                      backgroundColor: `${ARCHETYPE_COLORS[displaySecondaryKey as ArchetypeKey] ?? "#A0A0A0"}15`,
+                    }}
+                  >
+                    Secondary: {secondaryArchetype.name}
+                  </span>
+                )}
+              </div>
+
+              {/* Metaphor */}
+              {ARCHETYPE_CONTENT[displayArchetypeKey]?.metaphor && (
+                <p className="text-text-secondary text-sm leading-relaxed max-w-xl mx-auto mb-4 italic bg-surface/50 rounded-lg p-3 border border-border/50">
+                  {ARCHETYPE_CONTENT[displayArchetypeKey].metaphor}
+                </p>
+              )}
+
+              {/* Famous investors */}
+              {ARCHETYPE_CONTENT[displayArchetypeKey]?.famousInvestors?.length > 0 && (
+                <div className="max-w-md mx-auto">
+                  <p className="text-[10px] uppercase tracking-widest text-text-muted mb-2">
+                    Famous investors like you
+                  </p>
+                  <div className="flex flex-wrap justify-center gap-2">
+                    {ARCHETYPE_CONTENT[displayArchetypeKey].famousInvestors.map((inv) => (
+                      <span
+                        key={inv.name}
+                        className="text-xs px-2.5 py-1 rounded-full bg-surface border border-border/50 text-text-secondary"
+                        title={inv.why}
+                      >
+                        {inv.name}
+                      </span>
+                    ))}
+                  </div>
+                </div>
               )}
             </div>
           </div>
@@ -420,7 +432,7 @@ export default function DNAResultsPage() {
                 </p>
                 <div className="space-y-2">
                   {activeBiases.slice(0, 5).map((bias) => (
-                    <BiasCard key={bias.bias} bias={bias} />
+                    <BiasCard key={bias.bias} bias={bias} archetypeKey={displayArchetypeKey} />
                   ))}
                 </div>
               </div>
@@ -468,6 +480,124 @@ export default function DNAResultsPage() {
                 triggeredModules={profile.triggeredModules}
                 accentColor={accentColor}
               />
+            </Section>
+          )}
+
+          {/* ============================================================= */}
+          {/* 6. Investor Operating System -- the "screenshot and save" card */}
+          {/* ============================================================= */}
+          {ARCHETYPE_CONTENT[displayArchetypeKey] && (
+            <Section
+              number={isSharedView ? 4 : 6}
+              label="Your Playbook"
+              title="Investor Operating System"
+              accentColor={accentColor}
+              alt
+            >
+              <div
+                className="rounded-xl border p-5 sm:p-6 space-y-4"
+                style={{
+                  borderColor: `${accentColor}30`,
+                  background: `linear-gradient(135deg, ${accentColor}08 0%, transparent 100%)`,
+                }}
+              >
+                {/* Header row */}
+                <div className="flex items-center gap-3 mb-2">
+                  <div
+                    className="w-10 h-10 rounded-lg flex items-center justify-center"
+                    style={{
+                      backgroundColor: `${accentColor}15`,
+                      color: accentColor,
+                    }}
+                  >
+                    {ARCHETYPE_ICON_MAP[displayArchetypeKey] ?? (
+                      <Shield className="w-5 h-5" />
+                    )}
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-bold">{archetype?.name}</h3>
+                    <p className="text-xs text-text-muted italic">&ldquo;{archetype?.tagline}&rdquo;</p>
+                  </div>
+                </div>
+
+                {/* Top strengths */}
+                <div>
+                  <p className="text-[10px] uppercase tracking-widest text-text-muted mb-1.5 font-semibold">
+                    Core Strengths
+                  </p>
+                  <div className="space-y-1">
+                    {displayStrengths.slice(0, 3).map((s, i) => (
+                      <p key={i} className="text-xs text-text-secondary flex items-start gap-1.5">
+                        <span style={{ color: accentColor }}>+</span> {s}
+                      </p>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Top risks */}
+                <div>
+                  <p className="text-[10px] uppercase tracking-widest text-text-muted mb-1.5 font-semibold">
+                    Risks to Watch
+                  </p>
+                  <div className="space-y-1">
+                    {displayVulnerabilities.slice(0, 2).map((v, i) => (
+                      <p key={i} className="text-xs text-text-secondary flex items-start gap-1.5">
+                        <span className="text-gold">!</span> {v}
+                      </p>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Behavioral rule */}
+                <div
+                  className="rounded-lg p-3 border text-xs"
+                  style={{
+                    borderColor: `${accentColor}25`,
+                    backgroundColor: `${accentColor}06`,
+                  }}
+                >
+                  <span className="font-semibold" style={{ color: accentColor }}>
+                    Your #1 rule:
+                  </span>{" "}
+                  <span className="text-text-secondary">{displayBehavioralRule}</span>
+                </div>
+
+                {/* Portfolio style + allocation */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="bg-surface/50 rounded-lg p-3 border border-border/50">
+                    <p className="text-[10px] uppercase tracking-widest text-text-muted mb-1 font-semibold">
+                      Portfolio Style
+                    </p>
+                    <p className="text-xs text-text-secondary">
+                      {ARCHETYPE_CONTENT[displayArchetypeKey].portfolioStyle}
+                    </p>
+                  </div>
+                  <div className="bg-surface/50 rounded-lg p-3 border border-border/50">
+                    <p className="text-[10px] uppercase tracking-widest text-text-muted mb-1 font-semibold">
+                      Ideal Allocation
+                    </p>
+                    <p className="text-xs text-text-secondary">
+                      {ARCHETYPE_CONTENT[displayArchetypeKey].idealAllocation}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Decision framework */}
+                <div
+                  className="rounded-lg p-3 border text-xs text-center"
+                  style={{
+                    borderColor: `${accentColor}30`,
+                    backgroundColor: `${accentColor}10`,
+                  }}
+                >
+                  <p className="text-[10px] uppercase tracking-widest text-text-muted mb-1 font-semibold">
+                    Before Any Trade
+                  </p>
+                  <p className="text-text-primary font-medium">
+                    {ARCHETYPE_CONTENT[displayArchetypeKey].decisionFramework}
+                  </p>
+                </div>
+              </div>
             </Section>
           )}
 

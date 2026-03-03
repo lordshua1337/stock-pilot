@@ -176,7 +176,7 @@ export function ReportTab({
         {!hasDNA && (
           <div className="mb-4 p-3 bg-[rgba(255,215,64,0.05)] border border-gold/20 rounded-lg">
             <p className="text-xs text-text-secondary mb-2">
-              Complete your Financial DNA assessment to include investor personality insights in the report.
+              Complete your Investor Identity assessment to include personality-matched insights in the report.
             </p>
             <Link
               href="/personality"

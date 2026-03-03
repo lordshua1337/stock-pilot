@@ -13,7 +13,7 @@ import {
   ChevronDown,
   ChevronUp,
 } from "lucide-react";
-import type { DimKey } from "@/lib/financial-dna";
+import type { DimKey, ArchetypeKey } from "@/lib/financial-dna";
 import {
   DIMENSION_LABELS,
   DIMENSION_DESCRIPTIONS,
@@ -21,6 +21,11 @@ import {
   type DNAProfile,
   type BiasFlag,
 } from "@/lib/dna-scoring";
+import {
+  getDimensionCoaching,
+  BIAS_EDUCATION,
+  ARCHETYPE_CONTENT,
+} from "@/lib/archetype-content";
 
 // ---------------------------------------------------------------------------
 // Dimension icons
@@ -173,11 +178,9 @@ export function DimensionDetail({
   const desc = isHigh
     ? DIMENSION_DESCRIPTIONS[dimKey].high
     : DIMENSION_DESCRIPTIONS[dimKey].low;
-  const implication = isHigh
-    ? PORTFOLIO_IMPLICATIONS[dimKey].high
-    : PORTFOLIO_IMPLICATIONS[dimKey].low;
   const color = getScoreColor(value);
   const descriptor = getScoreDescriptor(value);
+  const coaching = getDimensionCoaching(dimKey, value);
 
   return (
     <div className="bg-surface border border-border rounded-xl overflow-hidden">
@@ -213,12 +216,31 @@ export function DimensionDetail({
                 style={{ width: `${value}%`, backgroundColor: color }}
               />
             </div>
+            {coaching.averageRange && (
+              <p className="text-[10px] text-text-muted mt-1">
+                Most investors score {coaching.averageRange} on this dimension
+              </p>
+            )}
           </div>
+
+          {/* Interpretation */}
           <p className="text-sm text-text-secondary leading-relaxed mb-3">
-            {desc}
+            {coaching.interpretation || desc}
           </p>
+
+          {/* In practice */}
+          {coaching.inPractice && (
+            <div className="mb-3">
+              <p className="text-xs font-semibold text-text-primary mb-1">In practice, this means:</p>
+              <p className="text-xs text-text-secondary leading-relaxed">
+                {coaching.inPractice}
+              </p>
+            </div>
+          )}
+
+          {/* Portfolio implication */}
           <div
-            className="text-xs rounded-lg p-2.5 border"
+            className="text-xs rounded-lg p-2.5 border mb-3"
             style={{
               borderColor: `${accentColor ?? color}30`,
               backgroundColor: `${accentColor ?? color}08`,
@@ -227,8 +249,37 @@ export function DimensionDetail({
             <span className="font-semibold" style={{ color: accentColor ?? color }}>
               Portfolio implication:
             </span>{" "}
-            <span className="text-text-secondary">{implication}</span>
+            <span className="text-text-secondary">
+              {coaching.portfolioImplication || (isHigh ? PORTFOLIO_IMPLICATIONS[dimKey].high : PORTFOLIO_IMPLICATIONS[dimKey].low)}
+            </span>
           </div>
+
+          {/* Watch out */}
+          {coaching.watchOut && (
+            <div className="flex items-start gap-2 text-xs mb-3">
+              <AlertTriangle className="w-3.5 h-3.5 text-gold flex-shrink-0 mt-0.5" />
+              <div>
+                <span className="font-semibold text-gold">Watch out: </span>
+                <span className="text-text-secondary">{coaching.watchOut}</span>
+              </div>
+            </div>
+          )}
+
+          {/* Coaching tip */}
+          {coaching.tip && (
+            <div
+              className="text-xs rounded-lg p-2.5 border"
+              style={{
+                borderColor: `${accentColor ?? color}20`,
+                backgroundColor: `${accentColor ?? color}05`,
+              }}
+            >
+              <span className="font-semibold" style={{ color: accentColor ?? color }}>
+                Tip:
+              </span>{" "}
+              <span className="text-text-secondary">{coaching.tip}</span>
+            </div>
+          )}
         </div>
       )}
     </div>
@@ -239,32 +290,88 @@ export function DimensionDetail({
 // BiasCard
 // ---------------------------------------------------------------------------
 
-export function BiasCard({ bias }: { bias: BiasFlag }) {
+export function BiasCard({
+  bias,
+  archetypeKey,
+}: {
+  bias: BiasFlag;
+  archetypeKey?: ArchetypeKey;
+}) {
+  const [expanded, setExpanded] = useState(false);
   if (bias.severity === 0) return null;
 
   const severityLabel =
     bias.severity >= 3 ? "High" : bias.severity >= 2 ? "Moderate" : "Low";
   const severityColor =
     bias.severity >= 3 ? "#FF5252" : bias.severity >= 2 ? "#FFD740" : "#A0A0A0";
+  const education = BIAS_EDUCATION[bias.bias];
 
   return (
-    <div className="flex items-start gap-3 bg-surface-alt rounded-lg p-3">
-      <AlertTriangle
-        className="w-4 h-4 flex-shrink-0 mt-0.5"
-        style={{ color: severityColor }}
-      />
-      <div className="min-w-0">
-        <div className="flex items-center gap-2 mb-0.5">
-          <span className="text-sm font-medium">{bias.label}</span>
-          <span
-            className="text-[10px] font-mono px-1.5 py-0.5 rounded"
-            style={{ color: severityColor, backgroundColor: `${severityColor}15` }}
-          >
-            {severityLabel}
-          </span>
+    <div className="bg-surface-alt rounded-lg overflow-hidden">
+      <button
+        onClick={() => setExpanded(!expanded)}
+        className="w-full flex items-start gap-3 p-3 hover:bg-surface-hover transition-colors text-left"
+      >
+        <AlertTriangle
+          className="w-4 h-4 flex-shrink-0 mt-0.5"
+          style={{ color: severityColor }}
+        />
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-2 mb-0.5">
+            <span className="text-sm font-medium">{bias.label}</span>
+            <span
+              className="text-[10px] font-mono px-1.5 py-0.5 rounded"
+              style={{ color: severityColor, backgroundColor: `${severityColor}15` }}
+            >
+              {severityLabel}
+            </span>
+          </div>
+          <p className="text-xs text-text-muted">{bias.behavioral_signature}</p>
         </div>
-        <p className="text-xs text-text-muted">{bias.behavioral_signature}</p>
-      </div>
+        {education && (
+          expanded ? (
+            <ChevronUp className="w-3.5 h-3.5 text-text-muted flex-shrink-0 mt-1" />
+          ) : (
+            <ChevronDown className="w-3.5 h-3.5 text-text-muted flex-shrink-0 mt-1" />
+          )
+        )}
+      </button>
+      {expanded && education && (
+        <div className="px-3 pb-3 pt-0 border-t border-border/50 animate-fade-in">
+          <div className="mt-3 space-y-2.5">
+            {/* Definition */}
+            <p className="text-xs text-text-secondary leading-relaxed">
+              {education.definition}
+            </p>
+
+            {/* Real world example */}
+            <div className="text-xs text-text-secondary bg-surface rounded-lg p-2.5 border border-border/50">
+              <span className="font-semibold text-text-primary">Sound familiar? </span>
+              {education.realWorldExample}
+            </div>
+
+            {/* Archetype-specific interaction */}
+            {archetypeKey && education.archetypeInteraction[archetypeKey] && (
+              <div className="text-xs text-text-secondary bg-surface rounded-lg p-2.5 border border-border/50">
+                <span className="font-semibold text-text-primary">How this affects your type: </span>
+                {education.archetypeInteraction[archetypeKey]}
+              </div>
+            )}
+
+            {/* Countermeasure */}
+            <div
+              className="text-xs rounded-lg p-2.5 border"
+              style={{
+                borderColor: "#00C85330",
+                backgroundColor: "#00C85308",
+              }}
+            >
+              <span className="font-semibold text-green">Countermeasure: </span>
+              <span className="text-text-secondary">{education.countermeasure}</span>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -363,6 +470,9 @@ export function CommunicationStyle({
   const archetype = ARCHETYPE_INFO[archetypeKey as keyof typeof ARCHETYPE_INFO];
   if (!archetype) return null;
 
+  const content = ARCHETYPE_CONTENT[archetypeKey as ArchetypeKey];
+  const starters = content?.advisorStarters ?? [];
+
   return (
     <div className="bg-surface border border-border rounded-xl p-5">
       <h3 className="text-sm font-semibold uppercase tracking-wider text-text-muted mb-3">
@@ -374,7 +484,7 @@ export function CommunicationStyle({
         </span>
       </p>
       <p
-        className="text-sm text-text-secondary rounded-lg p-3 italic border"
+        className="text-sm text-text-secondary rounded-lg p-3 italic border mb-4"
         style={{
           borderColor: `${accentColor ?? "#00C853"}20`,
           backgroundColor: `${accentColor ?? "#00C853"}08`,
@@ -382,6 +492,30 @@ export function CommunicationStyle({
       >
         {archetype.communicationRule}
       </p>
+
+      {starters.length > 0 && (
+        <div>
+          <p className="text-xs font-semibold text-text-primary mb-2">
+            Conversation starters for your advisor:
+          </p>
+          <div className="space-y-2">
+            {starters.map((starter, i) => (
+              <div
+                key={i}
+                className="text-xs text-text-secondary bg-surface-alt rounded-lg p-2.5 flex items-start gap-2"
+              >
+                <span
+                  className="font-mono font-bold flex-shrink-0 mt-px"
+                  style={{ color: accentColor ?? "#00C853" }}
+                >
+                  {i + 1}.
+                </span>
+                <span>&ldquo;{starter}&rdquo;</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

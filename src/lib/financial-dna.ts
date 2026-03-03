@@ -1,4 +1,4 @@
-// Financial DNA Assessment -- 25-question behavioral intelligence engine
+// Investor Identity Assessment -- 25-question behavioral intelligence engine
 // Grounded in prospect theory, disposition effect, myopic loss aversion
 // Each answer updates multiple weighted behavioral vectors simultaneously
 

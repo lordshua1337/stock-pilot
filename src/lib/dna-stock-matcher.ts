@@ -1,4 +1,4 @@
-// DNA Stock Matcher -- scores stocks against a user's Financial DNA profile
+// Stock Matcher -- scores stocks against a user's Investor Identity profile
 // Uses dimension scores to weight beta preference, dividend preference,
 // AI score, sector diversity, and analyst sentiment
 

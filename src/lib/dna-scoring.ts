@@ -1,4 +1,4 @@
-// Financial DNA Scoring Engine
+// Investor Identity Scoring Engine
 // Dimension normalization, bias accumulators, confidence scoring,
 // market mood computation, archetype classification, micro-module triggers
 
@@ -231,82 +231,82 @@ export const ARCHETYPE_INFO: Record<
   }
 > = {
   systems_builder: {
-    name: "The Systems Builder",
-    tagline: "Rules over instinct, process over impulse",
+    name: "The Money Architect",
+    tagline: "Build the system. Let it compound.",
     description:
-      "You build frameworks and follow them. Investing for you is a system to optimize, not a game to play. You want rules, automation, and scheduled reviews.",
+      "You don't trade on gut feelings -- you build frameworks and let them run. Investing for you is an engineering problem: design the rules, automate the execution, and review the system on a schedule. While others react to headlines, you're optimizing the machine.",
     communicationRule:
       "Lead with structure. Offer rule-based frameworks. Skip motivational framing.",
   },
   reassurance_seeker: {
-    name: "The Reassurance Seeker",
-    tagline: "Validate first, analyze second",
+    name: "The Steady Hand",
+    tagline: "Confidence is built, not borrowed.",
     description:
-      "You need to feel heard before you can act. Market uncertainty creates anxiety that can paralyze your decision-making until someone confirms you're on the right track.",
+      "You need solid ground before you move. Market uncertainty creates real anxiety, and you won't commit capital until you feel validated that your thesis holds up. This isn't weakness -- it's the instinct that keeps you from blowing up your portfolio on impulse.",
     communicationRule:
       "Validate before analyzing. Normalize uncertainty before risks. Never lead with loss numbers.",
   },
   analytical_skeptic: {
-    name: "The Analytical Skeptic",
-    tagline: "Show me the data, not the story",
+    name: "The Market Surgeon",
+    tagline: "Cut through the noise. Trust the data.",
     description:
-      "You question everything and trust evidence over opinion. You need to see the methodology behind any recommendation before you'll consider it.",
+      "You question everything Wall Street tells you. Earnings calls, analyst ratings, talking heads -- none of it matters until you've seen the raw numbers yourself. You need methodology, not marketing. Evidence, not enthusiasm.",
     communicationRule:
       "Lead with data and sources. Cite everything. Skip emotional reassurance.",
   },
   diy_controller: {
-    name: "The DIY Controller",
-    tagline: "My money, my rules",
+    name: "The Lone Wolf",
+    tagline: "My portfolio, my rules.",
     description:
-      "You want to be in the driver's seat. You're not looking for someone to tell you what to do -- you want the best tools and information to make your own calls.",
+      "You don't need a financial advisor to hold your hand. You want the best tools, the best data, and the freedom to make your own calls. Nobody else is going to care about your money as much as you do -- and you know it.",
     communicationRule:
       "Provide information efficiently. Do not guide or over-explain. Present options, not recommendations.",
   },
   collaborative_partner: {
-    name: "The Collaborative Partner",
-    tagline: "Think with me, not for me",
+    name: "The War Room Strategist",
+    tagline: "The best trades start with the best conversations.",
     description:
-      "You want a thought partner who explores ideas alongside you. The best outcomes come from dialogue, not directives.",
+      "You don't want someone to tell you what to buy. You want a thought partner who will stress-test your ideas, challenge your assumptions, and help you see angles you missed. Your edge comes from dialogue, not directives.",
     communicationRule:
       "Think out loud. Invite user into reasoning. Ask clarifying questions.",
   },
   big_picture_optimist: {
-    name: "The Big Picture Optimist",
-    tagline: "Zoom out, stay the course",
+    name: "The Marathon Capitalist",
+    tagline: "Time in the market beats timing the market.",
     description:
-      "You see the long arc. Short-term noise is just that -- noise. You trust that markets reward patience and that time in the market beats timing the market.",
+      "You see what others can't: the long arc. While everyone panics over quarterly earnings, you're thinking about where the world will be in 2035. Short-term noise is just that -- noise. You trust compounding, you trust patience, and you trust the math.",
     communicationRule:
       "Frame in terms of long-term trajectory. Minimize near-term noise.",
   },
   trend_sensitive_explorer: {
-    name: "The Trend Explorer",
-    tagline: "What's next? What's now?",
+    name: "The Wave Rider",
+    tagline: "Catch the momentum. Ride it out.",
     description:
-      "You're drawn to what's moving. Momentum, trends, and social signals pull your attention. You're not afraid to act fast when you see opportunity.",
+      "You're drawn to what's moving. Momentum, trends, social signals, sector rotations -- you see opportunity where others see chaos. You're not afraid to act fast when the wave is forming, but you need to watch for the undertow.",
     communicationRule:
       "Add friction before trend-following. Surface the bear case first for trend plays.",
   },
   avoider_under_stress: {
-    name: "The Stress Avoider",
-    tagline: "When in doubt, freeze",
+    name: "The Vault Keeper",
+    tagline: "Protect the capital. Weather the storm.",
     description:
-      "Under pressure, you tend to avoid decisions entirely. It's not laziness -- it's self-protection. But avoidance has its own costs.",
+      "When markets get ugly, your first instinct is to lock the vault and wait it out. This isn't cowardice -- it's self-preservation. But sitting on the sidelines during a recovery has its own costs. Your challenge: knowing when safety becomes stagnation.",
     communicationRule:
       "Reduce decision complexity. Offer one clear action. Don't present multiple options during stress.",
   },
   action_first_decider: {
-    name: "The Action-First Decider",
-    tagline: "Move fast, adjust later",
+    name: "The First Mover",
+    tagline: "Speed is the edge. Hesitation is the cost.",
     description:
-      "You'd rather act and course-correct than deliberate and miss the window. Speed feels like an advantage, but it can also create unnecessary risk.",
+      "You'd rather act and course-correct than deliberate and miss the window. While others are still reading the earnings report, you've already placed the trade. Speed feels like an advantage -- and sometimes it is. But every fast move needs a faster exit plan.",
     communicationRule:
       "Add explicit decision buffer recommendation. Surface risk before speed.",
   },
   values_anchored_steward: {
-    name: "The Values-Anchored Steward",
-    tagline: "Money is a tool, not the goal",
+    name: "The Legacy Builder",
+    tagline: "Wealth is what you leave behind.",
     description:
-      "Your financial decisions are grounded in purpose. You invest for what money enables -- security, freedom, legacy -- not for the thrill of returns.",
+      "Your financial decisions are grounded in something bigger than returns. Security, freedom, legacy, impact -- money is the tool, never the goal. You invest with purpose, and that purpose makes you more disciplined than most people who chase numbers.",
     communicationRule:
       "Frame everything in terms of their stated goals. Reference their purpose.",
   },

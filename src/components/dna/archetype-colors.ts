@@ -19,14 +19,14 @@ export const ARCHETYPE_COLORS: Record<ArchetypeKey, string> = {
 // Archetype icons -- mapped from lucide icon names
 // Used in hero card and PDF cover
 export const ARCHETYPE_ICONS: Record<ArchetypeKey, string> = {
-  systems_builder: "Cpu",
-  reassurance_seeker: "ShieldCheck",
-  analytical_skeptic: "Search",
-  diy_controller: "Wrench",
-  collaborative_partner: "Users",
-  big_picture_optimist: "Telescope",
-  trend_sensitive_explorer: "TrendingUp",
-  avoider_under_stress: "Pause",
+  systems_builder: "Building2",
+  reassurance_seeker: "Anchor",
+  analytical_skeptic: "Microscope",
+  diy_controller: "Crosshair",
+  collaborative_partner: "Swords",
+  big_picture_optimist: "Timer",
+  trend_sensitive_explorer: "Waves",
+  avoider_under_stress: "Lock",
   action_first_decider: "Zap",
-  values_anchored_steward: "Heart",
+  values_anchored_steward: "Crown",
 };

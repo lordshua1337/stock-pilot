@@ -442,7 +442,7 @@ export function generateStockInsight(stock: Stock): StockInsight {
 
 // ---------------------------------------------------------------------------
 // DNA Personalization Layer
-// Wraps stock insights with behavioral context from the user's Financial DNA
+// Wraps stock insights with behavioral context from the user's Investor Identity
 // ---------------------------------------------------------------------------
 
 export interface DNAPersonalization {

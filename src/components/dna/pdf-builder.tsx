@@ -518,7 +518,7 @@ function buildPdfDocument(
   cover.innerHTML = `
     <div class="dnapd-cover-inner">
       <div class="dnapd-cover-logo">STOCKPILOT</div>
-      <div class="dnapd-cover-title">Financial DNA Assessment</div>
+      <div class="dnapd-cover-title">Investor Identity Assessment</div>
       <div class="dnapd-cover-archetype">${archetypeName}</div>
       <div class="dnapd-cover-tagline">"${tagline}"</div>
       <div class="dnapd-cover-meta">${dateStr} &nbsp;&bull;&nbsp; Confidence: ${profile.confidence.overall}%</div>
@@ -550,7 +550,7 @@ function buildPdfDocument(
 
   page1.innerHTML = `
     <div class="dnapd-section-title" style="color:${accentColor}">Profile Overview</div>
-    <div class="dnapd-heading">Your Financial DNA</div>
+    <div class="dnapd-heading">Your Investor Identity</div>
     ${buildRadarSVG(dims, accentColor)}
     <div style="height:20px"></div>
     <div class="dnapd-dim-grid">${dimCards}</div>
@@ -706,7 +706,7 @@ async function generatePdf(profile: StoredDNAProfile, accentColor: string): Prom
     await html2pdf()
       .set({
         margin: 0,
-        filename: `financial-dna-${dateSlug}.pdf`,
+        filename: `investor-identity-${dateSlug}.pdf`,
         image: { type: "jpeg", quality: 0.98 },
         html2canvas: {
           scale: 2,

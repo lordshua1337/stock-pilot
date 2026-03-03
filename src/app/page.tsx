@@ -329,10 +329,10 @@ export default function HomePage() {
               <div className="w-10 h-10 rounded-lg bg-green-bg flex items-center justify-center mb-4">
                 <Brain className="w-5 h-5 text-green" />
               </div>
-              <h3 className="text-base font-semibold mb-2">Investor DNA</h3>
+              <h3 className="text-base font-semibold mb-2">Investor Identity</h3>
               <p className="text-sm text-text-secondary leading-relaxed">
-                20 questions to discover your investor personality type.
-                6 archetypes. 3 minutes.
+                44 triads to discover your investor personality type.
+                10 archetypes. 10 minutes.
               </p>
               <span className="text-green text-xs font-medium mt-2 inline-flex items-center gap-1 group-hover:gap-2 transition-all">
                 Take the Quiz <ArrowRight className="w-3 h-3" />

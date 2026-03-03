@@ -51,9 +51,9 @@ const STEPS: Step[] = [
   },
   {
     icon: <Brain className="w-8 h-8 text-green" />,
-    title: "Financial DNA Quiz",
+    title: "Investor Identity Quiz",
     description:
-      "20 questions, 3 minutes. Discover which of 6 investor personality types fits you -- from Steady Sentinel to Visionary Vanguard. Get stock picks and strategies matched to your type.",
+      "44 triads, 10 minutes. Discover which of 10 investor personality types fits you -- from The Money Architect to The Wave Rider. Get stock picks and strategies matched to your type.",
     link: { href: "/personality", label: "Take the Quiz" },
   },
 ];
