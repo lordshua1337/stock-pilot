@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { stocks, sectors, getSectorMetrics } from "@/lib/stock-data";
 import { BenchmarkTape } from "@/components/benchmark-tape";
+import { HeroChartBg } from "@/components/hero-chart-bg";
 import GettingStarted from "@/components/getting-started";
 
 function StockRow({ stock }: { stock: (typeof stocks)[0] }) {
@@ -107,8 +108,9 @@ export default function HomePage() {
       <GettingStarted />
 
       {/* Hero */}
-      <section className="pt-28 pb-16 px-4">
-        <div className="max-w-4xl mx-auto text-center">
+      <section className="relative pt-28 pb-16 px-4 overflow-hidden">
+        <HeroChartBg />
+        <div className="max-w-4xl mx-auto text-center relative z-10">
           <div className="inline-flex items-center gap-2 bg-green-bg text-green px-3 py-1 rounded-full text-xs font-medium mb-6">
             <Zap className="w-3.5 h-3.5" />
             AI-Powered Research
