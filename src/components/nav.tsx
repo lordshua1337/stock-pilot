@@ -10,6 +10,7 @@ const links = [
   { href: "/research", label: "Research" },
   { href: "/sectors", label: "Sectors" },
   { href: "/compare", label: "Compare" },
+  { href: "/pipeline", label: "Pipeline" },
   { href: "/watchlist", label: "Watchlist" },
   { href: "/personality", label: "Identity" },
 ];
