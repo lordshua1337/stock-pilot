@@ -77,7 +77,7 @@ export default function FlightPlanPage() {
         <h1 className="text-3xl font-bold text-white mb-3">Flight Plan</h1>
         <p className="text-zinc-400 mb-6">
           Your daily personalized action items. Sign in to unlock AI-powered recommendations
-          tailored to your Financial DNA archetype.
+          tailored to your Investor Identity archetype.
         </p>
         <Link href="/auth"
           className="inline-flex items-center gap-2 px-6 py-3 bg-[#00C853] text-black font-semibold rounded-lg hover:bg-[#00E676] transition-colors">
