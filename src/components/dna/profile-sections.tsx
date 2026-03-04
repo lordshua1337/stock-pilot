@@ -521,7 +521,136 @@ export function CommunicationStyle({
 }
 
 // ---------------------------------------------------------------------------
-// StrengthsVulnerabilities -- side-by-side cards
+// Strength leverage tips (keyed by text prefix from dim-based generation)
+// ---------------------------------------------------------------------------
+
+const STRENGTH_LEVERAGE: Record<string, { leverage: string; example: string }> = {
+  "Comfortable with market volatility": {
+    leverage: "Use your calm during downturns to dollar-cost average when others are panicking. Your ability to stay rational under pressure is a genuine competitive edge.",
+    example: "Next time markets drop 5%+, instead of watching from the sidelines, review your watchlist for buying opportunities you've pre-identified.",
+  },
+  "Strong decision-making autonomy": {
+    leverage: "Channel your independence into deep research rather than quick decisions. Your best moves come from conviction backed by evidence, not speed.",
+    example: "Before your next trade, write a one-paragraph thesis explaining your reasoning. If you can't, the conviction isn't real yet.",
+  },
+  "Natural long-term thinker": {
+    leverage: "Maximize your time horizon advantage by focusing on companies with strong compounding characteristics. Patience is the rarest edge in investing.",
+    example: "Set a calendar reminder to review your portfolio only quarterly. Between reviews, redirect urges to trade into research instead.",
+  },
+  "Disciplined execution": {
+    leverage: "Build on your consistency by creating a written investment policy statement (IPS). Your follow-through turns plans into results faster than most investors.",
+    example: "This week, write down your 3 core investing rules. Post them where you trade. Your discipline makes rules more powerful than algorithms.",
+  },
+  "Emotionally regulated": {
+    leverage: "Use your emotional steadiness to be the last one out during corrections. While others panic-sell, your composure lets you buy quality assets at discounts.",
+    example: "Keep a 'buy list' of stocks you'd love to own at lower prices. When a correction hits, you'll act while others freeze.",
+  },
+  "Self-awareness": {
+    leverage: "Your willingness to assess yourself honestly puts you ahead of most investors. Turn that self-awareness into a journaling habit to track your decisions.",
+    example: "Start a simple trade journal: what you bought/sold, why, and how you felt. Review it monthly to spot patterns.",
+  },
+};
+
+const VULN_MANAGEMENT: Record<string, { manage: string; example: string }> = {
+  "Loss sensitivity may cause": {
+    manage: "Pre-commit to holding periods and exit rules before entering positions. When the urge to sell hits during a dip, your written rules override your emotions.",
+    example: "Next time you feel the urge to sell a falling stock, pull up your original thesis. If nothing fundamental changed, close the app and wait 48 hours.",
+  },
+  "You may over-rely on others": {
+    manage: "Limit your information sources to 2-3 trusted ones. Write down your own analysis before reading anyone else's take to avoid being anchored by external opinions.",
+    example: "Before your next investment decision, write your thesis independently. Only then read analysts' views to check your blind spots.",
+  },
+  "Short-term focus can lead": {
+    manage: "Visualize your compound growth trajectory with a calculator. Seeing the exponential curve makes short-term patience feel like an investment, not a sacrifice.",
+    example: "Set up auto-invest contributions so the decision is made once. Your short-term brain doesn't get a vote on the long-term plan.",
+  },
+  "Without structured habits": {
+    manage: "Externalize your discipline through automation and calendar reminders. The less willpower required, the more consistent you'll become.",
+    example: "This week, automate at least one financial habit: DCA contribution, portfolio check schedule, or rebalancing alert.",
+  },
+  "Emotional reactivity during": {
+    manage: "Create a 'crisis protocol' now while you're calm: specific rules for what you'll do when markets drop 10%, 20%, 30%. Pre-made decisions beat in-the-moment reactions.",
+    example: "Write a sticky note with one rule: 'I do not sell during a market drop. I follow my plan.' Put it on your monitor.",
+  },
+  "No critical vulnerabilities": {
+    manage: "Your balanced profile is strong, but complacency itself is a risk. Schedule quarterly self-assessments to ensure you stay sharp.",
+    example: "Set a recurring calendar event to retake this assessment every quarter and compare your scores over time.",
+  },
+};
+
+function findCoaching(text: string, map: Record<string, { leverage?: string; manage?: string; example: string }>): { tip: string; example: string } | null {
+  for (const [prefix, coaching] of Object.entries(map)) {
+    if (text.startsWith(prefix)) {
+      return {
+        tip: ("leverage" in coaching ? coaching.leverage : coaching.manage) ?? "",
+        example: coaching.example,
+      };
+    }
+  }
+  return null;
+}
+
+// ---------------------------------------------------------------------------
+// Expandable strength/vulnerability item
+// ---------------------------------------------------------------------------
+
+function ExpandableItem({
+  text,
+  tipLabel,
+  tip,
+  example,
+  bulletColor,
+  bulletChar,
+}: {
+  text: string;
+  tipLabel: string;
+  tip: string | null;
+  example: string | null;
+  bulletColor: string;
+  bulletChar: string;
+}) {
+  const [expanded, setExpanded] = useState(false);
+  const hasContent = tip || example;
+
+  return (
+    <li className="text-sm text-text-secondary">
+      <button
+        onClick={() => hasContent && setExpanded(!expanded)}
+        className={`flex items-start gap-2 text-left w-full ${hasContent ? "cursor-pointer" : ""}`}
+      >
+        <span className="mt-0.5 flex-shrink-0" style={{ color: bulletColor }}>
+          {bulletChar}
+        </span>
+        <span className="flex-1">{text}</span>
+        {hasContent && (
+          expanded ? (
+            <ChevronUp className="w-3.5 h-3.5 text-text-muted flex-shrink-0 mt-1" />
+          ) : (
+            <ChevronDown className="w-3.5 h-3.5 text-text-muted flex-shrink-0 mt-1" />
+          )
+        )}
+      </button>
+      {expanded && (tip || example) && (
+        <div className="ml-5 mt-2 space-y-2 animate-fade-in">
+          {tip && (
+            <p className="text-xs text-text-secondary leading-relaxed">
+              <span className="font-semibold" style={{ color: bulletColor }}>{tipLabel}: </span>
+              {tip}
+            </p>
+          )}
+          {example && (
+            <p className="text-xs text-text-muted bg-surface-alt rounded-lg p-2.5 leading-relaxed italic">
+              {example}
+            </p>
+          )}
+        </div>
+      )}
+    </li>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// StrengthsVulnerabilities -- expandable cards with coaching
 // ---------------------------------------------------------------------------
 
 export function StrengthsVulnerabilities({
@@ -533,28 +662,33 @@ export function StrengthsVulnerabilities({
   vulnerabilities: string[];
   accentColor?: string;
 }) {
+  const color = accentColor ?? "#00C853";
+
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
       <div className="bg-surface border border-border rounded-xl p-5">
         <h3
           className="text-sm font-semibold uppercase tracking-wider mb-3 flex items-center gap-2"
-          style={{ color: accentColor ?? "#00C853" }}
+          style={{ color }}
         >
           <CheckCircle className="w-4 h-4" />
           Strengths
         </h3>
         <ul className="space-y-2">
-          {strengths.map((s, i) => (
-            <li key={i} className="text-sm text-text-secondary flex items-start gap-2">
-              <span
-                className="mt-0.5 flex-shrink-0"
-                style={{ color: accentColor ?? "#00C853" }}
-              >
-                +
-              </span>
-              {s}
-            </li>
-          ))}
+          {strengths.map((s, i) => {
+            const coaching = findCoaching(s, STRENGTH_LEVERAGE);
+            return (
+              <ExpandableItem
+                key={i}
+                text={s}
+                tipLabel="How to leverage this"
+                tip={coaching?.tip ?? null}
+                example={coaching?.example ?? null}
+                bulletColor={color}
+                bulletChar="+"
+              />
+            );
+          })}
         </ul>
       </div>
       <div className="bg-surface border border-border rounded-xl p-5">
@@ -563,12 +697,20 @@ export function StrengthsVulnerabilities({
           Vulnerabilities
         </h3>
         <ul className="space-y-2">
-          {vulnerabilities.map((s, i) => (
-            <li key={i} className="text-sm text-text-secondary flex items-start gap-2">
-              <span className="text-gold mt-0.5 flex-shrink-0">!</span>
-              {s}
-            </li>
-          ))}
+          {vulnerabilities.map((s, i) => {
+            const coaching = findCoaching(s, VULN_MANAGEMENT);
+            return (
+              <ExpandableItem
+                key={i}
+                text={s}
+                tipLabel="How to manage this"
+                tip={coaching?.tip ?? null}
+                example={coaching?.example ?? null}
+                bulletColor="#FFD740"
+                bulletChar="!"
+              />
+            );
+          })}
         </ul>
       </div>
     </div>
