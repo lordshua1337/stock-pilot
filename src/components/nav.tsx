@@ -14,6 +14,8 @@ const links = [
   { href: "/simulator", label: "Simulator" },
   { href: "/earnings", label: "Earnings" },
   { href: "/risk", label: "Risk" },
+  { href: "/screener", label: "Screener" },
+  { href: "/briefing", label: "Briefing" },
   { href: "/watchlist", label: "Watchlist" },
   { href: "/invest", label: "Invest" },
   { href: "/personality", label: "Identity" },
