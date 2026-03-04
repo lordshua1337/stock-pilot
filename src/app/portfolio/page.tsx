@@ -14,6 +14,10 @@ import {
   Lock,
   Coins,
   Scale,
+  Grid3X3,
+  GitBranch,
+  RefreshCw,
+  Dna,
 } from "lucide-react";
 import { stocks, type Stock } from "@/lib/stock-data";
 import {
@@ -31,6 +35,10 @@ import { ScenariosTab } from "./_components/scenarios-tab";
 import { ReportTab } from "./_components/report-tab";
 import { DividendTab } from "./_components/dividend-tab";
 import { BenchmarkTab } from "./_components/benchmark-tab";
+import { HeatmapTab } from "./_components/heatmap-tab";
+import { CorrelationTab } from "./_components/correlation-tab";
+import { RebalanceTab } from "./_components/rebalance-tab";
+import { AlignmentTab } from "./_components/alignment-tab";
 import { BiasNudgeBanner } from "@/components/bias-nudge-banner";
 import { ConfirmationModal } from "./_components/confirmation-modal";
 
@@ -41,7 +49,7 @@ export interface PortfolioItem {
   allocation: number; // percentage 1-50
 }
 
-type TabId = "build" | "simulate" | "insights" | "scenarios" | "report" | "dividends" | "benchmark";
+type TabId = "build" | "simulate" | "insights" | "scenarios" | "report" | "dividends" | "benchmark" | "heatmap" | "correlation" | "rebalance" | "alignment";
 
 interface TabDef {
   id: TabId;
@@ -60,6 +68,10 @@ const TABS: TabDef[] = [
   { id: "report", label: "Report", icon: <FileText className="w-4 h-4" />, minStocks: 3 },
   { id: "dividends", label: "Dividends", icon: <Coins className="w-4 h-4" />, minStocks: 2 },
   { id: "benchmark", label: "Benchmark", icon: <Scale className="w-4 h-4" />, minStocks: 3 },
+  { id: "heatmap", label: "Heatmap", icon: <Grid3X3 className="w-4 h-4" />, minStocks: 4 },
+  { id: "correlation", label: "Correlation", icon: <GitBranch className="w-4 h-4" />, minStocks: 4 },
+  { id: "rebalance", label: "Rebalance", icon: <RefreshCw className="w-4 h-4" />, minStocks: 3 },
+  { id: "alignment", label: "DNA Fit", icon: <Dna className="w-4 h-4" />, minStocks: 3 },
 ];
 
 const INVESTMENT_PILLS = [1000, 5000, 10000, 25000, 50000, 100000];
@@ -351,6 +363,34 @@ export default function PortfolioPage() {
             )}
             {activeTab === "benchmark" && (
               <BenchmarkTab
+                portfolio={portfolio}
+                portfolioStocks={portfolioStocks}
+                totalInvestment={totalInvestment}
+              />
+            )}
+            {activeTab === "heatmap" && (
+              <HeatmapTab
+                portfolio={portfolio}
+                portfolioStocks={portfolioStocks}
+                totalInvestment={totalInvestment}
+              />
+            )}
+            {activeTab === "correlation" && (
+              <CorrelationTab
+                portfolio={portfolio}
+                portfolioStocks={portfolioStocks}
+                totalInvestment={totalInvestment}
+              />
+            )}
+            {activeTab === "rebalance" && (
+              <RebalanceTab
+                portfolio={portfolio}
+                portfolioStocks={portfolioStocks}
+                totalInvestment={totalInvestment}
+              />
+            )}
+            {activeTab === "alignment" && (
+              <AlignmentTab
                 portfolio={portfolio}
                 portfolioStocks={portfolioStocks}
                 totalInvestment={totalInvestment}
