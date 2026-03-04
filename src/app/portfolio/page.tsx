@@ -12,6 +12,8 @@ import {
   Shield,
   FileText,
   Lock,
+  Coins,
+  Scale,
 } from "lucide-react";
 import { stocks, type Stock } from "@/lib/stock-data";
 import {
@@ -27,6 +29,8 @@ import { SimulateTab } from "./_components/simulate-tab";
 import { InsightsTab } from "./_components/insights-tab";
 import { ScenariosTab } from "./_components/scenarios-tab";
 import { ReportTab } from "./_components/report-tab";
+import { DividendTab } from "./_components/dividend-tab";
+import { BenchmarkTab } from "./_components/benchmark-tab";
 import { ConfirmationModal } from "./_components/confirmation-modal";
 
 // ─── Types ─────────────────────────────────────────────────────────────
@@ -36,7 +40,7 @@ export interface PortfolioItem {
   allocation: number; // percentage 1-50
 }
 
-type TabId = "build" | "simulate" | "insights" | "scenarios" | "report";
+type TabId = "build" | "simulate" | "insights" | "scenarios" | "report" | "dividends" | "benchmark";
 
 interface TabDef {
   id: TabId;
@@ -53,6 +57,8 @@ const TABS: TabDef[] = [
   { id: "insights", label: "Insights", icon: <Lightbulb className="w-4 h-4" />, minStocks: 2 },
   { id: "scenarios", label: "Scenarios", icon: <Shield className="w-4 h-4" />, minStocks: 3 },
   { id: "report", label: "Report", icon: <FileText className="w-4 h-4" />, minStocks: 3 },
+  { id: "dividends", label: "Dividends", icon: <Coins className="w-4 h-4" />, minStocks: 2 },
+  { id: "benchmark", label: "Benchmark", icon: <Scale className="w-4 h-4" />, minStocks: 3 },
 ];
 
 const INVESTMENT_PILLS = [1000, 5000, 10000, 25000, 50000, 100000];
@@ -330,6 +336,20 @@ export default function PortfolioPage() {
                 totalInvestment={totalInvestment}
                 signals={signals}
                 signalMap={signalMap}
+              />
+            )}
+            {activeTab === "dividends" && (
+              <DividendTab
+                portfolio={portfolio}
+                portfolioStocks={portfolioStocks}
+                totalInvestment={totalInvestment}
+              />
+            )}
+            {activeTab === "benchmark" && (
+              <BenchmarkTab
+                portfolio={portfolio}
+                portfolioStocks={portfolioStocks}
+                totalInvestment={totalInvestment}
               />
             )}
           </motion.div>

@@ -191,3 +191,22 @@ create table if not exists flight_plans (
 alter table flight_plans enable row level security;
 create policy "Users can manage own flight plans" on flight_plans for all using (auth.uid() = user_id);
 create index idx_flight_plans_user_date on flight_plans(user_id, plan_date);
+
+-- ============================================
+-- ERROR LOGS (API error persistence)
+-- ============================================
+create table if not exists error_logs (
+  id uuid primary key default gen_random_uuid(),
+  route text not null,
+  message text not null,
+  stack text,
+  metadata jsonb default '{}',
+  user_id uuid references auth.users(id) on delete set null,
+  created_at timestamptz default now() not null
+);
+
+-- No RLS -- server-only writes, admin reads
+alter table error_logs enable row level security;
+create policy "Service role can manage error logs" on error_logs for all using (true);
+create index idx_error_logs_route on error_logs(route);
+create index idx_error_logs_created on error_logs(created_at);

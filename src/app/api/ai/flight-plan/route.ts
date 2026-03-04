@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { requireUser } from '@/lib/auth/server'
 import { adminClient } from '@/lib/supabase/client'
 import { generateFlightPlan } from '@/lib/ai/claude'
+import { logError } from '@/lib/error-logger'
 
 export async function GET() {
   try {
@@ -116,6 +117,7 @@ export async function POST() {
     if (message === 'Unauthorized') {
       return NextResponse.json({ error: 'Sign in to generate Flight Plan' }, { status: 401 })
     }
+    logError('/api/ai/flight-plan', error)
     return NextResponse.json({ error: message }, { status: 500 })
   }
 }

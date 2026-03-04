@@ -4,6 +4,7 @@ import { requireUser } from '@/lib/auth/server'
 import { adminClient } from '@/lib/supabase/client'
 import { analyzeStock } from '@/lib/ai/claude'
 import { getOrRefreshPrice } from '@/lib/market-data/cache'
+import { logError } from '@/lib/error-logger'
 
 const ThesisSchema = z.object({
   ticker: z.string().min(1).max(10),
@@ -91,6 +92,7 @@ export async function POST(request: NextRequest) {
     if (message === 'Unauthorized') {
       return NextResponse.json({ error: 'Sign in to use AI analysis' }, { status: 401 })
     }
+    logError('/api/ai/thesis', error, { ticker: 'unknown' })
     return NextResponse.json({ error: message }, { status: 500 })
   }
 }
