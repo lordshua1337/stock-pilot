@@ -13,6 +13,7 @@ const links = [
   { href: "/pipeline", label: "Pipeline" },
   { href: "/simulator", label: "Simulator" },
   { href: "/earnings", label: "Earnings" },
+  { href: "/risk", label: "Risk" },
   { href: "/watchlist", label: "Watchlist" },
   { href: "/personality", label: "Identity" },
 ];
