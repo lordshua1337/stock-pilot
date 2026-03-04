@@ -17,6 +17,7 @@ const links = [
   { href: "/screener", label: "Screener" },
   { href: "/briefing", label: "Briefing" },
   { href: "/watchlist", label: "Watchlist" },
+  { href: "/journal", label: "Journal" },
   { href: "/invest", label: "Invest" },
   { href: "/personality", label: "Identity" },
 ];
