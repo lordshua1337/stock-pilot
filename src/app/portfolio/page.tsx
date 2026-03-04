@@ -31,6 +31,7 @@ import { ScenariosTab } from "./_components/scenarios-tab";
 import { ReportTab } from "./_components/report-tab";
 import { DividendTab } from "./_components/dividend-tab";
 import { BenchmarkTab } from "./_components/benchmark-tab";
+import { BiasNudgeBanner } from "@/components/bias-nudge-banner";
 import { ConfirmationModal } from "./_components/confirmation-modal";
 
 // ─── Types ─────────────────────────────────────────────────────────────
@@ -240,6 +241,9 @@ export default function PortfolioPage() {
             {portfolio.length} position{portfolio.length !== 1 ? "s" : ""} &middot; {formatCurrency(totalInvestment)} invested
           </p>
         </div>
+
+        {/* Bias nudge banner */}
+        <BiasNudgeBanner portfolio={portfolio} />
 
         {/* Tab bar */}
         <div className="flex gap-1 mb-6 border-b border-border overflow-x-auto pb-px">

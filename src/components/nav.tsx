@@ -15,6 +15,7 @@ const links = [
   { href: "/earnings", label: "Earnings" },
   { href: "/risk", label: "Risk" },
   { href: "/watchlist", label: "Watchlist" },
+  { href: "/invest", label: "Invest" },
   { href: "/personality", label: "Identity" },
 ];
 
