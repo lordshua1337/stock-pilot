@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { Nav } from "@/components/nav";
+import { CopilotSidebar } from "@/components/copilot/copilot-sidebar";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -48,6 +49,7 @@ export default function RootLayout({
       >
         <Nav />
         <main>{children}</main>
+        <CopilotSidebar />
       </body>
     </html>
   );

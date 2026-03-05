@@ -3,7 +3,23 @@
 import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { ArrowLeft, ArrowRight, Clock, RefreshCw } from "lucide-react";
+import {
+  ArrowLeft,
+  ArrowRight,
+  Clock,
+  RefreshCw,
+  TrendingUp,
+  TrendingDown,
+  Minus,
+  Award,
+  AlertTriangle,
+  Sprout,
+  Calendar,
+  BookOpen,
+  Activity,
+  Brain,
+  Target,
+} from "lucide-react";
 import {
   getDNAHistory,
   loadDNAProfile,
@@ -12,6 +28,12 @@ import {
 import { ARCHETYPE_INFO } from "@/lib/dna-scoring";
 import { ARCHETYPE_COLORS } from "@/components/dna/archetype-colors";
 import type { ArchetypeKey, CoreDimensions } from "@/lib/financial-dna";
+import {
+  analyzeEvolution,
+  type EvolutionData,
+  type TimeSlice,
+  type Milestone,
+} from "@/lib/ai/evolution-analyzer";
 
 const DIM_LABELS: Record<string, string> = {
   R: "Risk",
@@ -26,11 +48,13 @@ const DIM_KEYS = ["R", "C", "H", "D", "E"] as const;
 export default function EvolutionPage() {
   const [history, setHistory] = useState<DNAHistoryEntry[]>([]);
   const [selectedIdx, setSelectedIdx] = useState<number | null>(null);
+  const [evolutionData, setEvolutionData] = useState<EvolutionData | null>(null);
 
   useEffect(() => {
     const h = getDNAHistory();
     setHistory(h);
     if (h.length > 0) setSelectedIdx(h.length - 1);
+    setEvolutionData(analyzeEvolution());
   }, []);
 
   const currentProfile = useMemo(() => loadDNAProfile(), []);
@@ -226,6 +250,11 @@ export default function EvolutionPage() {
           </div>
         )}
 
+        {/* Behavioral Evolution Section */}
+        {evolutionData && evolutionData.totalEntries > 0 && (
+          <BehavioralEvolutionSection data={evolutionData} />
+        )}
+
         {/* Retake CTA */}
         <div className="mt-8 text-center">
           <Link
@@ -343,6 +372,215 @@ function EvolutionRadar({
           strokeWidth="2"
         />
       </svg>
+    </div>
+  );
+}
+
+// ─── Behavioral Evolution Section ────────────────────────────────────
+
+function BehavioralEvolutionSection({ data }: { data: EvolutionData }) {
+  return (
+    <div className="mt-8 space-y-4">
+      <div className="flex items-center gap-2 mb-2">
+        <Activity className="w-4 h-4 text-green" />
+        <h2 className="text-lg font-semibold">Behavioral Evolution</h2>
+      </div>
+
+      {/* Growth trends */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <BehaviorTrendBadge
+          trend={data.overallGrowth.ruleFollowTrend}
+          label="Rule Following"
+        />
+        <BehaviorTrendBadge
+          trend={data.overallGrowth.calmTradeTrend}
+          label="Emotional Control"
+        />
+        <BehaviorTrendBadge
+          trend={data.overallGrowth.biasAwarenessTrend}
+          label="Bias Awareness"
+        />
+        <div className="bg-surface-alt rounded-xl border border-border p-4">
+          <div className="w-8 h-8 rounded-lg bg-green/10 flex items-center justify-center mb-2">
+            <Target className="w-4 h-4 text-green" />
+          </div>
+          <p className="text-xs text-text-muted mb-0.5">Consistency</p>
+          <p className="text-sm font-semibold text-green">
+            {data.overallGrowth.consistencyScore}/100
+          </p>
+        </div>
+      </div>
+
+      {/* Factor timelines */}
+      {data.timeline.length >= 2 && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <FactorTimelineChart
+            slices={data.timeline}
+            accessor={(s) => s.ruleFollowRate}
+            label="Rule Follow Rate Over Time"
+            color="bg-green"
+          />
+          <FactorTimelineChart
+            slices={data.timeline}
+            accessor={(s) => s.calmTradeRate}
+            label="Calm Trade Rate Over Time"
+            color="bg-blue"
+          />
+        </div>
+      )}
+
+      {/* Journal heatmap */}
+      <JournalHeatmapChart data={data.journalHeatmap} />
+
+      {/* Milestones */}
+      {data.milestones.length > 0 && (
+        <div className="bg-surface-alt rounded-xl border border-border p-4">
+          <h3 className="text-sm font-medium text-text-primary mb-3 flex items-center gap-2">
+            <Award className="w-4 h-4 text-green" />
+            Milestones
+          </h3>
+          <div className="space-y-2">
+            {data.milestones.map((m) => {
+              const iconMap = {
+                achievement: { icon: Award, color: "text-green", bg: "bg-green/10" },
+                concern: { icon: AlertTriangle, color: "text-gold", bg: "bg-gold/10" },
+                growth: { icon: Sprout, color: "text-blue", bg: "bg-blue/10" },
+              };
+              const config = iconMap[m.type];
+              const Icon = config.icon;
+              return (
+                <div key={m.id} className="flex items-start gap-3 bg-surface rounded-lg p-3">
+                  <div className={`w-6 h-6 rounded-lg ${config.bg} flex items-center justify-center shrink-0`}>
+                    <Icon className={`w-3 h-3 ${config.color}`} />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium">{m.title}</p>
+                    <p className="text-xs text-text-muted">{m.description}</p>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* Links */}
+      <div className="flex gap-3">
+        <Link
+          href="/personality/coaching"
+          className="flex-1 bg-surface-alt border border-border rounded-xl p-4 hover:border-green/30 transition-colors"
+        >
+          <Brain className="w-4 h-4 text-green mb-2" />
+          <p className="text-sm font-medium">Coaching Memory</p>
+          <p className="text-xs text-text-muted">What the AI learned</p>
+        </Link>
+        <Link
+          href="/journal"
+          className="flex-1 bg-surface-alt border border-border rounded-xl p-4 hover:border-green/30 transition-colors"
+        >
+          <BookOpen className="w-4 h-4 text-green mb-2" />
+          <p className="text-sm font-medium">Trade Journal</p>
+          <p className="text-xs text-text-muted">Log more decisions</p>
+        </Link>
+      </div>
+    </div>
+  );
+}
+
+function BehaviorTrendBadge({
+  trend,
+  label,
+}: {
+  trend: "improving" | "stable" | "declining";
+  label: string;
+}) {
+  const config = {
+    improving: { icon: TrendingUp, color: "text-green", bg: "bg-green/10" },
+    stable: { icon: Minus, color: "text-blue", bg: "bg-blue/10" },
+    declining: { icon: TrendingDown, color: "text-red", bg: "bg-red/10" },
+  };
+  const c = config[trend];
+  const Icon = c.icon;
+  return (
+    <div className="bg-surface-alt rounded-xl border border-border p-4">
+      <div className={`w-8 h-8 rounded-lg ${c.bg} flex items-center justify-center mb-2`}>
+        <Icon className={`w-4 h-4 ${c.color}`} />
+      </div>
+      <p className="text-xs text-text-muted mb-0.5">{label}</p>
+      <p className={`text-sm font-semibold capitalize ${c.color}`}>{trend}</p>
+    </div>
+  );
+}
+
+function FactorTimelineChart({
+  slices,
+  accessor,
+  label,
+  color,
+}: {
+  slices: readonly TimeSlice[];
+  accessor: (s: TimeSlice) => number;
+  label: string;
+  color: string;
+}) {
+  const recent = slices.slice(-12);
+  const maxVal = Math.max(...recent.map(accessor), 0.01);
+  return (
+    <div className="bg-surface-alt rounded-xl border border-border p-4">
+      <p className="text-xs font-medium mb-3">{label}</p>
+      <div className="flex items-end gap-1 h-16">
+        {recent.map((s) => {
+          const val = accessor(s);
+          const pct = (val / maxVal) * 100;
+          return (
+            <div key={s.period} className="flex-1" title={`${s.period}: ${Math.round(val * 100)}%`}>
+              <div className={`w-full rounded-t ${color}`} style={{ height: `${Math.max(pct, 4)}%` }} />
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function JournalHeatmapChart({ data }: { data: readonly { date: string; count: number }[] }) {
+  const now = new Date();
+  const countMap = new Map(data.map((d) => [d.date, d.count]));
+  const days: { date: string; count: number }[] = [];
+  for (let i = 89; i >= 0; i--) {
+    const d = new Date(now);
+    d.setDate(d.getDate() - i);
+    const key = d.toISOString().slice(0, 10);
+    days.push({ date: key, count: countMap.get(key) ?? 0 });
+  }
+  const maxCount = Math.max(...days.map((d) => d.count), 1);
+  return (
+    <div className="bg-surface-alt rounded-xl border border-border p-4">
+      <p className="text-xs font-medium mb-3 flex items-center gap-2">
+        <Calendar className="w-3.5 h-3.5 text-text-muted" />
+        Journal Activity (90 days)
+      </p>
+      <div className="grid grid-cols-[repeat(15,1fr)] gap-0.5">
+        {days.map((day) => {
+          const intensity = day.count > 0 ? Math.max(0.2, day.count / maxCount) : 0;
+          return (
+            <div
+              key={day.date}
+              className="aspect-square rounded-sm"
+              style={{
+                backgroundColor: day.count > 0
+                  ? `rgba(0, 200, 83, ${intensity})`
+                  : "rgba(255,255,255,0.03)",
+              }}
+              title={`${day.date}: ${day.count} entries`}
+            />
+          );
+        })}
+      </div>
+      <div className="flex justify-between mt-2">
+        <span className="text-[9px] text-text-muted">90 days ago</span>
+        <span className="text-[9px] text-text-muted">Today</span>
+      </div>
     </div>
   );
 }

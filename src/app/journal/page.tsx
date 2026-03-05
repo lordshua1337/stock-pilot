@@ -26,6 +26,7 @@ import {
 import { stocks, type Stock } from "@/lib/stock-data";
 import { loadDNAProfile, type StoredDNAProfile } from "@/lib/dna-storage";
 import { ARCHETYPE_INFO } from "@/lib/dna-scoring";
+import { AIInsightCard } from "@/components/copilot/ai-insight-card";
 import {
   type JournalState,
   type JournalEntry,
@@ -745,6 +746,8 @@ export default function JournalPage() {
           {coaching}
         </p>
       </div>
+
+      <AIInsightCard pageId="journal" className="mb-4" />
 
       {/* Stats grid */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">

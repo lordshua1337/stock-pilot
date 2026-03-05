@@ -210,3 +210,17 @@ alter table error_logs enable row level security;
 create policy "Service role can manage error logs" on error_logs for all using (true);
 create index idx_error_logs_route on error_logs(route);
 create index idx_error_logs_created on error_logs(created_at);
+
+-- ============================================
+-- AI CHAT USAGE (copilot rate limiting)
+-- ============================================
+create table if not exists ai_chat_usage (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null references auth.users(id) on delete cascade,
+  created_at timestamptz default now() not null
+);
+
+alter table ai_chat_usage enable row level security;
+create policy "Users can view own chat usage" on ai_chat_usage for select using (auth.uid() = user_id);
+create policy "Service role can manage chat usage" on ai_chat_usage for insert using (true);
+create index idx_chat_usage_user_date on ai_chat_usage(user_id, created_at);

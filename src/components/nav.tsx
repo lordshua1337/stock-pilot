@@ -19,6 +19,7 @@ const links = [
   { href: "/watchlist", label: "Watchlist" },
   { href: "/journal", label: "Journal" },
   { href: "/invest", label: "Invest" },
+  { href: "/digest", label: "Digest" },
   { href: "/personality", label: "Identity" },
 ];
 

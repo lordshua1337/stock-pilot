@@ -36,6 +36,9 @@ import {
 } from "@/lib/simulator-data";
 import { loadDNAProfile, type StoredDNAProfile } from "@/lib/dna-storage";
 import { ARCHETYPE_INFO } from "@/lib/dna-scoring";
+import { AIInsightCard } from "@/components/copilot/ai-insight-card";
+import { PreTradeModal } from "@/components/copilot/pre-trade-modal";
+import type { TradeCheckRequest } from "@/lib/ai/trade-advisor";
 
 // ---------------------------------------------------------------------------
 // Price map (static from stock data)
@@ -424,6 +427,8 @@ export default function SimulatorPage() {
   const [portfolio, setPortfolio] = useState<SimPortfolio | null>(null);
   const [profile, setProfile] = useState<StoredDNAProfile | null>(null);
   const [sellTarget, setSellTarget] = useState<Stock | null>(null);
+  const [pendingTrade, setPendingTrade] = useState<TradeCheckRequest | null>(null);
+  const [pendingTradeCallback, setPendingTradeCallback] = useState<(() => void) | null>(null);
   const [loaded, setLoaded] = useState(false);
 
   const priceMap = useMemo(() => buildPriceMap(), []);
@@ -446,7 +451,7 @@ export default function SimulatorPage() {
     }
   }, [portfolio, loaded]);
 
-  const handleBuy = useCallback((ticker: string, shares: number) => {
+  const executeBuy = useCallback((ticker: string, shares: number) => {
     setPortfolio((prev) => {
       if (!prev) return prev;
       const stock = stocks.find((s) => s.ticker === ticker);
@@ -455,7 +460,7 @@ export default function SimulatorPage() {
     });
   }, []);
 
-  const handleSell = useCallback((ticker: string, shares: number) => {
+  const executeSell = useCallback((ticker: string, shares: number) => {
     setPortfolio((prev) => {
       if (!prev) return prev;
       const stock = stocks.find((s) => s.ticker === ticker);
@@ -463,6 +468,60 @@ export default function SimulatorPage() {
       return sellStock(prev, ticker, shares, stock.price);
     });
     setSellTarget(null);
+  }, []);
+
+  // Wrap buy/sell with pre-trade check
+  const handleBuy = useCallback((ticker: string, shares: number) => {
+    const stock = stocks.find((s) => s.ticker === ticker);
+    if (!stock || !portfolio) return;
+
+    const tradeReq: TradeCheckRequest = {
+      ticker,
+      action: "buy",
+      shares,
+      price: stock.price,
+      currentCash: portfolio.cash,
+      currentPositions: portfolio.positions.map((p) => ({
+        ticker: p.ticker,
+        shares: p.shares,
+        avgCost: p.avgCost,
+      })),
+    };
+
+    setPendingTrade(tradeReq);
+    setPendingTradeCallback(() => () => executeBuy(ticker, shares));
+  }, [portfolio, executeBuy]);
+
+  const handleSell = useCallback((ticker: string, shares: number) => {
+    const stock = stocks.find((s) => s.ticker === ticker);
+    if (!stock || !portfolio) return;
+
+    const tradeReq: TradeCheckRequest = {
+      ticker,
+      action: "sell",
+      shares,
+      price: stock.price,
+      currentCash: portfolio.cash,
+      currentPositions: portfolio.positions.map((p) => ({
+        ticker: p.ticker,
+        shares: p.shares,
+        avgCost: p.avgCost,
+      })),
+    };
+
+    setPendingTrade(tradeReq);
+    setPendingTradeCallback(() => () => executeSell(ticker, shares));
+  }, [portfolio, executeSell]);
+
+  const handleTradeConfirm = useCallback(() => {
+    pendingTradeCallback?.();
+    setPendingTrade(null);
+    setPendingTradeCallback(null);
+  }, [pendingTradeCallback]);
+
+  const handleTradeCancel = useCallback(() => {
+    setPendingTrade(null);
+    setPendingTradeCallback(null);
   }, []);
 
   const handleReset = useCallback(() => {
@@ -527,6 +586,8 @@ export default function SimulatorPage() {
             {coaching}
           </p>
         </div>
+
+        <AIInsightCard pageId="simulator" className="mb-4" />
 
         {/* Portfolio summary */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
@@ -657,6 +718,16 @@ export default function SimulatorPage() {
           }
           onTrade={(shares) => handleSell(sellTarget.ticker, shares)}
           onClose={() => setSellTarget(null)}
+        />
+      )}
+
+      {/* Pre-trade AI check */}
+      {pendingTrade && (
+        <PreTradeModal
+          isOpen={true}
+          trade={pendingTrade}
+          onConfirm={handleTradeConfirm}
+          onCancel={handleTradeCancel}
         />
       )}
     </div>

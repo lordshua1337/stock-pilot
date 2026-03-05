@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { getStockByTicker, getStocksBySector, type Stock } from "@/lib/stock-data";
 import { HoldingInsightCard } from "@/components/insight-card";
+import { AIInsightCard } from "@/components/copilot/ai-insight-card";
 
 function ScoreRing({ score }: { score: number }) {
   const color =
@@ -225,6 +226,9 @@ export default function StockDetailPage() {
             icon={<Zap className="w-3.5 h-3.5" />}
           />
         </div>
+
+        {/* AI Copilot Insight */}
+        <AIInsightCard pageId="research" ticker={stock.ticker} className="mb-4" />
 
         {/* Full Insight Card */}
         <div className="mb-6">

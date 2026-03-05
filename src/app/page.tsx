@@ -15,6 +15,7 @@ import { BenchmarkTape } from "@/components/benchmark-tape";
 import { HeroChartBg } from "@/components/hero-chart-bg";
 import GettingStarted from "@/components/getting-started";
 import DailyPulseCard from "@/components/daily-pulse";
+import { AIInsightCard } from "@/components/copilot/ai-insight-card";
 
 function StockRow({ stock }: { stock: (typeof stocks)[0] }) {
   const isUp = stock.change >= 0;
@@ -187,6 +188,13 @@ export default function HomePage() {
             <p className="text-2xl sm:text-3xl font-semibold font-mono">$0</p>
             <p className="text-xs text-text-muted mt-1">Cost to Use</p>
           </div>
+        </div>
+      </section>
+
+      {/* AI Copilot Insight */}
+      <section className="px-4 pt-4">
+        <div className="max-w-xl mx-auto">
+          <AIInsightCard pageId="home" />
         </div>
       </section>
 

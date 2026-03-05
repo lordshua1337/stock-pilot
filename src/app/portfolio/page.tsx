@@ -40,6 +40,7 @@ import { CorrelationTab } from "./_components/correlation-tab";
 import { RebalanceTab } from "./_components/rebalance-tab";
 import { AlignmentTab } from "./_components/alignment-tab";
 import { BiasNudgeBanner } from "@/components/bias-nudge-banner";
+import { AIInsightCard } from "@/components/copilot/ai-insight-card";
 import { ConfirmationModal } from "./_components/confirmation-modal";
 
 // ─── Types ─────────────────────────────────────────────────────────────
@@ -256,6 +257,8 @@ export default function PortfolioPage() {
 
         {/* Bias nudge banner */}
         <BiasNudgeBanner portfolio={portfolio} />
+
+        <AIInsightCard pageId="portfolio" className="mb-4" />
 
         {/* Tab bar */}
         <div className="flex gap-1 mb-6 border-b border-border overflow-x-auto pb-px">
