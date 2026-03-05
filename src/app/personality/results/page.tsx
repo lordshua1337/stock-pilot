@@ -460,6 +460,7 @@ export default function DNAResultsPage() {
               <StockPicks
                 dimensions={displayDimensions}
                 accentColor={accentColor}
+                archetype={displayArchetypeKey}
               />
             </Section>
           )}

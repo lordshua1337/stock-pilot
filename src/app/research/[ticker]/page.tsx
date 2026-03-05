@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import {
@@ -12,10 +12,20 @@ import {
   BarChart3,
   DollarSign,
   ArrowUpDown,
+  Sparkles,
 } from "lucide-react";
 import { getStockByTicker, getStocksBySector, type Stock } from "@/lib/stock-data";
 import { HoldingInsightCard } from "@/components/insight-card";
 import { AIInsightCard } from "@/components/copilot/ai-insight-card";
+import { loadDNAProfile } from "@/lib/dna-storage";
+import { loadV2Profile } from "@/lib/dna-v2/storage";
+import { ARCHETYPE_INFO } from "@/lib/dna-scoring";
+import { ARCHETYPE_COLORS } from "@/components/dna/archetype-colors";
+import { getPersonalityCopy } from "@/lib/personality-copy";
+import { getWhyThisFitsYou } from "@/data/stock-match-reasons";
+import { matchStocksToDNA } from "@/lib/dna-stock-matcher";
+import type { ArchetypeKey, CoreDimensions } from "@/lib/financial-dna";
+import { v2ToDimensions } from "@/lib/dna-v2/compat";
 
 function ScoreRing({ score }: { score: number }) {
   const color =
@@ -100,6 +110,23 @@ export default function StockDetailPage() {
       (s) => s.ticker !== stock.ticker
     );
   }, [stock]);
+
+  const [archetype, setArchetype] = useState<ArchetypeKey | null>(null);
+  const [dimensions, setDimensions] = useState<CoreDimensions | null>(null);
+
+  useEffect(() => {
+    const v2 = loadV2Profile();
+    if (v2) {
+      setArchetype(v2.archetype.primary as ArchetypeKey);
+      setDimensions(v2ToDimensions(v2));
+      return;
+    }
+    const v1 = loadDNAProfile();
+    if (v1) {
+      setArchetype(v1.communicationArchetype as ArchetypeKey);
+      setDimensions(v1.dimensions);
+    }
+  }, []);
 
   if (!stock) {
     return (
@@ -234,6 +261,52 @@ export default function StockDetailPage() {
         <div className="mb-6">
           <HoldingInsightCard stock={stock} variant="expanded" />
         </div>
+
+        {/* How this fits your profile */}
+        {stock && archetype && dimensions && (() => {
+          const accentColor = ARCHETYPE_COLORS[archetype] ?? "#00C853";
+          const archetypeName = ARCHETYPE_INFO[archetype]?.name ?? archetype;
+          const copy = getPersonalityCopy(archetype);
+          const whyText = getWhyThisFitsYou(stock, archetype, dimensions);
+          const matchedTickers = new Set(
+            matchStocksToDNA(dimensions).map((m) => m.stock.ticker)
+          );
+          const isMatch = matchedTickers.has(stock.ticker);
+
+          return (
+            <div
+              className="rounded-xl border p-5 mb-6"
+              style={{ borderColor: `${accentColor}30`, backgroundColor: `${accentColor}06` }}
+            >
+              <div className="flex items-center gap-2 mb-3">
+                <Sparkles className="w-4 h-4" style={{ color: accentColor }} />
+                <h3 className="text-sm font-semibold" style={{ color: accentColor }}>
+                  How This Fits Your Profile
+                </h3>
+                {isMatch && copy && (
+                  <span
+                    className="text-[9px] font-medium px-1.5 py-0.5 rounded ml-auto"
+                    style={{ color: accentColor, backgroundColor: `${accentColor}15` }}
+                  >
+                    {copy.stockFitLabel}
+                  </span>
+                )}
+              </div>
+              <p className="text-xs text-text-muted mb-2">
+                As {archetypeName}:
+              </p>
+              <p className="text-sm text-text-secondary leading-relaxed">
+                {whyText}
+              </p>
+              {!isMatch && (
+                <p className="text-xs text-text-muted mt-3 italic">
+                  This stock is not in your top personality-matched picks, but may still be worth
+                  researching based on your own analysis.
+                </p>
+              )}
+            </div>
+          );
+        })()}
 
         {/* Sector Peers */}
         {peers.length > 0 && (

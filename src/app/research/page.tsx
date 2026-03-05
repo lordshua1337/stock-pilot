@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useEffect } from "react";
 import Link from "next/link";
 import {
   ArrowLeft,
@@ -11,6 +11,8 @@ import {
   Zap,
   ChevronDown,
   ChevronUp,
+  Sparkles,
+  ArrowRight,
 } from "lucide-react";
 import { stocks, sectors, type Stock } from "@/lib/stock-data";
 import ScreenerPanel from "@/components/screener-panel";
@@ -19,15 +21,27 @@ import {
   EMPTY_FILTERS,
   applyScreenerFilters,
 } from "@/lib/screener-utils";
+import { loadDNAProfile } from "@/lib/dna-storage";
+import { loadV2Profile } from "@/lib/dna-v2/storage";
+import { getPersonalityCopy } from "@/lib/personality-copy";
+import { ARCHETYPE_INFO } from "@/lib/dna-scoring";
+import { ARCHETYPE_COLORS } from "@/components/dna/archetype-colors";
+import { matchStocksToDNA } from "@/lib/dna-stock-matcher";
+import type { ArchetypeKey, CoreDimensions } from "@/lib/financial-dna";
+import { v2ToDimensions } from "@/lib/dna-v2/compat";
 
 function StockDetail({
   stock,
   isExpanded,
   onToggle,
+  fitLabel,
+  fitColor,
 }: {
   stock: Stock;
   isExpanded: boolean;
   onToggle: () => void;
+  fitLabel?: string;
+  fitColor?: string;
 }) {
   const isUp = stock.change >= 0;
   const scoreColor =
@@ -57,6 +71,14 @@ function StockDetail({
               <span className="text-xs text-text-muted px-2 py-0.5 bg-surface-alt rounded">
                 {stock.sector}
               </span>
+              {fitLabel && fitColor && (
+                <span
+                  className="text-[9px] font-medium px-1.5 py-0.5 rounded"
+                  style={{ color: fitColor, backgroundColor: `${fitColor}15` }}
+                >
+                  {fitLabel}
+                </span>
+              )}
             </div>
             <div className="flex items-center gap-3 mt-1">
               <span className="font-mono text-sm">
@@ -203,10 +225,31 @@ export default function ResearchPage() {
     ...EMPTY_FILTERS,
     analystRatings: new Set(),
   });
+  const [archetype, setArchetype] = useState<ArchetypeKey | null>(null);
+  const [dimensions, setDimensions] = useState<CoreDimensions | null>(null);
+
+  useEffect(() => {
+    const v2 = loadV2Profile();
+    if (v2) {
+      setArchetype(v2.archetype.primary as ArchetypeKey);
+      setDimensions(v2ToDimensions(v2));
+      return;
+    }
+    const v1 = loadDNAProfile();
+    if (v1) {
+      setArchetype(v1.communicationArchetype as ArchetypeKey);
+      setDimensions(v1.dimensions);
+    }
+  }, []);
 
   const handleScreenerChange = useCallback((f: ScreenerFilters) => {
     setScreenerFilters(f);
   }, []);
+
+  const matchedTickers = useMemo(() => {
+    if (!dimensions) return new Set<string>();
+    return new Set(matchStocksToDNA(dimensions).map((m) => m.stock.ticker));
+  }, [dimensions]);
 
   const sectorNames = [...new Set(stocks.map((s) => s.sector))].sort();
 
@@ -250,15 +293,20 @@ export default function ResearchPage() {
         </Link>
 
         <div className="mb-8">
-          <p className="text-xs text-green uppercase tracking-widest font-medium mb-2">
+          <p
+            className="text-xs uppercase tracking-widest font-medium mb-2"
+            style={{ color: archetype ? (ARCHETYPE_COLORS[archetype] ?? "#00C853") : "#00C853" }}
+          >
             Research
           </p>
           <h1 className="text-3xl font-semibold tracking-tight mb-3">
             Stock Analysis
           </h1>
           <p className="text-text-secondary text-sm">
-            AI-generated research for each stock. Thesis, catalysts, risks,
-            and a score from 1-100.
+            {archetype
+              ? getPersonalityCopy(archetype)?.researchIntro ??
+                "AI-generated research for each stock. Thesis, catalysts, risks, and a score from 1-100."
+              : "AI-generated research for each stock. Thesis, catalysts, risks, and a score from 1-100."}
           </p>
         </div>
 
@@ -283,6 +331,53 @@ export default function ResearchPage() {
             <p className="text-xs text-text-muted">Sectors</p>
           </div>
         </div>
+
+        {/* Personality-matched picks (only shown if user has profile) */}
+        {archetype && dimensions && (() => {
+          const accentColor = ARCHETYPE_COLORS[archetype] ?? "#00C853";
+          const archetypeName = ARCHETYPE_INFO[archetype]?.name ?? archetype;
+          const personalityMatches = matchStocksToDNA(dimensions);
+          const copy = getPersonalityCopy(archetype);
+          return (
+            <div
+              className="rounded-xl p-5 mb-6 border"
+              style={{ borderColor: `${accentColor}30`, backgroundColor: `${accentColor}08` }}
+            >
+              <div className="flex items-center gap-2 mb-3">
+                <Sparkles className="w-4 h-4" style={{ color: accentColor }} />
+                <h2 className="text-sm font-semibold" style={{ color: accentColor }}>
+                  Stocks for {archetypeName}
+                </h2>
+              </div>
+              {copy && (
+                <p className="text-xs text-text-secondary mb-4">{copy.researchIntro}</p>
+              )}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                {personalityMatches.slice(0, 3).map((match) => (
+                  <Link
+                    key={match.stock.ticker}
+                    href={`/research/${match.stock.ticker.toLowerCase()}`}
+                    className="flex items-center justify-between bg-surface border border-border rounded-lg p-3 hover:border-opacity-60 transition-colors group"
+                  >
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-bold">{match.stock.ticker}</span>
+                        <span
+                          className="text-[9px] font-medium px-1.5 py-0.5 rounded"
+                          style={{ color: accentColor, backgroundColor: `${accentColor}15` }}
+                        >
+                          {copy?.stockFitLabel ?? "Match"}
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-text-muted mt-0.5">{match.stock.name}</p>
+                    </div>
+                    <ArrowRight className="w-3.5 h-3.5 text-text-muted group-hover:text-text-secondary transition-colors" />
+                  </Link>
+                ))}
+              </div>
+            </div>
+          );
+        })()}
 
         {/* Sector filter */}
         <div className="flex flex-wrap gap-1.5 mb-4">
@@ -360,18 +455,25 @@ export default function ResearchPage() {
 
         {/* Stock list */}
         <div className="space-y-3">
-          {filtered.map((stock) => (
-            <StockDetail
-              key={stock.ticker}
-              stock={stock}
-              isExpanded={expanded === stock.ticker}
-              onToggle={() =>
-                setExpanded((prev) =>
-                  prev === stock.ticker ? null : stock.ticker
-                )
-              }
-            />
-          ))}
+          {filtered.map((stock) => {
+            const copy = archetype ? getPersonalityCopy(archetype) : null;
+            const accentColor = archetype ? (ARCHETYPE_COLORS[archetype] ?? "#00C853") : undefined;
+            const isMatch = matchedTickers.has(stock.ticker);
+            return (
+              <StockDetail
+                key={stock.ticker}
+                stock={stock}
+                isExpanded={expanded === stock.ticker}
+                onToggle={() =>
+                  setExpanded((prev) =>
+                    prev === stock.ticker ? null : stock.ticker
+                  )
+                }
+                fitLabel={isMatch && copy ? copy.stockFitLabel : undefined}
+                fitColor={isMatch ? accentColor : undefined}
+              />
+            );
+          })}
         </div>
 
         {filtered.length === 0 && (

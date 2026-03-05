@@ -1,14 +1,24 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
-import { motion, useReducedMotion } from "framer-motion";
-import { TrendingUp, TrendingDown, ArrowRight, AlertTriangle, Info } from "lucide-react";
-import type { CoreDimensions } from "@/lib/financial-dna";
+import { motion, useReducedMotion, AnimatePresence } from "framer-motion";
+import {
+  TrendingUp,
+  TrendingDown,
+  ArrowRight,
+  AlertTriangle,
+  Info,
+  ChevronDown,
+  Sparkles,
+} from "lucide-react";
+import type { CoreDimensions, ArchetypeKey } from "@/lib/financial-dna";
 import {
   matchStocksToDNA,
   antiMatchStocksToDNA,
   type MatchedStock,
 } from "@/lib/dna-stock-matcher";
+import { getWhyThisFitsYou } from "@/data/stock-match-reasons";
 
 // ---------------------------------------------------------------------------
 // Why-these-stocks explanation based on dimensions
@@ -37,20 +47,29 @@ function getProfileExplanation(dims: CoreDimensions): string {
 }
 
 // ---------------------------------------------------------------------------
-// Stock card
+// Stock card with expandable "Why this fits you"
 // ---------------------------------------------------------------------------
 
 function StockCard({
   match,
   index,
   accentColor,
+  archetype,
+  dimensions,
 }: {
   match: MatchedStock;
   index: number;
   accentColor: string;
+  archetype: ArchetypeKey | null;
+  dimensions: CoreDimensions;
 }) {
   const prefersReducedMotion = useReducedMotion();
+  const [expanded, setExpanded] = useState(false);
   const { stock, reason } = match;
+
+  const whyText = archetype
+    ? getWhyThisFitsYou(stock, archetype, dimensions)
+    : null;
 
   return (
     <motion.div
@@ -58,39 +77,75 @@ function StockCard({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3, delay: index * 0.08 }}
     >
-      <Link
-        href={`/research/${stock.ticker}`}
-        className="block bg-surface border border-border rounded-xl p-4 hover:border-opacity-60 transition-colors group"
-        style={{ borderColor: undefined }}
-      >
-        <div className="flex items-start justify-between mb-2">
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="text-base font-bold">{stock.ticker}</span>
-              <span
-                className="text-[10px] font-mono px-1.5 py-0.5 rounded"
-                style={{
-                  color: accentColor,
-                  backgroundColor: `${accentColor}15`,
-                }}
-              >
-                AI {stock.aiScore}
-              </span>
+      <div className="bg-surface border border-border rounded-xl overflow-hidden group">
+        <Link
+          href={`/research/${stock.ticker}`}
+          className="block p-4 hover:bg-surface-hover transition-colors"
+        >
+          <div className="flex items-start justify-between mb-2">
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-base font-bold">{stock.ticker}</span>
+                <span
+                  className="text-[10px] font-mono px-1.5 py-0.5 rounded"
+                  style={{
+                    color: accentColor,
+                    backgroundColor: `${accentColor}15`,
+                  }}
+                >
+                  AI {stock.aiScore}
+                </span>
+              </div>
+              <p className="text-xs text-text-muted mt-0.5">{stock.name}</p>
             </div>
-            <p className="text-xs text-text-muted mt-0.5">{stock.name}</p>
+            <ArrowRight className="w-4 h-4 text-text-muted group-hover:text-text-secondary transition-colors flex-shrink-0 mt-1" />
           </div>
-          <ArrowRight className="w-4 h-4 text-text-muted group-hover:text-text-secondary transition-colors flex-shrink-0 mt-1" />
-        </div>
-        <p className="text-xs text-text-secondary leading-relaxed">{reason}</p>
-        <div className="flex items-center gap-3 mt-2 text-[10px] text-text-muted">
-          <span>{stock.sector}</span>
-          <span>Beta {stock.beta.toFixed(2)}</span>
-          {stock.dividendYield > 0 && (
-            <span>Div {stock.dividendYield.toFixed(1)}%</span>
-          )}
-          <span>{stock.analystRating}</span>
-        </div>
-      </Link>
+          <p className="text-xs text-text-secondary leading-relaxed">{reason}</p>
+          <div className="flex items-center gap-3 mt-2 text-[10px] text-text-muted">
+            <span>{stock.sector}</span>
+            <span>Beta {stock.beta.toFixed(2)}</span>
+            {stock.dividendYield > 0 && (
+              <span>Div {stock.dividendYield.toFixed(1)}%</span>
+            )}
+            <span>{stock.analystRating}</span>
+          </div>
+        </Link>
+
+        {whyText && (
+          <>
+            <button
+              onClick={() => setExpanded(!expanded)}
+              className="w-full flex items-center gap-1.5 px-4 py-2 text-[11px] font-medium border-t border-border hover:bg-surface-hover transition-colors"
+              style={{ color: accentColor }}
+            >
+              <Sparkles className="w-3 h-3" />
+              Why this fits YOU
+              <ChevronDown
+                className="w-3 h-3 ml-auto transition-transform"
+                style={{ transform: expanded ? "rotate(180deg)" : "rotate(0deg)" }}
+              />
+            </button>
+            <AnimatePresence>
+              {expanded && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: "auto", opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                  className="overflow-hidden"
+                >
+                  <div
+                    className="px-4 pb-3 text-xs leading-relaxed text-text-secondary"
+                    style={{ borderLeft: `2px solid ${accentColor}30`, marginLeft: "14px" }}
+                  >
+                    {whyText}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </>
+        )}
+      </div>
     </motion.div>
   );
 }
@@ -149,9 +204,11 @@ function AntiMatchCard({
 export function StockPicks({
   dimensions,
   accentColor = "#00C853",
+  archetype = null,
 }: {
   dimensions: CoreDimensions;
   accentColor?: string;
+  archetype?: ArchetypeKey | null;
 }) {
   const matches = matchStocksToDNA(dimensions);
   const antiMatches = antiMatchStocksToDNA(dimensions);
@@ -181,6 +238,8 @@ export function StockPicks({
               match={match}
               index={i}
               accentColor={accentColor}
+              archetype={archetype}
+              dimensions={dimensions}
             />
           ))}
         </div>
