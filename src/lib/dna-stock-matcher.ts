@@ -165,6 +165,80 @@ function getAntiMatchReason(stock: Stock, dims: CoreDimensions): string {
 }
 
 // ---------------------------------------------------------------------------
+// Single-stock fit score (normalized 0-100)
+// ---------------------------------------------------------------------------
+
+export function getStockFitScore(stock: Stock, dims: CoreDimensions): number {
+  const raw = scoreStock(stock, dims);
+  // Theoretical max is roughly 83 (30 AI + 15 beta + 10 div + 8 horizon + 10 disc + 10 analyst)
+  // Normalize to 0-100
+  return Math.round(Math.min(100, Math.max(0, (raw / 75) * 100)));
+}
+
+export function getStockFitDetails(
+  stock: Stock,
+  dims: CoreDimensions
+): { score: number; factors: Array<{ label: string; value: string; positive: boolean }> } {
+  const score = getStockFitScore(stock, dims);
+  const factors: Array<{ label: string; value: string; positive: boolean }> = [];
+
+  // Risk fit
+  if (dims.R >= 60) {
+    factors.push({
+      label: "Risk Match",
+      value: stock.beta >= 1.2 ? "High-growth fits your risk appetite" : "Lower beta than ideal",
+      positive: stock.beta >= 1.0,
+    });
+  } else {
+    factors.push({
+      label: "Risk Match",
+      value: stock.beta <= 1.0 ? "Stable -- fits your profile" : "More volatile than you prefer",
+      positive: stock.beta <= 1.0,
+    });
+  }
+
+  // Income fit
+  if (dims.H < 60 || dims.R < 50) {
+    factors.push({
+      label: "Income",
+      value: stock.dividendYield >= 1.5
+        ? `${stock.dividendYield.toFixed(1)}% yield -- strong income`
+        : "Low dividend yield",
+      positive: stock.dividendYield >= 1.0,
+    });
+  } else {
+    factors.push({
+      label: "Growth",
+      value: stock.aiScore >= 75 ? "High conviction growth thesis" : "Moderate growth outlook",
+      positive: stock.aiScore >= 70,
+    });
+  }
+
+  // Analyst consensus
+  factors.push({
+    label: "Consensus",
+    value: stock.analystRating,
+    positive: stock.analystRating === "Strong Buy" || stock.analystRating === "Buy",
+  });
+
+  return { score, factors };
+}
+
+// ---------------------------------------------------------------------------
+// Top N stocks for a given profile (no diversity filter, pure score rank)
+// ---------------------------------------------------------------------------
+
+export function topStocksForProfile(dims: CoreDimensions, count: number): MatchedStock[] {
+  const scored = stocks.map((stock) => ({
+    stock,
+    score: getStockFitScore(stock, dims),
+    reason: getMatchReason(stock, dims),
+  }));
+
+  return [...scored].sort((a, b) => b.score - a.score).slice(0, count);
+}
+
+// ---------------------------------------------------------------------------
 // Public API
 // ---------------------------------------------------------------------------
 

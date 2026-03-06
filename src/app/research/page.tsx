@@ -26,7 +26,7 @@ import { loadV2Profile } from "@/lib/dna-v2/storage";
 import { getPersonalityCopy } from "@/lib/personality-copy";
 import { ARCHETYPE_INFO } from "@/lib/dna-scoring";
 import { ARCHETYPE_COLORS } from "@/components/dna/archetype-colors";
-import { matchStocksToDNA } from "@/lib/dna-stock-matcher";
+import { matchStocksToDNA, topStocksForProfile } from "@/lib/dna-stock-matcher";
 import type { ArchetypeKey, CoreDimensions } from "@/lib/financial-dna";
 import { v2ToDimensions } from "@/lib/dna-v2/compat";
 
@@ -332,48 +332,54 @@ export default function ResearchPage() {
           </div>
         </div>
 
-        {/* Personality-matched picks (only shown if user has profile) */}
+        {/* Top 10 stocks for your archetype */}
         {archetype && dimensions && (() => {
           const accentColor = ARCHETYPE_COLORS[archetype] ?? "#00C853";
           const archetypeName = ARCHETYPE_INFO[archetype]?.name ?? archetype;
-          const personalityMatches = matchStocksToDNA(dimensions);
+          const top10 = topStocksForProfile(dimensions, 10);
           const copy = getPersonalityCopy(archetype);
           return (
             <div
               className="rounded-xl p-5 mb-6 border"
               style={{ borderColor: `${accentColor}30`, backgroundColor: `${accentColor}08` }}
             >
-              <div className="flex items-center gap-2 mb-3">
+              <div className="flex items-center gap-2 mb-1">
                 <Sparkles className="w-4 h-4" style={{ color: accentColor }} />
                 <h2 className="text-sm font-semibold" style={{ color: accentColor }}>
-                  Stocks for {archetypeName}
+                  Top 10 for {archetypeName}
                 </h2>
               </div>
               {copy && (
                 <p className="text-xs text-text-secondary mb-4">{copy.researchIntro}</p>
               )}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                {personalityMatches.slice(0, 3).map((match) => (
-                  <Link
-                    key={match.stock.ticker}
-                    href={`/research/${match.stock.ticker.toLowerCase()}`}
-                    className="flex items-center justify-between bg-surface border border-border rounded-lg p-3 hover:border-opacity-60 transition-colors group"
-                  >
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm font-bold">{match.stock.ticker}</span>
-                        <span
-                          className="text-[9px] font-medium px-1.5 py-0.5 rounded"
-                          style={{ color: accentColor, backgroundColor: `${accentColor}15` }}
-                        >
-                          {copy?.stockFitLabel ?? "Match"}
-                        </span>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                {top10.map((match, idx) => {
+                  const fitColor = match.score >= 75 ? "#00C853" : match.score >= 50 ? "#FFD740" : "#FF5252";
+                  return (
+                    <Link
+                      key={match.stock.ticker}
+                      href={`/research/${match.stock.ticker.toLowerCase()}`}
+                      className="flex items-center gap-3 bg-surface border border-border rounded-lg p-3 hover:border-opacity-60 transition-colors group"
+                    >
+                      <span className="text-[10px] text-text-muted font-mono w-4 text-right shrink-0">
+                        {idx + 1}
+                      </span>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm font-bold font-mono">{match.stock.ticker}</span>
+                          <span className="text-[11px] text-text-muted truncate">{match.stock.name}</span>
+                        </div>
+                        <p className="text-[10px] text-text-muted mt-0.5">{match.reason}</p>
                       </div>
-                      <p className="text-[11px] text-text-muted mt-0.5">{match.stock.name}</p>
-                    </div>
-                    <ArrowRight className="w-3.5 h-3.5 text-text-muted group-hover:text-text-secondary transition-colors" />
-                  </Link>
-                ))}
+                      <div className="text-right shrink-0">
+                        <span className="text-sm font-bold font-mono" style={{ color: fitColor }}>
+                          {match.score}
+                        </span>
+                        <p className="text-[9px] text-text-muted">FIT</p>
+                      </div>
+                    </Link>
+                  );
+                })}
               </div>
             </div>
           );

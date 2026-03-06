@@ -23,7 +23,7 @@ import { ARCHETYPE_INFO } from "@/lib/dna-scoring";
 import { ARCHETYPE_COLORS } from "@/components/dna/archetype-colors";
 import { getPersonalityCopy } from "@/lib/personality-copy";
 import { getWhyThisFitsYou } from "@/data/stock-match-reasons";
-import { matchStocksToDNA } from "@/lib/dna-stock-matcher";
+import { matchStocksToDNA, getStockFitDetails } from "@/lib/dna-stock-matcher";
 import type { ArchetypeKey, CoreDimensions } from "@/lib/financial-dna";
 import { v2ToDimensions } from "@/lib/dna-v2/compat";
 
@@ -262,7 +262,7 @@ export default function StockDetailPage() {
           <HoldingInsightCard stock={stock} variant="expanded" />
         </div>
 
-        {/* How this fits your profile */}
+        {/* Personality Fit Score */}
         {stock && archetype && dimensions && (() => {
           const accentColor = ARCHETYPE_COLORS[archetype] ?? "#00C853";
           const archetypeName = ARCHETYPE_INFO[archetype]?.name ?? archetype;
@@ -272,16 +272,24 @@ export default function StockDetailPage() {
             matchStocksToDNA(dimensions).map((m) => m.stock.ticker)
           );
           const isMatch = matchedTickers.has(stock.ticker);
+          const fitDetails = getStockFitDetails(stock, dimensions);
+          const fitScore = fitDetails.score;
+
+          // Score ring SVG values
+          const ringR = 28;
+          const ringC = 2 * Math.PI * ringR;
+          const ringOffset = ringC - (fitScore / 100) * ringC;
+          const fitColor = fitScore >= 75 ? "#00C853" : fitScore >= 50 ? "#FFD740" : "#FF5252";
 
           return (
             <div
               className="rounded-xl border p-5 mb-6"
               style={{ borderColor: `${accentColor}30`, backgroundColor: `${accentColor}06` }}
             >
-              <div className="flex items-center gap-2 mb-3">
+              <div className="flex items-center gap-2 mb-4">
                 <Sparkles className="w-4 h-4" style={{ color: accentColor }} />
                 <h3 className="text-sm font-semibold" style={{ color: accentColor }}>
-                  How This Fits Your Profile
+                  Personality Fit Score
                 </h3>
                 {isMatch && copy && (
                   <span
@@ -292,18 +300,59 @@ export default function StockDetailPage() {
                   </span>
                 )}
               </div>
-              <p className="text-xs text-text-muted mb-2">
-                As {archetypeName}:
-              </p>
-              <p className="text-sm text-text-secondary leading-relaxed">
-                {whyText}
-              </p>
-              {!isMatch && (
-                <p className="text-xs text-text-muted mt-3 italic">
-                  This stock is not in your top personality-matched picks, but may still be worth
-                  researching based on your own analysis.
+
+              {/* Score ring + factors */}
+              <div className="flex items-start gap-5">
+                {/* Score ring */}
+                <div className="relative shrink-0">
+                  <svg width="72" height="72" viewBox="0 0 72 72" style={{ transform: "rotate(-90deg)" }}>
+                    <circle cx="36" cy="36" r={ringR} fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="5" />
+                    <circle
+                      cx="36" cy="36" r={ringR} fill="none"
+                      stroke={fitColor}
+                      strokeWidth="5"
+                      strokeLinecap="round"
+                      strokeDasharray={ringC}
+                      strokeDashoffset={ringOffset}
+                      style={{ transition: "stroke-dashoffset 0.8s ease-out" }}
+                    />
+                  </svg>
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <span className="text-xl font-bold font-mono" style={{ color: fitColor }}>{fitScore}</span>
+                  </div>
+                </div>
+
+                {/* Factor breakdown */}
+                <div className="flex-1 space-y-2">
+                  {fitDetails.factors.map((f) => (
+                    <div key={f.label} className="flex items-center gap-2">
+                      <span
+                        className="w-1.5 h-1.5 rounded-full shrink-0"
+                        style={{ background: f.positive ? "#00C853" : "#FF5252" }}
+                      />
+                      <div>
+                        <span className="text-[10px] text-text-muted uppercase tracking-wider">{f.label}</span>
+                        <p className="text-xs text-text-secondary">{f.value}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Archetype explanation */}
+              <div className="mt-4 pt-3 border-t" style={{ borderColor: `${accentColor}15` }}>
+                <p className="text-xs text-text-muted mb-1">
+                  As {archetypeName}:
                 </p>
-              )}
+                <p className="text-sm text-text-secondary leading-relaxed">
+                  {whyText}
+                </p>
+                {!isMatch && (
+                  <p className="text-xs text-text-muted mt-2 italic">
+                    Not in your top personality picks, but may be worth researching.
+                  </p>
+                )}
+              </div>
             </div>
           );
         })()}
