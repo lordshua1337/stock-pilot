@@ -1,100 +1,178 @@
-import { adminClient } from '@/lib/supabase/client'
-import { fetchQuote, fetchOverview, rateLimitedFetch, type QuoteData } from './alpha-vantage'
+import { adminClient } from "@/lib/supabase/client";
+import {
+  fetchYahooBatch,
+  getCacheTTLMinutes,
+  type YahooQuote,
+} from "./yahoo";
 
 export type CachedStock = {
-  ticker: string
-  price: number
-  change_amount: number
-  change_percent: number
-  volume: number
-  market_cap: number | null
-  pe_ratio: number | null
-  week_52_high: number | null
-  week_52_low: number | null
-  raw_data: Record<string, unknown>
-  last_refreshed: string
-}
+  ticker: string;
+  price: number;
+  change_amount: number;
+  change_percent: number;
+  volume: number;
+  market_cap: number | null;
+  pe_ratio: number | null;
+  week_52_high: number | null;
+  week_52_low: number | null;
+  raw_data: Record<string, unknown>;
+  last_refreshed: string;
+};
 
-const CACHE_TTL_HOURS = 24
-
-export async function getCachedPrice(ticker: string): Promise<CachedStock | null> {
+/**
+ * Get all cached prices, returning only rows that are within TTL.
+ */
+export async function getAllCachedPrices(): Promise<Map<string, CachedStock>> {
   const { data } = await adminClient
-    .from('stock_cache')
-    .select('*')
-    .eq('ticker', ticker.toUpperCase())
-    .single()
+    .from("stock_cache")
+    .select("*")
+    .order("ticker");
 
-  if (!data) return null
+  const results = new Map<string, CachedStock>();
+  if (!data) return results;
 
-  // Check if cache is stale
-  const lastRefreshed = new Date(data.last_refreshed)
-  const hoursOld = (Date.now() - lastRefreshed.getTime()) / (1000 * 60 * 60)
+  const ttlMs = getCacheTTLMinutes() * 60 * 1000;
+  const now = Date.now();
 
-  if (hoursOld > CACHE_TTL_HOURS) return null
+  for (const row of data) {
+    const age = now - new Date(row.last_refreshed).getTime();
+    if (age <= ttlMs) {
+      results.set(row.ticker, row as CachedStock);
+    }
+  }
 
-  return data as CachedStock
+  return results;
 }
 
-export async function refreshStockCache(ticker: string): Promise<CachedStock | null> {
-  const upperTicker = ticker.toUpperCase()
+/**
+ * Get cached price for a single ticker. Returns null if stale or missing.
+ */
+export async function getCachedPrice(
+  ticker: string
+): Promise<CachedStock | null> {
+  const { data } = await adminClient
+    .from("stock_cache")
+    .select("*")
+    .eq("ticker", ticker.toUpperCase())
+    .single();
 
-  // Try to fetch live data
-  const quote = await rateLimitedFetch(() => fetchQuote(upperTicker))
-  if (!quote) return null
+  if (!data) return null;
 
-  const overview = await rateLimitedFetch(() => fetchOverview(upperTicker))
+  const ttlMs = getCacheTTLMinutes() * 60 * 1000;
+  const age = Date.now() - new Date(data.last_refreshed).getTime();
 
-  const cacheRow = {
-    ticker: upperTicker,
-    price: quote.price,
-    change_amount: quote.changeAmount,
-    change_percent: quote.changePercent,
-    volume: quote.volume,
-    market_cap: overview?.marketCap as number ?? null,
-    pe_ratio: overview?.peRatio as number ?? null,
-    week_52_high: overview?.week52High as number ?? null,
-    week_52_low: overview?.week52Low as number ?? null,
-    raw_data: overview ?? {},
+  if (age > ttlMs) return null;
+
+  return data as CachedStock;
+}
+
+/**
+ * Write a batch of Yahoo quotes to the Supabase cache.
+ */
+async function writeCacheRows(
+  quotes: Map<string, YahooQuote>
+): Promise<number> {
+  if (quotes.size === 0) return 0;
+
+  const rows = Array.from(quotes.values()).map((q) => ({
+    ticker: q.ticker,
+    price: q.price,
+    change_amount: q.changeAmount,
+    change_percent: q.changePercent,
+    volume: q.volume,
+    market_cap: q.marketCap,
+    pe_ratio: q.peRatio,
+    week_52_high: q.fiftyTwoHigh,
+    week_52_low: q.fiftyTwoLow,
+    raw_data: {},
     last_refreshed: new Date().toISOString(),
-  }
+  }));
 
-  const { data, error } = await adminClient
-    .from('stock_cache')
-    .upsert(cacheRow, { onConflict: 'ticker' })
-    .select()
-    .single()
+  // Upsert in chunks of 50 to avoid payload limits
+  let written = 0;
+  for (let i = 0; i < rows.length; i += 50) {
+    const chunk = rows.slice(i, i + 50);
+    const { error } = await adminClient
+      .from("stock_cache")
+      .upsert(chunk, { onConflict: "ticker" });
 
-  if (error) {
-    console.error(`Failed to cache ${upperTicker}:`, error.message)
-    return null
-  }
-
-  return data as CachedStock
-}
-
-export async function getOrRefreshPrice(ticker: string): Promise<CachedStock | null> {
-  const cached = await getCachedPrice(ticker)
-  if (cached) return cached
-
-  return refreshStockCache(ticker)
-}
-
-export async function batchRefresh(tickers: string[]): Promise<{ refreshed: number; failed: number }> {
-  let refreshed = 0
-  let failed = 0
-
-  for (const ticker of tickers) {
-    const result = await refreshStockCache(ticker)
-    if (result) {
-      refreshed++
+    if (error) {
+      console.error("Cache write failed:", error.message);
     } else {
-      failed++
-    }
-    // Rate limit spacing: wait 12s between calls to stay under 5/min
-    if (tickers.indexOf(ticker) < tickers.length - 1) {
-      await new Promise(resolve => setTimeout(resolve, 12500))
+      written += chunk.length;
     }
   }
 
-  return { refreshed, failed }
+  return written;
+}
+
+/**
+ * Refresh all given tickers via Yahoo Finance and update the cache.
+ * Returns the count of successfully refreshed instruments.
+ */
+export async function batchRefresh(
+  tickers: string[]
+): Promise<{ refreshed: number; failed: number }> {
+  const quotes = await fetchYahooBatch(tickers);
+  const refreshed = await writeCacheRows(quotes);
+  const failed = tickers.length - refreshed;
+
+  return { refreshed, failed };
+}
+
+/**
+ * Smart refresh: checks which tickers are stale, only fetches those.
+ * Returns a merged map of all current prices (cached + freshly fetched).
+ */
+export async function smartRefresh(
+  tickers: string[]
+): Promise<Map<string, CachedStock>> {
+  // 1. Get all currently cached data
+  const cached = await getAllCachedPrices();
+
+  // 2. Find stale or missing tickers
+  const stale = tickers.filter((t) => !cached.has(t.toUpperCase()));
+
+  // 3. If nothing is stale, return cached data
+  if (stale.length === 0) return cached;
+
+  // 4. Fetch stale tickers from Yahoo
+  const freshQuotes = await fetchYahooBatch(stale);
+
+  // 5. Write fresh data to cache
+  await writeCacheRows(freshQuotes);
+
+  // 6. Merge fresh into cached and return
+  for (const [ticker, quote] of freshQuotes) {
+    cached.set(ticker, {
+      ticker: quote.ticker,
+      price: quote.price,
+      change_amount: quote.changeAmount,
+      change_percent: quote.changePercent,
+      volume: quote.volume,
+      market_cap: quote.marketCap,
+      pe_ratio: quote.peRatio,
+      week_52_high: quote.fiftyTwoHigh,
+      week_52_low: quote.fiftyTwoLow,
+      raw_data: {},
+      last_refreshed: new Date().toISOString(),
+    });
+  }
+
+  return cached;
+}
+
+/**
+ * Get or refresh a single ticker price.
+ */
+export async function getOrRefreshPrice(
+  ticker: string
+): Promise<CachedStock | null> {
+  const cached = await getCachedPrice(ticker);
+  if (cached) return cached;
+
+  const result = await batchRefresh([ticker]);
+  if (result.refreshed === 0) return null;
+
+  return getCachedPrice(ticker);
 }

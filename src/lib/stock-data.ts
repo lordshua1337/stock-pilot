@@ -36,14 +36,19 @@ export interface Sector {
 }
 
 export const sectors: Sector[] = [
-  { name: "Technology", allocation: 30, color: "#448AFF" },
-  { name: "Healthcare", allocation: 15, color: "#006DD8" },
-  { name: "Finance", allocation: 15, color: "#FFD740" },
-  { name: "Consumer", allocation: 12, color: "#FF6E40" },
-  { name: "Energy", allocation: 10, color: "#E040FB" },
+  { name: "Technology", allocation: 25, color: "#448AFF" },
+  { name: "Healthcare", allocation: 12, color: "#006DD8" },
+  { name: "Finance", allocation: 12, color: "#FFD740" },
+  { name: "Consumer", allocation: 10, color: "#FF6E40" },
   { name: "Industrial", allocation: 8, color: "#40C4FF" },
-  { name: "Real Estate", allocation: 5, color: "#FF5252" },
-  { name: "Utilities", allocation: 5, color: "#0058B0" },
+  { name: "Communication", allocation: 6, color: "#9C27B0" },
+  { name: "Energy", allocation: 5, color: "#E040FB" },
+  { name: "Materials", allocation: 5, color: "#795548" },
+  { name: "Broad Market", allocation: 5, color: "#607D8B" },
+  { name: "Real Estate", allocation: 4, color: "#FF5252" },
+  { name: "Utilities", allocation: 3, color: "#0058B0" },
+  { name: "Fixed Income", allocation: 3, color: "#4CAF50" },
+  { name: "International", allocation: 2, color: "#FF9800" },
 ];
 
 export const stocks: Stock[] = [

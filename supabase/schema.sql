@@ -147,6 +147,7 @@ create table if not exists stock_cache (
   pe_ratio numeric(8,2),
   week_52_high numeric(12,4),
   week_52_low numeric(12,4),
+  dividend_yield numeric(8,4),
   raw_data jsonb default '{}',
   last_refreshed timestamptz default now() not null
 );

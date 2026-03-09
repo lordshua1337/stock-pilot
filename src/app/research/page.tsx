@@ -14,7 +14,7 @@ import {
   Sparkles,
   ArrowRight,
 } from "lucide-react";
-import { stocks, sectors, type Stock, type InstrumentType } from "@/lib/stock-data";
+import { stocks as staticStocks, sectors, type Stock, type InstrumentType } from "@/lib/stock-data";
 import ScreenerPanel from "@/components/screener-panel";
 import {
   type ScreenerFilters,
@@ -235,6 +235,57 @@ export default function ResearchPage() {
   });
   const [archetype, setArchetype] = useState<ArchetypeKey | null>(null);
   const [dimensions, setDimensions] = useState<CoreDimensions | null>(null);
+  const [livePrices, setLivePrices] = useState<Record<string, {
+    price: number;
+    change_amount: number;
+    change_percent: number;
+    last_refreshed: string;
+  }>>({});
+  const [priceAge, setPriceAge] = useState<string>("");
+
+  // Fetch live prices from Yahoo Finance via our API
+  useEffect(() => {
+    let mounted = true;
+    async function fetchPrices() {
+      try {
+        const res = await fetch("/api/market/prices");
+        if (!res.ok) return;
+        const data = await res.json();
+        if (mounted && data.prices) {
+          setLivePrices(data.prices);
+          // Find the most recent refresh time
+          const times = Object.values(data.prices as Record<string, { last_refreshed: string }>)
+            .map((p) => new Date(p.last_refreshed).getTime());
+          if (times.length > 0) {
+            const newest = Math.max(...times);
+            const ago = Math.round((Date.now() - newest) / 60000);
+            setPriceAge(ago <= 1 ? "just now" : `${ago}m ago`);
+          }
+        }
+      } catch {
+        // Silently fall back to static prices
+      }
+    }
+    fetchPrices();
+    // Re-fetch every 5 minutes during active use
+    const interval = setInterval(fetchPrices, 5 * 60 * 1000);
+    return () => { mounted = false; clearInterval(interval); };
+  }, []);
+
+  // Merge live prices into static stock data
+  const stocks = useMemo(() => {
+    if (Object.keys(livePrices).length === 0) return staticStocks;
+    return staticStocks.map((s) => {
+      const live = livePrices[s.ticker];
+      if (!live) return s;
+      return {
+        ...s,
+        price: live.price,
+        change: live.change_amount,
+        changePercent: live.change_percent,
+      };
+    });
+  }, [livePrices]);
 
   useEffect(() => {
     const v2 = loadV2Profile();
@@ -349,6 +400,14 @@ export default function ResearchPage() {
             </button>
           ))}
         </div>
+
+        {/* Live price indicator */}
+        {priceAge && (
+          <div className="flex items-center gap-2 mb-4 text-xs text-text-muted">
+            <span className="w-1.5 h-1.5 rounded-full bg-green animate-pulse" />
+            Live prices updated {priceAge}
+          </div>
+        )}
 
         {/* Quick stats */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
