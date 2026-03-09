@@ -1,13 +1,8 @@
 import type { Metadata } from "next";
-import { Inter, JetBrains_Mono } from "next/font/google";
+import { JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { Nav } from "@/components/nav";
 import { CopilotSidebar } from "@/components/copilot/copilot-sidebar";
-
-const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin"],
-});
 
 const jetbrains = JetBrains_Mono({
   variable: "--font-jetbrains",
@@ -45,7 +40,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${inter.variable} ${jetbrains.variable} font-sans antialiased`}
+        className={`${jetbrains.variable} font-sans antialiased`}
       >
         <Nav />
         <main>{children}</main>

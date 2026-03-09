@@ -82,7 +82,7 @@ export function Nav() {
               <div className="w-7 h-7 rounded-lg bg-green/10 flex items-center justify-center group-hover:bg-green/20 transition-colors">
                 <BarChart3 className="w-4 h-4 text-green" />
               </div>
-              <span className="text-sm font-semibold tracking-tight font-mono">
+              <span className="text-sm font-semibold tracking-tight">
                 StockPilot
               </span>
             </Link>
