@@ -293,7 +293,7 @@ export const archetypes: InvestorArchetype[] = [
     ],
     idealAllocation: [
       { label: "Bonds / Fixed Income", pct: 50, color: "#448AFF" },
-      { label: "Broad Market ETFs", pct: 30, color: "#2E8BEF" },
+      { label: "Broad Market ETFs", pct: 30, color: "#006DD8" },
       { label: "Cash / Money Market", pct: 15, color: "#FFD740" },
       { label: "REITs", pct: 5, color: "#FF5252" },
     ],
@@ -323,7 +323,7 @@ export const archetypes: InvestorArchetype[] = [
       "Dividend cuts during recessions can be psychologically devastating",
     ],
     idealAllocation: [
-      { label: "Dividend Growth Stocks", pct: 40, color: "#2E8BEF" },
+      { label: "Dividend Growth Stocks", pct: 40, color: "#006DD8" },
       { label: "Bond Funds", pct: 25, color: "#448AFF" },
       { label: "REITs", pct: 15, color: "#FF5252" },
       { label: "Broad Market ETFs", pct: 15, color: "#FFD740" },
@@ -355,7 +355,7 @@ export const archetypes: InvestorArchetype[] = [
       "Over-reliance on historical data in rapidly changing industries",
     ],
     idealAllocation: [
-      { label: "Quality Growth Stocks", pct: 35, color: "#2E8BEF" },
+      { label: "Quality Growth Stocks", pct: 35, color: "#006DD8" },
       { label: "Value / GARP Stocks", pct: 25, color: "#448AFF" },
       { label: "International Developed", pct: 15, color: "#FFD740" },
       { label: "Emerging Markets", pct: 10, color: "#FF5252" },
@@ -388,7 +388,7 @@ export const archetypes: InvestorArchetype[] = [
       "Narrative-driven investing can blind you to deteriorating fundamentals",
     ],
     idealAllocation: [
-      { label: "High-Growth Stocks", pct: 45, color: "#2E8BEF" },
+      { label: "High-Growth Stocks", pct: 45, color: "#006DD8" },
       { label: "Innovation ETFs / Thematic", pct: 20, color: "#FF5252" },
       { label: "Emerging Markets Growth", pct: 15, color: "#FFD740" },
       { label: "Broad Market ETF", pct: 15, color: "#448AFF" },
@@ -420,7 +420,7 @@ export const archetypes: InvestorArchetype[] = [
       "May confuse luck with skill in a bull market",
     ],
     idealAllocation: [
-      { label: "Concentrated Stock Picks (5-10)", pct: 50, color: "#2E8BEF" },
+      { label: "Concentrated Stock Picks (5-10)", pct: 50, color: "#006DD8" },
       { label: "Growth / Momentum ETFs", pct: 20, color: "#FF5252" },
       { label: "Speculative / Crypto", pct: 15, color: "#7C3AED" },
       { label: "Cash (for opportunities)", pct: 10, color: "#FFD740" },
@@ -452,7 +452,7 @@ export const archetypes: InvestorArchetype[] = [
       "May be too passive about asset allocation shifts as life changes",
     ],
     idealAllocation: [
-      { label: "Total US Market ETF", pct: 50, color: "#2E8BEF" },
+      { label: "Total US Market ETF", pct: 50, color: "#006DD8" },
       { label: "Total International ETF", pct: 30, color: "#448AFF" },
       { label: "Total Bond Market ETF", pct: 15, color: "#FFD740" },
       { label: "TIPS", pct: 5, color: "#A0A0A0" },

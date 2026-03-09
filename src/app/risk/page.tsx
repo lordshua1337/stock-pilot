@@ -513,8 +513,8 @@ export default function RiskRadarPage() {
   }, []);
 
   const accentColor = profile
-    ? ARCHETYPE_COLORS[profile.communicationArchetype] ?? "#2E8BEF"
-    : "#2E8BEF";
+    ? ARCHETYPE_COLORS[profile.communicationArchetype] ?? "#006DD8"
+    : "#006DD8";
 
   const archetypeName = profile
     ? ARCHETYPE_INFO[profile.communicationArchetype]?.name ?? "Investor"

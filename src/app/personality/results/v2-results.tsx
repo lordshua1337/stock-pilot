@@ -152,7 +152,7 @@ export function V2ResultsDisplay({ profileV2 }: { profileV2: StoredDNAProfileV2 
   const secondaryArchetypeMeta = profileV2.archetype.secondary
     ? ARCHETYPE_INFO_V2[profileV2.archetype.secondary]
     : null;
-  const accentColorV2 = ARCHETYPE_COLORS[profileV2.archetype.primary as ArchetypeKey] ?? "#2E8BEF";
+  const accentColorV2 = ARCHETYPE_COLORS[profileV2.archetype.primary as ArchetypeKey] ?? "#006DD8";
 
   const activeBiasesV2 = [...profileV2.biasFlags]
     .filter((f) => f.severity > 0)

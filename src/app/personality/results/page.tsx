@@ -188,7 +188,7 @@ export default function DNAResultsPage() {
     ? ARCHETYPE_INFO[displaySecondaryKey as ArchetypeKey]
     : null;
   const accentColor =
-    ARCHETYPE_COLORS[displayArchetypeKey] ?? "#2E8BEF";
+    ARCHETYPE_COLORS[displayArchetypeKey] ?? "#006DD8";
 
   const activeBiases = [...displayBiasFlags]
     .filter((f) => f.severity > 0)
@@ -625,7 +625,7 @@ export default function DNAResultsPage() {
             {isSharedView ? (
               <Link
                 href="/personality"
-                className="flex-1 text-black px-5 py-3 rounded-lg font-medium text-center transition-all inline-flex items-center justify-center gap-2 sp-btn-gradient"
+                className="flex-1 px-5 py-3 rounded-lg font-medium text-center transition-all inline-flex items-center justify-center gap-2 sp-btn-primary"
               >
                 Take Your Own Assessment
                 <ArrowRight className="w-4 h-4" />

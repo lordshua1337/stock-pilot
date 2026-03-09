@@ -29,7 +29,7 @@ export function PersonalizedHero() {
   }, []);
 
   const copy = getPersonalityCopy(archetype);
-  const accentColor = archetype ? (ARCHETYPE_COLORS[archetype] ?? "#2E8BEF") : "#2E8BEF";
+  const accentColor = archetype ? (ARCHETYPE_COLORS[archetype] ?? "#006DD8") : "#006DD8";
   const archetypeName = archetype ? ARCHETYPE_INFO[archetype]?.name : null;
 
   // SSR / no-profile fallback
@@ -58,7 +58,7 @@ export function PersonalizedHero() {
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <Link
             href="/portfolio"
-            className="text-black px-6 py-2.5 rounded-lg font-medium transition-all inline-flex items-center justify-center gap-2 sp-btn-gradient"
+            className="px-6 py-2.5 rounded-lg font-medium transition-all inline-flex items-center justify-center gap-2 sp-btn-primary"
           >
             Build Portfolio
             <Briefcase className="w-4 h-4" />
@@ -101,8 +101,8 @@ export function PersonalizedHero() {
       <div className="flex flex-col sm:flex-row gap-3 justify-center">
         <Link
           href="/portfolio"
-          className="text-black px-6 py-2.5 rounded-lg font-medium hover:opacity-90 transition-opacity inline-flex items-center justify-center gap-2"
-          style={{ background: `linear-gradient(135deg, ${accentColor}, color-mix(in srgb, ${accentColor} 70%, white))` }}
+          className="text-white px-6 py-2.5 rounded-lg font-medium hover:opacity-90 transition-opacity inline-flex items-center justify-center gap-2"
+          style={{ backgroundColor: accentColor }}
         >
           {copy.heroCta}
           <Briefcase className="w-4 h-4" />

@@ -110,7 +110,7 @@ export function PortfolioRadar({ portfolio, portfolioStocks, signals }: Portfoli
             key={scale}
             points={getPoints(scale)}
             fill="none"
-            stroke="#2A2A2A"
+            stroke="#e5e5e7"
             strokeWidth="0.5"
           />
         ))}
@@ -121,21 +121,21 @@ export function PortfolioRadar({ portfolio, portfolioStocks, signals }: Portfoli
           const x2 = CX + RADIUS * Math.cos(angle);
           const y2 = CY + RADIUS * Math.sin(angle);
           return (
-            <line key={i} x1={CX} y1={CY} x2={x2} y2={y2} stroke="#2A2A2A" strokeWidth="0.5" />
+            <line key={i} x1={CX} y1={CY} x2={x2} y2={y2} stroke="#e5e5e7" strokeWidth="0.5" />
           );
         })}
 
         {/* Data polygon */}
         <polygon
           points={dataPoints.map((p) => `${p.x},${p.y}`).join(" ")}
-          fill="rgba(46, 139, 239, 0.15)"
-          stroke="#2E8BEF"
+          fill="rgba(0, 109, 216, 0.15)"
+          stroke="#006DD8"
           strokeWidth="2"
         />
 
         {/* Data dots */}
         {dataPoints.map((p, i) => (
-          <circle key={i} cx={p.x} cy={p.y} r="4" fill="#2E8BEF" />
+          <circle key={i} cx={p.x} cy={p.y} r="4" fill="#006DD8" />
         ))}
 
         {/* Labels */}
@@ -146,7 +146,7 @@ export function PortfolioRadar({ portfolio, portfolioStocks, signals }: Portfoli
             y={p.y}
             textAnchor="middle"
             dominantBaseline="middle"
-            fill="#A0A0A0"
+            fill="#6e6e73"
             fontSize="10"
             fontFamily="Inter, sans-serif"
           >
@@ -161,7 +161,7 @@ export function PortfolioRadar({ portfolio, portfolioStocks, signals }: Portfoli
             x={p.x}
             y={p.y - 10}
             textAnchor="middle"
-            fill="#F5F5F5"
+            fill="#1d1d1f"
             fontSize="9"
             fontWeight="600"
             fontFamily="JetBrains Mono"

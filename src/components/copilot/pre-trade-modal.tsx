@@ -311,7 +311,7 @@ export function PreTradeModal({
                       ? "bg-gold/10 text-gold border border-gold/20 hover:bg-gold/20"
                       : needsOverride
                         ? "bg-surface-alt text-text-muted cursor-not-allowed"
-                        : "bg-green text-black hover:bg-green-light"
+                        : "bg-green text-white hover:bg-green-light"
                   }`}
                 >
                   <CheckCircle className="w-3.5 h-3.5" />

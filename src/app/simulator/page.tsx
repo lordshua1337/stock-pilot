@@ -200,7 +200,7 @@ function TradeModal({
             disabled={!isValid}
             className={`w-full py-3 rounded-xl text-sm font-semibold transition-all disabled:opacity-30 ${
               action === "buy"
-                ? "bg-green text-black hover:brightness-110"
+                ? "bg-green text-white hover:brightness-110"
                 : "bg-red text-white hover:brightness-110"
             }`}
           >

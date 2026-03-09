@@ -435,7 +435,7 @@ function buildPdfActions(
 // ---------------------------------------------------------------------------
 
 function pdfScoreColor(value: number): string {
-  if (value >= 70) return "#2E8BEF";
+  if (value >= 70) return "#006DD8";
   if (value >= 40) return "#E5A100";
   return "#E53935";
 }
@@ -546,7 +546,7 @@ function buildPdfDocument(
   }).join("");
 
   const strengthItems = profile.strengths.map(s =>
-    `<div class="dnapd-sv-item" style="color:#1a7a3c"><span style="position:absolute;left:0;top:7px;width:4px;height:4px;border-radius:50%;background:#2E8BEF;display:block"></span>${s}</div>`
+    `<div class="dnapd-sv-item" style="color:#1a7a3c"><span style="position:absolute;left:0;top:7px;width:4px;height:4px;border-radius:50%;background:#006DD8;display:block"></span>${s}</div>`
   ).join("");
 
   const vulnItems = profile.vulnerabilities.map(v =>
@@ -561,7 +561,7 @@ function buildPdfDocument(
     <div class="dnapd-dim-grid">${dimCards}</div>
     <div class="dnapd-sv-grid">
       <div>
-        <div class="dnapd-sv-title" style="color:#2E8BEF">Strengths</div>
+        <div class="dnapd-sv-title" style="color:#006DD8">Strengths</div>
         ${strengthItems}
       </div>
       <div>
@@ -583,7 +583,7 @@ function buildPdfDocument(
   };
   const moodColors: Record<string, string> = {
     panicked: "#E53935", reactive: "#FF8A65", euphoric: "#E5A100",
-    concerned: "#E5A100", steady: "#2E8BEF",
+    concerned: "#E5A100", steady: "#006DD8",
   };
 
   const biasItems = activeBiases.slice(0, 6).map(b => {
@@ -606,7 +606,7 @@ function buildPdfDocument(
       ${profile.behavioralRule}
     </div>
 
-    <div style="font-size:12px;font-weight:600;color:#555;margin-bottom:8px">Market Mood: <span style="color:${moodColors[moodState] ?? "#2E8BEF"}">${moodLabels[moodState] ?? "Steady"}</span></div>
+    <div style="font-size:12px;font-weight:600;color:#555;margin-bottom:8px">Market Mood: <span style="color:${moodColors[moodState] ?? "#006DD8"}">${moodLabels[moodState] ?? "Steady"}</span></div>
     <div class="dnapd-mood-grid">
       <div class="dnapd-mood-card">
         <div class="dnapd-mood-label">Panic</div>
@@ -637,7 +637,7 @@ function buildPdfDocument(
   page3.className = "dna-pdf-page";
 
   const stockItems = stocks.map(m => {
-    const scoreColor = m.stock.aiScore >= 80 ? "#2E8BEF" : m.stock.aiScore >= 60 ? "#E5A100" : "#999";
+    const scoreColor = m.stock.aiScore >= 80 ? "#006DD8" : m.stock.aiScore >= 60 ? "#E5A100" : "#999";
     return `<div class="dnapd-stock-card">
       <div class="dnapd-stock-left">
         <div>
@@ -690,7 +690,7 @@ function buildPdfDocument(
     ).join("");
 
     const strengthBullets = profile.strengths.slice(0, 3).map(s =>
-      `<div style="font-size:12px;color:#1a7a3c;margin-bottom:4px;padding-left:12px;position:relative"><span style="position:absolute;left:0;color:#2E8BEF;font-weight:700">+</span>${s}</div>`
+      `<div style="font-size:12px;color:#1a7a3c;margin-bottom:4px;padding-left:12px;position:relative"><span style="position:absolute;left:0;color:#006DD8;font-weight:700">+</span>${s}</div>`
     ).join("");
 
     const riskBullets = profile.vulnerabilities.slice(0, 2).map(v =>
@@ -804,7 +804,7 @@ async function generatePdf(profile: StoredDNAProfile, accentColor: string): Prom
 
 export function DownloadPdfButton({
   profile,
-  accentColor = "#2E8BEF",
+  accentColor = "#006DD8",
 }: {
   profile: StoredDNAProfile;
   accentColor?: string;

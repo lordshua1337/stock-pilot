@@ -459,7 +459,7 @@ export default function ComparePage() {
             </p>
             <button
               onClick={() => setShowPicker(true)}
-              className="text-black px-5 py-2.5 rounded-lg font-medium transition-all inline-flex items-center gap-2 sp-btn-gradient"
+              className="px-5 py-2.5 rounded-lg font-medium transition-all inline-flex items-center gap-2 sp-btn-primary"
             >
               <Plus className="w-4 h-4" />
               Add First Stock

@@ -46,7 +46,7 @@ function ringPoints(
 // Component
 // ---------------------------------------------------------------------------
 
-export function RadarChart({ dimensions, accentColor = "#2E8BEF" }: RadarChartProps) {
+export function RadarChart({ dimensions, accentColor = "#006DD8" }: RadarChartProps) {
   const size = 340;
   const cx = size / 2;
   const cy = size / 2;
@@ -77,7 +77,7 @@ export function RadarChart({ dimensions, accentColor = "#2E8BEF" }: RadarChartPr
           key={scale}
           points={ringPoints(cx, cy, radius, scale)}
           fill="none"
-          stroke="#2A2A2A"
+          stroke="#e5e5e7"
           strokeWidth="0.5"
           opacity={0.6}
         />
@@ -91,7 +91,7 @@ export function RadarChart({ dimensions, accentColor = "#2E8BEF" }: RadarChartPr
             key={`val-${scale}`}
             x={cx + 6}
             y={y + 3}
-            fill="#555"
+            fill="#6e6e73"
             fontSize="8"
             fontFamily="Inter, sans-serif"
           >
@@ -110,7 +110,7 @@ export function RadarChart({ dimensions, accentColor = "#2E8BEF" }: RadarChartPr
             y1={cy}
             x2={endPt.x}
             y2={endPt.y}
-            stroke="#2A2A2A"
+            stroke="#e5e5e7"
             strokeWidth="0.5"
           />
         );
@@ -156,7 +156,7 @@ export function RadarChart({ dimensions, accentColor = "#2E8BEF" }: RadarChartPr
             y={p.y - 6}
             textAnchor="middle"
             dominantBaseline="middle"
-            fill="#A0A0A0"
+            fill="#6e6e73"
             fontSize="11"
             fontWeight="500"
             fontFamily="Inter, sans-serif"
@@ -187,7 +187,7 @@ export function RadarChart({ dimensions, accentColor = "#2E8BEF" }: RadarChartPr
 
 export function RadarChartStatic({
   dimensions,
-  accentColor = "#2E8BEF",
+  accentColor = "#006DD8",
 }: RadarChartProps) {
   const size = 300;
   const cx = size / 2;
@@ -254,7 +254,7 @@ export function RadarChartStatic({
             y={p.y - 5}
             textAnchor="middle"
             dominantBaseline="middle"
-            fill="#555"
+            fill="#6e6e73"
             fontSize="10"
             fontWeight="500"
             fontFamily="Inter, sans-serif"

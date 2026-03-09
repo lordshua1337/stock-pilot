@@ -453,7 +453,7 @@ export default function HomePage() {
           </p>
           <Link
             href="/portfolio"
-            className="text-black px-8 py-3 rounded-lg font-medium transition-all inline-flex items-center gap-2 sp-btn-gradient"
+            className="px-8 py-3 rounded-lg font-medium transition-all inline-flex items-center gap-2 sp-btn-primary"
           >
             Build Portfolio
             <ArrowRight className="w-4 h-4" />

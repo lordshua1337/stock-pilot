@@ -26,13 +26,13 @@ function SubScoreRing({ score, label }: { score: number; label: string }) {
   const pct = score / 100;
   const circumference = 2 * Math.PI * 16;
   const dashOffset = circumference * (1 - pct);
-  const color = score >= 70 ? "#2E8BEF" : score >= 45 ? "#FFD740" : "#FF5252";
+  const color = score >= 70 ? "#006DD8" : score >= 45 ? "#FFD740" : "#FF5252";
 
   return (
     <div className="flex flex-col items-center gap-1">
       <div className="relative w-11 h-11">
         <svg viewBox="0 0 40 40" className="w-full h-full -rotate-90">
-          <circle cx="20" cy="20" r="16" fill="none" stroke="#2A2A2A" strokeWidth="2.5" />
+          <circle cx="20" cy="20" r="16" fill="none" stroke="#e5e5e7" strokeWidth="2.5" />
           <circle
             cx="20" cy="20" r="16" fill="none"
             stroke={color} strokeWidth="2.5" strokeLinecap="round"

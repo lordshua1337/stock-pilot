@@ -105,8 +105,8 @@ export function BacktestChart({
           const val = yMin + (yMax - yMin) * pct;
           return (
             <g key={pct}>
-              <line x1={PAD.left} y1={y} x2={PAD.left + CHART_W} y2={y} stroke="#2A2A2A" strokeWidth="0.5" />
-              <text x={PAD.left + CHART_W + 4} y={y + 3} fill="#666" fontSize="9" fontFamily="JetBrains Mono">
+              <line x1={PAD.left} y1={y} x2={PAD.left + CHART_W} y2={y} stroke="#e5e5e7" strokeWidth="0.5" />
+              <text x={PAD.left + CHART_W + 4} y={y + 3} fill="#aeaeb2" fontSize="9" fontFamily="JetBrains Mono">
                 {(val / 1000).toFixed(1)}k
               </text>
             </g>
@@ -121,7 +121,7 @@ export function BacktestChart({
               x={xScale(i)}
               y={HEIGHT - 6}
               textAnchor="middle"
-              fill="#666"
+              fill="#aeaeb2"
               fontSize="9"
             >
               {label}
@@ -130,14 +130,14 @@ export function BacktestChart({
         )}
 
         {/* S&P 500 line */}
-        <path d={buildLine(sp500Values)} fill="none" stroke="#666" strokeWidth="1.5" strokeDasharray="4 2" />
+        <path d={buildLine(sp500Values)} fill="none" stroke="#aeaeb2" strokeWidth="1.5" strokeDasharray="4 2" />
 
         {/* Portfolio line */}
-        <path d={buildLine(portfolioValues)} fill="none" stroke="#2E8BEF" strokeWidth="2" />
+        <path d={buildLine(portfolioValues)} fill="none" stroke="#006DD8" strokeWidth="2" />
 
         {/* End dots */}
-        <circle cx={xScale(MONTHS)} cy={yScale(sp500Values[MONTHS])} r="3" fill="#666" />
-        <circle cx={xScale(MONTHS)} cy={yScale(portfolioValues[MONTHS])} r="3" fill="#2E8BEF" />
+        <circle cx={xScale(MONTHS)} cy={yScale(sp500Values[MONTHS])} r="3" fill="#aeaeb2" />
+        <circle cx={xScale(MONTHS)} cy={yScale(portfolioValues[MONTHS])} r="3" fill="#006DD8" />
       </svg>
 
       {/* Legend + returns */}

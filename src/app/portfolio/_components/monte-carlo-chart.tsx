@@ -19,7 +19,7 @@ interface Scenario {
 }
 
 const SCENARIOS: Scenario[] = [
-  { label: "Bull", color: "#2E8BEF", annualReturn: 0.18 },
+  { label: "Bull", color: "#006DD8", annualReturn: 0.18 },
   { label: "Base", color: "#448AFF", annualReturn: 0.08 },
   { label: "Bear", color: "#FF5252", annualReturn: -0.12 },
 ];
@@ -99,8 +99,8 @@ export function MonteCarloChart({
           const val = yMin + (yMax - yMin) * pct;
           return (
             <g key={pct}>
-              <line x1={PAD.left} y1={y} x2={PAD.left + CHART_W} y2={y} stroke="#2A2A2A" strokeWidth="0.5" />
-              <text x={PAD.left + CHART_W + 6} y={y + 3} fill="#666" fontSize="9" fontFamily="JetBrains Mono">
+              <line x1={PAD.left} y1={y} x2={PAD.left + CHART_W} y2={y} stroke="#e5e5e7" strokeWidth="0.5" />
+              <text x={PAD.left + CHART_W + 6} y={y + 3} fill="#aeaeb2" fontSize="9" fontFamily="JetBrains Mono">
                 {formatCurrency(val)}
               </text>
             </g>
@@ -116,7 +116,7 @@ export function MonteCarloChart({
               x={xScale(month)}
               y={HEIGHT - 6}
               textAnchor="middle"
-              fill="#666"
+              fill="#aeaeb2"
               fontSize="9"
               fontFamily="Inter"
             >
@@ -149,7 +149,7 @@ export function MonteCarloChart({
           y1={yScale(totalInvestment)}
           x2={PAD.left + CHART_W}
           y2={yScale(totalInvestment)}
-          stroke="#666"
+          stroke="#aeaeb2"
           strokeWidth="0.5"
           strokeDasharray="4 2"
         />

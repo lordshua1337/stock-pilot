@@ -37,7 +37,7 @@ export function DonutChart({
             cy={cy}
             r={outerRadius}
             fill="none"
-            stroke="#2A2A2A"
+            stroke="#e5e5e7"
             strokeWidth={outerRadius - innerRadius}
           />
         </svg>
@@ -83,14 +83,14 @@ export function DonutChart({
     <div className="flex flex-col items-center gap-3">
       <svg viewBox={`0 0 ${size} ${size}`} width={size} height={size}>
         {/* Gap ring */}
-        <circle cx={cx} cy={cy} r={outerRadius} fill="none" stroke="#1A1A1A" strokeWidth="1" />
+        <circle cx={cx} cy={cy} r={outerRadius} fill="none" stroke="#e5e5e7" strokeWidth="1" />
 
         {arcs.map((arc, i) => (
           <path
             key={i}
             d={arc.path}
             fill={arc.color}
-            stroke="#0A0A0A"
+            stroke="#f5f5f7"
             strokeWidth="1.5"
             className="transition-opacity hover:opacity-80"
           />
@@ -104,7 +104,7 @@ export function DonutChart({
               y={cy - 6}
               textAnchor="middle"
               dominantBaseline="middle"
-              fill="#F5F5F5"
+              fill="#1d1d1f"
               fontSize="18"
               fontWeight="700"
               fontFamily="JetBrains Mono, monospace"
@@ -117,7 +117,7 @@ export function DonutChart({
                 y={cy + 12}
                 textAnchor="middle"
                 dominantBaseline="middle"
-                fill="#666666"
+                fill="#aeaeb2"
                 fontSize="10"
               >
                 {centerLabel}

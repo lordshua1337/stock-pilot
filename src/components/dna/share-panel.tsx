@@ -259,7 +259,7 @@ export function SharePanel({
           {/* Email button */}
           <a
             href={mailtoLink}
-            className="w-full px-4 py-2.5 rounded-lg text-black text-sm font-medium flex items-center justify-center gap-2 sp-btn-gradient"
+            className="w-full px-4 py-2.5 rounded-lg text-sm font-medium flex items-center justify-center gap-2 sp-btn-primary"
           >
             <Mail className="w-4 h-4" />
             Email to Advisor

@@ -71,7 +71,7 @@ const MACRO_SCENARIOS: MacroScenario[] = [
     description:
       "Strong economic expansion with AI adoption driving productivity gains. Risk-on environment lifts growth stocks. Cyclical sectors outperform.",
     icon: <TrendingUp className="w-5 h-5" />,
-    color: "#2E8BEF",
+    color: "#006DD8",
     sectorImpacts: {
       Technology: 22,
       Healthcare: 10,

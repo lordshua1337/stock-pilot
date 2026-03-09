@@ -8,7 +8,7 @@ interface FactorChartProps {
 }
 
 const FACTORS: { key: "momentum" | "value" | "stability"; label: string; color: string }[] = [
-  { key: "momentum", label: "Momentum", color: "#2E8BEF" },
+  { key: "momentum", label: "Momentum", color: "#006DD8" },
   { key: "value", label: "Value", color: "#448AFF" },
   { key: "stability", label: "Stability", color: "#FFD740" },
 ];
@@ -46,13 +46,13 @@ export function FactorChart({ signals }: FactorChartProps) {
               <line
                 x1={x} y1={TOP_PAD - 5}
                 x2={x} y2={totalHeight}
-                stroke="#2A2A2A"
+                stroke="#e5e5e7"
                 strokeWidth="0.5"
               />
               <text
                 x={x} y={TOP_PAD - 8}
                 textAnchor="middle"
-                fill="#666"
+                fill="#aeaeb2"
                 fontSize="8"
                 fontFamily="JetBrains Mono"
               >
@@ -74,7 +74,7 @@ export function FactorChart({ signals }: FactorChartProps) {
                 y={groupY + groupHeight / 2 + 1}
                 textAnchor="end"
                 dominantBaseline="middle"
-                fill="#F5F5F5"
+                fill="#1d1d1f"
                 fontSize="11"
                 fontWeight="600"
                 fontFamily="JetBrains Mono"
@@ -97,7 +97,7 @@ export function FactorChart({ signals }: FactorChartProps) {
                       width={barMaxWidth}
                       height={BAR_HEIGHT}
                       rx={3}
-                      fill="#1A1A1A"
+                      fill="#f0f0f2"
                     />
                     {/* Filled bar */}
                     <rect
@@ -114,7 +114,7 @@ export function FactorChart({ signals }: FactorChartProps) {
                       x={LEFT_PAD + barWidth + 4}
                       y={barY + BAR_HEIGHT / 2 + 1}
                       dominantBaseline="middle"
-                      fill="#A0A0A0"
+                      fill="#6e6e73"
                       fontSize="8"
                       fontFamily="JetBrains Mono"
                     >

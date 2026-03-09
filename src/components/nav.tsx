@@ -160,7 +160,7 @@ export function Nav() {
                 href="/portfolio"
                 className={`ml-2 text-xs font-medium px-4 py-1.5 rounded-lg transition-all ${
                   pathname === "/portfolio"
-                    ? "bg-green text-black"
+                    ? "bg-green text-white"
                     : "bg-green/10 text-green border border-green/20 hover:bg-green/20"
                 }`}
               >

@@ -36,11 +36,11 @@ function Tooltip({ content }: { content: string }) {
       </button>
       {open && (
         <div
-          className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-80 max-w-[90vw] bg-[#1a1a2e] border border-border rounded-lg p-3 text-[13px] leading-[1.6] text-text-secondary z-50 shadow-xl animate-fade-in"
+          className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-80 max-w-[90vw] bg-surface border border-border rounded-lg p-3 text-[13px] leading-[1.6] text-text-secondary z-50 shadow-xl animate-fade-in"
           onMouseEnter={() => setOpen(true)}
           onMouseLeave={() => setOpen(false)}
         >
-          <div className="absolute top-full left-1/2 -translate-x-1/2 w-2 h-2 bg-[#1a1a2e] border-r border-b border-border rotate-45 -mt-1" />
+          <div className="absolute top-full left-1/2 -translate-x-1/2 w-2 h-2 bg-surface border-r border-b border-border rotate-45 -mt-1" />
           {content}
         </div>
       )}
@@ -71,12 +71,12 @@ function ScoreRing({ score }: { score: number }) {
   const pct = score / 100;
   const circumference = 2 * Math.PI * 20;
   const dashOffset = circumference * (1 - pct);
-  const color = score >= 80 ? "#2E8BEF" : score >= 60 ? "#FFD740" : "#FF5252";
+  const color = score >= 80 ? "#006DD8" : score >= 60 ? "#FFD740" : "#FF5252";
 
   return (
     <div className="relative w-14 h-14 flex-shrink-0">
       <svg viewBox="0 0 48 48" className="w-full h-full -rotate-90">
-        <circle cx="24" cy="24" r="20" fill="none" stroke="#2A2A2A" strokeWidth="3" />
+        <circle cx="24" cy="24" r="20" fill="none" stroke="#e5e5e7" strokeWidth="3" />
         <circle
           cx="24" cy="24" r="20" fill="none"
           stroke={color} strokeWidth="3" strokeLinecap="round"
@@ -519,7 +519,7 @@ export function HoldingInsightCard({ stock, variant = "standard" }: {
             <button
               onClick={() => setActiveTab("signals")}
               className={`px-3 py-1.5 text-xs font-medium rounded transition-colors ${
-                activeTab === "signals" ? "bg-green text-black" : "text-text-muted hover:bg-surface-hover"
+                activeTab === "signals" ? "bg-green text-white" : "text-text-muted hover:bg-surface-hover"
               }`}
             >
               Fundamentals & Technicals
@@ -527,7 +527,7 @@ export function HoldingInsightCard({ stock, variant = "standard" }: {
             <button
               onClick={() => setActiveTab("redteam")}
               className={`px-3 py-1.5 text-xs font-medium rounded transition-colors ${
-                activeTab === "redteam" ? "bg-green text-black" : "text-text-muted hover:bg-surface-hover"
+                activeTab === "redteam" ? "bg-green text-white" : "text-text-muted hover:bg-surface-hover"
               }`}
             >
               Red Team

@@ -50,7 +50,7 @@ export function BenchmarkTape() {
             onClick={() => setPeriod(p)}
             className={`px-2.5 py-1 text-[11px] font-mono font-medium rounded transition-colors ${
               period === p
-                ? "bg-green text-black"
+                ? "bg-green text-white"
                 : "text-text-muted hover:text-text-secondary hover:bg-surface-hover"
             }`}
           >

@@ -39,7 +39,7 @@ interface ActionItem {
 }
 
 const PRIORITY_LABELS: Record<Priority, { label: string; color: string }> = {
-  this_week: { label: "Do This Week", color: "#2E8BEF" },
+  this_week: { label: "Do This Week", color: "#006DD8" },
   this_month: { label: "Do This Month", color: "#FFD740" },
   ongoing: { label: "Ongoing Habit", color: "#448AFF" },
 };
@@ -351,7 +351,7 @@ export function ActionPlan({
   biasFlags,
   triggeredModules,
   archetypeKey,
-  accentColor = "#2E8BEF",
+  accentColor = "#006DD8",
 }: {
   dimensions: CoreDimensions;
   biasFlags: BiasFlag[];

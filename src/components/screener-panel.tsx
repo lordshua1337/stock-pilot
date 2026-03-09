@@ -232,7 +232,7 @@ export default function ScreenerPanel({
         <SlidersHorizontal className="w-3.5 h-3.5" />
         Screener
         {activeCount > 0 && (
-          <span className="bg-green text-black text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
+          <span className="bg-green text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
             {activeCount}
           </span>
         )}

@@ -72,7 +72,7 @@ function getPersonalityFit(
 }
 
 const FIT_COLORS = {
-  great: { bg: "rgba(46, 139, 239, 0.12)", text: "#2E8BEF", label: "Great Fit" },
+  great: { bg: "rgba(0, 109, 216, 0.12)", text: "#006DD8", label: "Great Fit" },
   caution: {
     bg: "rgba(255, 215, 64, 0.12)",
     text: "#FFD740",
@@ -196,7 +196,7 @@ function AddStockModal({
                   border: `1px solid ${
                     selectedStage === stage
                       ? STAGE_META[stage].color + "40"
-                      : "#2A2A2A"
+                      : "#e5e5e7"
                   }`,
                 }}
               >
@@ -593,7 +593,7 @@ export default function PipelinePage() {
 
           <button
             onClick={() => setShowAdd(true)}
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-semibold sp-btn-gradient"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-semibold sp-btn-primary"
           >
             <Plus className="w-4 h-4" />
             Add Your First Stock

@@ -54,7 +54,7 @@ function ringPoints(
 // Component
 // ---------------------------------------------------------------------------
 
-export function RadarChartV2({ factors, accentColor = "#2E8BEF" }: RadarChartV2Props) {
+export function RadarChartV2({ factors, accentColor = "#006DD8" }: RadarChartV2Props) {
   const size = 360;
   const cx = size / 2;
   const cy = size / 2;
@@ -86,7 +86,7 @@ export function RadarChartV2({ factors, accentColor = "#2E8BEF" }: RadarChartV2P
           key={scale}
           points={ringPoints(cx, cy, radius, scale)}
           fill="none"
-          stroke="#2A2A2A"
+          stroke="#e5e5e7"
           strokeWidth="0.5"
           opacity={0.6}
         />
@@ -100,7 +100,7 @@ export function RadarChartV2({ factors, accentColor = "#2E8BEF" }: RadarChartV2P
             key={`val-${scale}`}
             x={cx + 6}
             y={y + 3}
-            fill="#555"
+            fill="#6e6e73"
             fontSize="8"
             fontFamily="Inter, sans-serif"
           >
@@ -119,7 +119,7 @@ export function RadarChartV2({ factors, accentColor = "#2E8BEF" }: RadarChartV2P
             y1={cy}
             x2={endPt.x}
             y2={endPt.y}
-            stroke="#2A2A2A"
+            stroke="#e5e5e7"
             strokeWidth="0.5"
           />
         );
@@ -165,7 +165,7 @@ export function RadarChartV2({ factors, accentColor = "#2E8BEF" }: RadarChartV2P
           y={p.y}
           textAnchor="middle"
           dominantBaseline="middle"
-          fill="#A0A0A0"
+          fill="#6e6e73"
           fontSize="10"
           fontWeight="500"
           fontFamily="Inter, sans-serif"

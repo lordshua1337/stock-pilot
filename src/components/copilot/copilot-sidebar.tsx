@@ -301,7 +301,7 @@ export function CopilotSidebar() {
                 <button
                   onClick={handleSend}
                   disabled={!input.trim() || isStreaming}
-                  className="p-2 rounded-lg bg-green text-black hover:bg-green/90 disabled:opacity-40 disabled:cursor-not-allowed transition-all shrink-0"
+                  className="p-2 rounded-lg bg-green text-white hover:bg-green/90 disabled:opacity-40 disabled:cursor-not-allowed transition-all shrink-0"
                 >
                   {isStreaming ? (
                     <Loader2 className="w-4 h-4 animate-spin" />

@@ -303,9 +303,9 @@ function NewEntryModal({
                     onClick={() => setFollowedRule(true)}
                     className="px-3 py-1 rounded-lg text-xs font-medium border transition-all"
                     style={{
-                      borderColor: followedRule ? "#2E8BEF" : "var(--border)",
+                      borderColor: followedRule ? "#006DD8" : "var(--border)",
                       background: followedRule ? "rgba(0,200,83,0.12)" : "transparent",
-                      color: followedRule ? "#2E8BEF" : "var(--text-muted)",
+                      color: followedRule ? "#006DD8" : "var(--text-muted)",
                     }}
                   >
                     Yes
@@ -576,7 +576,7 @@ function EntryCard({
 function InsightCard({ insight }: { readonly insight: JournalInsight }) {
   const colorMap = {
     warning: { bg: "rgba(255,215,64,0.08)", border: "#FFD740", icon: <AlertTriangle className="w-4 h-4" /> },
-    positive: { bg: "rgba(0,200,83,0.08)", border: "#2E8BEF", icon: <CheckCircle2 className="w-4 h-4" /> },
+    positive: { bg: "rgba(0,200,83,0.08)", border: "#006DD8", icon: <CheckCircle2 className="w-4 h-4" /> },
     neutral: { bg: "rgba(68,138,255,0.08)", border: "#448AFF", icon: <Info className="w-4 h-4" /> },
   };
   const c = colorMap[insight.type];
