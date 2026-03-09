@@ -295,7 +295,7 @@ export default function ResearchPage() {
         <div className="mb-8">
           <p
             className="text-xs uppercase tracking-widest font-medium mb-2"
-            style={{ color: archetype ? (ARCHETYPE_COLORS[archetype] ?? "#00C853") : "#00C853" }}
+            style={{ color: archetype ? (ARCHETYPE_COLORS[archetype] ?? "#006DD8") : "#006DD8" }}
           >
             Research
           </p>
@@ -334,7 +334,7 @@ export default function ResearchPage() {
 
         {/* Top 10 stocks for your archetype */}
         {archetype && dimensions && (() => {
-          const accentColor = ARCHETYPE_COLORS[archetype] ?? "#00C853";
+          const accentColor = ARCHETYPE_COLORS[archetype] ?? "#006DD8";
           const archetypeName = ARCHETYPE_INFO[archetype]?.name ?? archetype;
           const top10 = topStocksForProfile(dimensions, 10);
           const copy = getPersonalityCopy(archetype);
@@ -354,7 +354,7 @@ export default function ResearchPage() {
               )}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 {top10.map((match, idx) => {
-                  const fitColor = match.score >= 75 ? "#00C853" : match.score >= 50 ? "#FFD740" : "#FF5252";
+                  const fitColor = match.score >= 75 ? "#006DD8" : match.score >= 50 ? "#FFD740" : "#FF5252";
                   return (
                     <Link
                       key={match.stock.ticker}
@@ -463,7 +463,7 @@ export default function ResearchPage() {
         <div className="space-y-3">
           {filtered.map((stock) => {
             const copy = archetype ? getPersonalityCopy(archetype) : null;
-            const accentColor = archetype ? (ARCHETYPE_COLORS[archetype] ?? "#00C853") : undefined;
+            const accentColor = archetype ? (ARCHETYPE_COLORS[archetype] ?? "#006DD8") : undefined;
             const isMatch = matchedTickers.has(stock.ticker);
             return (
               <StockDetail

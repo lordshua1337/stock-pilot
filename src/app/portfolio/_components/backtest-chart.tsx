@@ -133,11 +133,11 @@ export function BacktestChart({
         <path d={buildLine(sp500Values)} fill="none" stroke="#666" strokeWidth="1.5" strokeDasharray="4 2" />
 
         {/* Portfolio line */}
-        <path d={buildLine(portfolioValues)} fill="none" stroke="#00C853" strokeWidth="2" />
+        <path d={buildLine(portfolioValues)} fill="none" stroke="#006DD8" strokeWidth="2" />
 
         {/* End dots */}
         <circle cx={xScale(MONTHS)} cy={yScale(sp500Values[MONTHS])} r="3" fill="#666" />
-        <circle cx={xScale(MONTHS)} cy={yScale(portfolioValues[MONTHS])} r="3" fill="#00C853" />
+        <circle cx={xScale(MONTHS)} cy={yScale(portfolioValues[MONTHS])} r="3" fill="#006DD8" />
       </svg>
 
       {/* Legend + returns */}

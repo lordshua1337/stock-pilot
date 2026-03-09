@@ -49,14 +49,14 @@ export const EMOTIONAL_STATES: Record<
   EmotionalState,
   { readonly label: string; readonly color: string; readonly icon: string }
 > = {
-  calm: { label: "Calm", color: "#00C853", icon: "leaf" },
+  calm: { label: "Calm", color: "#006DD8", icon: "leaf" },
   confident: { label: "Confident", color: "#448AFF", icon: "shield" },
   anxious: { label: "Anxious", color: "#FFD740", icon: "alert-triangle" },
   excited: { label: "Excited", color: "#E040FB", icon: "zap" },
   fomo: { label: "FOMO", color: "#FF8A65", icon: "flame" },
   panicking: { label: "Panicking", color: "#FF5252", icon: "alert-circle" },
   uncertain: { label: "Uncertain", color: "#8B8B8B", icon: "help-circle" },
-  disciplined: { label: "Disciplined", color: "#69F0AE", icon: "target" },
+  disciplined: { label: "Disciplined", color: "#4DA3F0", icon: "target" },
 };
 
 export const BIAS_INFO: Record<
@@ -109,7 +109,7 @@ export const ACTION_INFO: Record<
   JournalAction,
   { readonly label: string; readonly color: string }
 > = {
-  buy: { label: "Buy", color: "#00C853" },
+  buy: { label: "Buy", color: "#006DD8" },
   sell: { label: "Sell", color: "#FF5252" },
   hold: { label: "Hold", color: "#448AFF" },
   watchlist: { label: "Watchlist", color: "#FFD740" },

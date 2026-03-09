@@ -8,7 +8,7 @@ interface FactorChartProps {
 }
 
 const FACTORS: { key: "momentum" | "value" | "stability"; label: string; color: string }[] = [
-  { key: "momentum", label: "Momentum", color: "#00C853" },
+  { key: "momentum", label: "Momentum", color: "#006DD8" },
   { key: "value", label: "Value", color: "#448AFF" },
   { key: "stability", label: "Stability", color: "#FFD740" },
 ];

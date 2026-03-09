@@ -95,7 +95,7 @@ function SurpriseChart({ entry }: { entry: EarningsEntry }) {
               className="w-2.5 rounded-sm transition-all"
               style={{
                 height: `${Math.max(height, 8)}%`,
-                backgroundColor: isPositive ? "#00C853" : s.surprisePercent === 0 ? "#555" : "#FF5252",
+                backgroundColor: isPositive ? "#006DD8" : s.surprisePercent === 0 ? "#555" : "#FF5252",
                 opacity: 0.8,
               }}
             />
@@ -133,7 +133,7 @@ function EarningsCard({
     ? "#FF5252"
     : daysUntil <= 7 && daysUntil >= 0
       ? "#FFD740"
-      : "#00C853";
+      : "#006DD8";
 
   return (
     <motion.div
@@ -172,7 +172,7 @@ function EarningsCard({
               <div className="flex items-center gap-4 mt-2">
                 <div>
                   <p className="text-[9px] text-text-muted uppercase tracking-wider">Expected</p>
-                  <p className="text-sm font-bold" style={{ color: accentColor ?? "#00C853" }}>
+                  <p className="text-sm font-bold" style={{ color: accentColor ?? "#006DD8" }}>
                     ${entry.expectedEPS.toFixed(2)}
                   </p>
                 </div>
@@ -187,7 +187,7 @@ function EarningsCard({
                   <p
                     className="text-sm font-mono font-semibold"
                     style={{
-                      color: beatRate >= 66 ? "#00C853" : beatRate >= 33 ? "#FFD740" : "#FF5252",
+                      color: beatRate >= 66 ? "#006DD8" : beatRate >= 33 ? "#FFD740" : "#FF5252",
                     }}
                   >
                     {beatRate}%
@@ -257,7 +257,7 @@ function EarningsCard({
                         style={{
                           color:
                             s.surprisePercent > 0
-                              ? "#00C853"
+                              ? "#006DD8"
                               : s.surprisePercent === 0
                                 ? "#888"
                                 : "#FF5252",
@@ -405,8 +405,8 @@ export default function EarningsPage() {
   }, []);
 
   const accentColor = archetypeKey
-    ? ARCHETYPE_COLORS[archetypeKey] ?? "#00C853"
-    : "#00C853";
+    ? ARCHETYPE_COLORS[archetypeKey] ?? "#006DD8"
+    : "#006DD8";
 
   const archetype = archetypeKey ? ARCHETYPE_INFO[archetypeKey] : null;
 

@@ -19,7 +19,7 @@ interface Scenario {
 }
 
 const SCENARIOS: Scenario[] = [
-  { label: "Bull", color: "#00C853", annualReturn: 0.18 },
+  { label: "Bull", color: "#006DD8", annualReturn: 0.18 },
   { label: "Base", color: "#448AFF", annualReturn: 0.08 },
   { label: "Bear", color: "#FF5252", annualReturn: -0.12 },
 ];

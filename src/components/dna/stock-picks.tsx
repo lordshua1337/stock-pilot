@@ -203,7 +203,7 @@ function AntiMatchCard({
 
 export function StockPicks({
   dimensions,
-  accentColor = "#00C853",
+  accentColor = "#006DD8",
   archetype = null,
 }: {
   dimensions: CoreDimensions;

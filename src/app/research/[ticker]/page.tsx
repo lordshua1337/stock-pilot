@@ -264,7 +264,7 @@ export default function StockDetailPage() {
 
         {/* Personality Fit Score */}
         {stock && archetype && dimensions && (() => {
-          const accentColor = ARCHETYPE_COLORS[archetype] ?? "#00C853";
+          const accentColor = ARCHETYPE_COLORS[archetype] ?? "#006DD8";
           const archetypeName = ARCHETYPE_INFO[archetype]?.name ?? archetype;
           const copy = getPersonalityCopy(archetype);
           const whyText = getWhyThisFitsYou(stock, archetype, dimensions);
@@ -279,7 +279,7 @@ export default function StockDetailPage() {
           const ringR = 28;
           const ringC = 2 * Math.PI * ringR;
           const ringOffset = ringC - (fitScore / 100) * ringC;
-          const fitColor = fitScore >= 75 ? "#00C853" : fitScore >= 50 ? "#FFD740" : "#FF5252";
+          const fitColor = fitScore >= 75 ? "#006DD8" : fitScore >= 50 ? "#FFD740" : "#FF5252";
 
           return (
             <div
@@ -328,7 +328,7 @@ export default function StockDetailPage() {
                     <div key={f.label} className="flex items-center gap-2">
                       <span
                         className="w-1.5 h-1.5 rounded-full shrink-0"
-                        style={{ background: f.positive ? "#00C853" : "#FF5252" }}
+                        style={{ background: f.positive ? "#006DD8" : "#FF5252" }}
                       />
                       <div>
                         <span className="text-[10px] text-text-muted uppercase tracking-wider">{f.label}</span>

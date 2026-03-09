@@ -29,13 +29,13 @@ export interface Sector {
 
 export const sectors: Sector[] = [
   { name: "Technology", allocation: 30, color: "#448AFF" },
-  { name: "Healthcare", allocation: 15, color: "#00C853" },
+  { name: "Healthcare", allocation: 15, color: "#006DD8" },
   { name: "Finance", allocation: 15, color: "#FFD740" },
   { name: "Consumer", allocation: 12, color: "#FF6E40" },
   { name: "Energy", allocation: 10, color: "#E040FB" },
   { name: "Industrial", allocation: 8, color: "#40C4FF" },
   { name: "Real Estate", allocation: 5, color: "#FF5252" },
-  { name: "Utilities", allocation: 5, color: "#69F0AE" },
+  { name: "Utilities", allocation: 5, color: "#4DA3F0" },
 ];
 
 export const stocks: Stock[] = [

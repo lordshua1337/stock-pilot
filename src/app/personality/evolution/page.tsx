@@ -569,7 +569,7 @@ function JournalHeatmapChart({ data }: { data: readonly { date: string; count: n
               className="aspect-square rounded-sm"
               style={{
                 backgroundColor: day.count > 0
-                  ? `rgba(0, 200, 83, ${intensity})`
+                  ? `rgba(0, 109, 216, ${intensity})`
                   : "rgba(255,255,255,0.03)",
               }}
               title={`${day.date}: ${day.count} entries`}

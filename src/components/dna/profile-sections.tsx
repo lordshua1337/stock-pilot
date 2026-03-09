@@ -71,7 +71,7 @@ const PORTFOLIO_IMPLICATIONS: Record<DimKey, { high: string; low: string }> = {
 // ---------------------------------------------------------------------------
 
 function getScoreColor(value: number): string {
-  if (value >= 70) return "#00C853";
+  if (value >= 70) return "#006DD8";
   if (value >= 40) return "#FFD740";
   return "#FF5252";
 }
@@ -362,8 +362,8 @@ export function BiasCard({
             <div
               className="text-xs rounded-lg p-2.5 border"
               style={{
-                borderColor: "#00C85330",
-                backgroundColor: "#00C85308",
+                borderColor: "#006DD830",
+                backgroundColor: "#006DD808",
               }}
             >
               <span className="font-semibold text-green">Countermeasure: </span>
@@ -403,7 +403,7 @@ const moodConfig: Record<string, { label: string; color: string; desc: string }>
   },
   steady: {
     label: "Steady",
-    color: "#00C853",
+    color: "#006DD8",
     desc: "You handle market stress well. Your emotional baseline supports good decision-making.",
   },
 };
@@ -486,8 +486,8 @@ export function CommunicationStyle({
       <p
         className="text-sm text-text-secondary rounded-lg p-3 italic border mb-4"
         style={{
-          borderColor: `${accentColor ?? "#00C853"}20`,
-          backgroundColor: `${accentColor ?? "#00C853"}08`,
+          borderColor: `${accentColor ?? "#006DD8"}20`,
+          backgroundColor: `${accentColor ?? "#006DD8"}08`,
         }}
       >
         {archetype.communicationRule}
@@ -506,7 +506,7 @@ export function CommunicationStyle({
               >
                 <span
                   className="font-mono font-bold flex-shrink-0 mt-px"
-                  style={{ color: accentColor ?? "#00C853" }}
+                  style={{ color: accentColor ?? "#006DD8" }}
                 >
                   {i + 1}.
                 </span>
@@ -662,7 +662,7 @@ export function StrengthsVulnerabilities({
   vulnerabilities: string[];
   accentColor?: string;
 }) {
-  const color = accentColor ?? "#00C853";
+  const color = accentColor ?? "#006DD8";
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

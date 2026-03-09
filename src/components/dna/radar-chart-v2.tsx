@@ -54,7 +54,7 @@ function ringPoints(
 // Component
 // ---------------------------------------------------------------------------
 
-export function RadarChartV2({ factors, accentColor = "#00C853" }: RadarChartV2Props) {
+export function RadarChartV2({ factors, accentColor = "#006DD8" }: RadarChartV2Props) {
   const size = 360;
   const cx = size / 2;
   const cy = size / 2;

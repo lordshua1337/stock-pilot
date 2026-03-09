@@ -29,7 +29,7 @@ export function PersonalizedHero() {
   }, []);
 
   const copy = getPersonalityCopy(archetype);
-  const accentColor = archetype ? (ARCHETYPE_COLORS[archetype] ?? "#00C853") : "#00C853";
+  const accentColor = archetype ? (ARCHETYPE_COLORS[archetype] ?? "#006DD8") : "#006DD8";
   const archetypeName = archetype ? ARCHETYPE_INFO[archetype]?.name : null;
 
   // SSR / no-profile fallback

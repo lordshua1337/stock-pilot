@@ -38,7 +38,7 @@ export const STAGE_META: Record<
   },
   portfolio: {
     label: "Portfolio",
-    color: "#00C853",
+    color: "#006DD8",
     description: "Currently holding",
   },
   exited: {
