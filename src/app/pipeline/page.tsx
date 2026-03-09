@@ -593,7 +593,7 @@ export default function PipelinePage() {
 
           <button
             onClick={() => setShowAdd(true)}
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-semibold bg-green text-black hover:brightness-110 transition-all"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-semibold sp-btn-gradient"
           >
             <Plus className="w-4 h-4" />
             Add Your First Stock

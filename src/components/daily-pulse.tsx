@@ -222,7 +222,7 @@ export default function DailyPulseCard() {
           ) : (
             <button
               onClick={handleCheckIn}
-              className="bg-green text-black px-4 py-2 rounded-lg text-sm font-medium hover:bg-green-light transition-colors"
+              className="text-black px-4 py-2 rounded-lg text-sm font-medium sp-btn-gradient"
             >
               Check In
             </button>

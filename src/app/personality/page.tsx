@@ -164,7 +164,7 @@ function IntroScreen({
 
             <button
               onClick={onBegin}
-              className="w-full bg-green text-black px-5 py-3 rounded-lg font-medium hover:bg-green-light transition-colors inline-flex items-center justify-center gap-2"
+              className="w-full text-black px-5 py-3 rounded-lg font-medium transition-all inline-flex items-center justify-center gap-2 sp-btn-gradient"
             >
               {alreadyCompleted ? "Retake Assessment" : "Begin Assessment"}
               <ArrowRight className="w-4 h-4" />
@@ -340,7 +340,7 @@ function TriadScreen({
             <button
               disabled={!isComplete}
               onClick={onFinish}
-              className="bg-green text-black px-5 py-2 rounded-lg text-sm font-medium hover:bg-green-light transition-colors disabled:opacity-30 disabled:cursor-not-allowed inline-flex items-center gap-2"
+              className="text-black px-5 py-2 rounded-lg text-sm font-medium transition-all disabled:opacity-30 disabled:cursor-not-allowed inline-flex items-center gap-2 sp-btn-gradient"
             >
               Finish Assessment
               <ArrowRight className="w-4 h-4" />

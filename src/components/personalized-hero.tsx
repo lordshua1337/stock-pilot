@@ -58,7 +58,7 @@ export function PersonalizedHero() {
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <Link
             href="/portfolio"
-            className="bg-green text-black px-6 py-2.5 rounded-lg font-medium hover:bg-green-light transition-colors inline-flex items-center justify-center gap-2"
+            className="text-black px-6 py-2.5 rounded-lg font-medium transition-all inline-flex items-center justify-center gap-2 sp-btn-gradient"
           >
             Build Portfolio
             <Briefcase className="w-4 h-4" />
@@ -102,7 +102,7 @@ export function PersonalizedHero() {
         <Link
           href="/portfolio"
           className="text-black px-6 py-2.5 rounded-lg font-medium hover:opacity-90 transition-opacity inline-flex items-center justify-center gap-2"
-          style={{ backgroundColor: accentColor }}
+          style={{ background: `linear-gradient(135deg, ${accentColor}, color-mix(in srgb, ${accentColor} 70%, white))` }}
         >
           {copy.heroCta}
           <Briefcase className="w-4 h-4" />

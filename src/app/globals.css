@@ -12,6 +12,8 @@
   --color-green-light: #64AEFA;
   --color-green-dark: #1A7AE0;
   --color-green-bg: rgba(46, 139, 239, 0.12);
+  --gradient-primary: linear-gradient(135deg, #2E8BEF 0%, #64AEFA 100%);
+  --gradient-primary-hover: linear-gradient(135deg, #1A7AE0 0%, #2E8BEF 100%);
   --color-red: #FF5252;
   --color-red-bg: rgba(255, 82, 82, 0.1);
   --color-blue: #448AFF;
@@ -88,6 +90,24 @@
   background-color: var(--color-surface-hover);
   transform: translateY(-2px);
   box-shadow: 0 4px 20px rgba(46, 139, 239, 0.06);
+}
+
+/* Primary gradient button */
+.sp-btn-gradient {
+  background: var(--gradient-primary);
+  color: #000;
+  font-weight: 600;
+  border: none;
+  transition: all 0.2s ease;
+}
+.sp-btn-gradient:hover {
+  background: var(--gradient-primary-hover);
+  box-shadow: 0 4px 20px rgba(46, 139, 239, 0.3);
+}
+
+/* Gradient accent border (left) */
+.sp-accent-gradient {
+  border-image: var(--gradient-primary) 1;
 }
 
 /* Section rhythm -- alternate backgrounds */

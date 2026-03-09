@@ -383,7 +383,7 @@ export default function WatchlistPage() {
             </p>
             <button
               onClick={() => setShowPicker(true)}
-              className="bg-green text-black px-5 py-2.5 rounded-lg font-medium hover:bg-green-light transition-colors inline-flex items-center gap-2"
+              className="text-black px-5 py-2.5 rounded-lg font-medium transition-all inline-flex items-center gap-2 sp-btn-gradient"
             >
               <Plus className="w-4 h-4" />
               Add First Stock

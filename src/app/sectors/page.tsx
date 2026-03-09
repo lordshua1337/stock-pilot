@@ -415,7 +415,7 @@ export default function SectorsPage() {
           </p>
           <Link
             href="/portfolio"
-            className="bg-green text-black px-6 py-2.5 rounded-lg font-medium hover:bg-green-light transition-colors inline-flex items-center gap-2"
+            className="text-black px-6 py-2.5 rounded-lg font-medium transition-all inline-flex items-center gap-2 sp-btn-gradient"
           >
             Build Portfolio
             <ArrowRight className="w-4 h-4" />

@@ -41,7 +41,7 @@ export default function AuthPage() {
     <div className="min-h-screen bg-[#0A0A0A] flex items-center justify-center px-4">
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
-          <div className="w-16 h-16 bg-[#2E8BEF] rounded-2xl flex items-center justify-center mx-auto mb-4">
+          <div className="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4" style={{ background: 'var(--gradient-primary)' }}>
             <svg className="w-8 h-8 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
             </svg>
@@ -73,7 +73,7 @@ export default function AuthPage() {
               placeholder="you@example.com"
               className="w-full px-3 py-2.5 bg-zinc-800 border border-zinc-700 rounded-lg text-white text-sm placeholder:text-zinc-500 mb-3" />
             <button type="submit" disabled={loading || !email}
-              className="w-full px-4 py-2.5 bg-[#2E8BEF] text-black font-semibold rounded-lg hover:bg-[#3B8FE0] transition-colors disabled:opacity-50 text-sm">
+              className="w-full px-4 py-2.5 text-black font-semibold rounded-lg transition-all disabled:opacity-50 text-sm sp-btn-gradient">
               {loading ? 'Sending...' : 'Send Magic Link'}
             </button>
           </form>
