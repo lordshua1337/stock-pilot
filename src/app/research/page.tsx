@@ -29,6 +29,14 @@ import { ARCHETYPE_COLORS } from "@/components/dna/archetype-colors";
 import { matchStocksToDNA, topStocksForProfile } from "@/lib/dna-stock-matcher";
 import type { ArchetypeKey, CoreDimensions } from "@/lib/financial-dna";
 import { v2ToDimensions } from "@/lib/dna-v2/compat";
+import {
+  computeLensScore,
+  loadSelectedPersonas,
+  saveSelectedPersonas,
+  type PersonaKey,
+  type LensResult,
+} from "@/lib/lens-scoring";
+import { LensSelector } from "@/components/lens-selector";
 
 function StockDetail({
   stock,
@@ -36,12 +44,14 @@ function StockDetail({
   onToggle,
   fitLabel,
   fitColor,
+  lensResult,
 }: {
   stock: Stock;
   isExpanded: boolean;
   onToggle: () => void;
   fitLabel?: string;
   fitColor?: string;
+  lensResult?: LensResult;
 }) {
   const isUp = stock.change >= 0;
   const scoreColor =
@@ -110,8 +120,22 @@ function StockDetail({
           </div>
         </div>
         <div className="flex items-center gap-3">
+          {lensResult && lensResult.personas.length > 0 && (
+            <div className="text-right">
+              <p className="text-[10px] text-text-muted">Lens</p>
+              <p className={`text-xl font-mono font-bold ${
+                lensResult.lensScore >= 80
+                  ? "text-green"
+                  : lensResult.lensScore >= 60
+                    ? "text-gold"
+                    : "text-red"
+              }`}>
+                {lensResult.lensScore}
+              </p>
+            </div>
+          )}
           <div className="text-right mr-2">
-            <p className="text-xs text-text-muted">AI Score</p>
+            <p className="text-[10px] text-text-muted">AI Score</p>
             <p className={`text-xl font-mono font-bold ${scoreColor}`}>
               {stock.aiScore}
             </p>
@@ -225,7 +249,7 @@ export default function ResearchPage() {
   const [expanded, setExpanded] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [sectorFilter, setSectorFilter] = useState<string>("all");
-  const [sortBy, setSortBy] = useState<"aiScore" | "changePercent" | "peRatio">(
+  const [sortBy, setSortBy] = useState<"aiScore" | "lensScore" | "changePercent" | "peRatio">(
     "aiScore"
   );
   const [typeFilter, setTypeFilter] = useState<InstrumentType | "all">("all");
@@ -235,6 +259,12 @@ export default function ResearchPage() {
   });
   const [archetype, setArchetype] = useState<ArchetypeKey | null>(null);
   const [dimensions, setDimensions] = useState<CoreDimensions | null>(null);
+  const [selectedLenses, setSelectedLenses] = useState<PersonaKey[]>([]);
+
+  // Load saved lens selection
+  useEffect(() => {
+    setSelectedLenses(loadSelectedPersonas());
+  }, []);
   const [livePrices, setLivePrices] = useState<Record<string, {
     price: number;
     change_amount: number;
@@ -305,6 +335,27 @@ export default function ResearchPage() {
     setScreenerFilters(f);
   }, []);
 
+  const handleLensChange = useCallback((keys: PersonaKey[]) => {
+    setSelectedLenses(keys);
+    saveSelectedPersonas(keys);
+    // Auto-switch sort when lens is activated/deactivated
+    if (keys.length > 0) {
+      setSortBy("lensScore");
+    } else {
+      setSortBy("aiScore");
+    }
+  }, []);
+
+  // Compute lens scores for all stocks
+  const lensScores = useMemo(() => {
+    if (selectedLenses.length === 0) return new Map<string, LensResult>();
+    const results = new Map<string, LensResult>();
+    for (const stock of stocks) {
+      results.set(stock.ticker, computeLensScore(stock, selectedLenses));
+    }
+    return results;
+  }, [stocks, selectedLenses]);
+
   const matchedTickers = useMemo(() => {
     if (!dimensions) return new Set<string>();
     return new Set(matchStocksToDNA(dimensions).map((m) => m.stock.ticker));
@@ -342,12 +393,17 @@ export default function ResearchPage() {
         );
       })
       .sort((a, b) => {
+        if (sortBy === "lensScore" && lensScores.size > 0) {
+          const aLens = lensScores.get(a.ticker)?.lensScore ?? a.aiScore;
+          const bLens = lensScores.get(b.ticker)?.lensScore ?? b.aiScore;
+          return bLens - aLens;
+        }
         if (sortBy === "aiScore") return b.aiScore - a.aiScore;
         if (sortBy === "changePercent")
           return Math.abs(b.changePercent) - Math.abs(a.changePercent);
         return a.peRatio - b.peRatio;
       });
-  }, [screenerFilters, typeFiltered, sectorFilter, searchQuery, sortBy]);
+  }, [screenerFilters, typeFiltered, sectorFilter, searchQuery, sortBy, lensScores]);
 
   return (
     <div className="min-h-screen pt-24 pb-16 px-4">
@@ -520,11 +576,17 @@ export default function ResearchPage() {
           })}
         </div>
 
-        {/* Screener */}
-        <ScreenerPanel
-          filters={screenerFilters}
-          onChange={handleScreenerChange}
-        />
+        {/* Screener + Lens */}
+        <div className="flex items-start gap-3 flex-wrap mb-1">
+          <ScreenerPanel
+            filters={screenerFilters}
+            onChange={handleScreenerChange}
+          />
+          <LensSelector
+            selected={selectedLenses}
+            onSelect={handleLensChange}
+          />
+        </div>
 
         {/* Search + Sort */}
         <div className="flex flex-col sm:flex-row gap-3 mb-6">
@@ -541,11 +603,14 @@ export default function ResearchPage() {
           <select
             value={sortBy}
             onChange={(e) =>
-              setSortBy(e.target.value as "aiScore" | "changePercent" | "peRatio")
+              setSortBy(e.target.value as "aiScore" | "lensScore" | "changePercent" | "peRatio")
             }
             className="bg-surface border border-border rounded-lg px-3 py-2 text-sm text-text-primary focus:outline-none focus:border-green/40"
           >
             <option value="aiScore">Sort: AI Score</option>
+            {selectedLenses.length > 0 && (
+              <option value="lensScore">Sort: Lens Score</option>
+            )}
             <option value="changePercent">Sort: Most Active</option>
             <option value="peRatio">Sort: P/E Ratio</option>
           </select>
@@ -576,6 +641,7 @@ export default function ResearchPage() {
                 }
                 fitLabel={isMatch && copy ? copy.stockFitLabel : undefined}
                 fitColor={isMatch ? accentColor : undefined}
+                lensResult={lensScores.get(stock.ticker)}
               />
             );
           })}
