@@ -14,7 +14,7 @@ import {
   Sparkles,
   ArrowRight,
 } from "lucide-react";
-import { stocks, sectors, type Stock } from "@/lib/stock-data";
+import { stocks, sectors, type Stock, type InstrumentType } from "@/lib/stock-data";
 import ScreenerPanel from "@/components/screener-panel";
 import {
   type ScreenerFilters,
@@ -130,17 +130,24 @@ function StockDetail({
           {/* Metrics grid */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
             <div className="bg-surface-alt rounded-lg p-3">
-              <p className="text-xs text-text-muted">Market Cap</p>
-              <p className="text-sm font-mono font-medium">{stock.marketCap}</p>
+              <p className="text-xs text-text-muted">{stock.type === "stock" ? "Market Cap" : "AUM"}</p>
+              <p className="text-sm font-mono font-medium">{stock.aum ?? stock.marketCap}</p>
             </div>
+            {stock.expenseRatio != null ? (
+              <div className="bg-surface-alt rounded-lg p-3">
+                <p className="text-xs text-text-muted">Expense Ratio</p>
+                <p className="text-sm font-mono font-medium">{stock.expenseRatio}%</p>
+              </div>
+            ) : (
+              <div className="bg-surface-alt rounded-lg p-3">
+                <p className="text-xs text-text-muted">P/E Ratio</p>
+                <p className="text-sm font-mono font-medium">{stock.peRatio}</p>
+              </div>
+            )}
             <div className="bg-surface-alt rounded-lg p-3">
-              <p className="text-xs text-text-muted">P/E Ratio</p>
-              <p className="text-sm font-mono font-medium">{stock.peRatio}</p>
-            </div>
-            <div className="bg-surface-alt rounded-lg p-3">
-              <p className="text-xs text-text-muted">Dividend Yield</p>
+              <p className="text-xs text-text-muted">{stock.holdings ? "Holdings" : "Dividend Yield"}</p>
               <p className="text-sm font-mono font-medium">
-                {stock.dividendYield}%
+                {stock.holdings ?? `${stock.dividendYield}%`}
               </p>
             </div>
             <div className="bg-surface-alt rounded-lg p-3">
@@ -221,6 +228,7 @@ export default function ResearchPage() {
   const [sortBy, setSortBy] = useState<"aiScore" | "changePercent" | "peRatio">(
     "aiScore"
   );
+  const [typeFilter, setTypeFilter] = useState<InstrumentType | "all">("all");
   const [screenerFilters, setScreenerFilters] = useState<ScreenerFilters>({
     ...EMPTY_FILTERS,
     analystRatings: new Set(),
@@ -251,17 +259,26 @@ export default function ResearchPage() {
     return new Set(matchStocksToDNA(dimensions).map((m) => m.stock.ticker));
   }, [dimensions]);
 
-  const sectorNames = [...new Set(stocks.map((s) => s.sector))].sort();
+  const typeFiltered = useMemo(() => {
+    if (typeFilter === "all") return stocks;
+    return stocks.filter((s) => s.type === typeFilter);
+  }, [typeFilter]);
+
+  const sectorNames = [...new Set(typeFiltered.map((s) => s.sector))].sort();
+
+  const stockCount = stocks.filter((s) => s.type === "stock").length;
+  const etfCount = stocks.filter((s) => s.type === "etf").length;
+  const fundCount = stocks.filter((s) => s.type === "fund").length;
 
   const avgScore = Math.round(
-    stocks.reduce((sum, s) => sum + s.aiScore, 0) / stocks.length
+    typeFiltered.reduce((sum, s) => sum + s.aiScore, 0) / typeFiltered.length
   );
-  const strongBuys = stocks.filter(
+  const strongBuys = typeFiltered.filter(
     (s) => s.analystRating === "Strong Buy"
   ).length;
 
   const filtered = useMemo(() => {
-    const screened = applyScreenerFilters(stocks, screenerFilters);
+    const screened = applyScreenerFilters(typeFiltered, screenerFilters);
     return screened
       .filter((s) => {
         if (sectorFilter !== "all" && s.sector !== sectorFilter) return false;
@@ -279,7 +296,7 @@ export default function ResearchPage() {
           return Math.abs(b.changePercent) - Math.abs(a.changePercent);
         return a.peRatio - b.peRatio;
       });
-  }, [screenerFilters, sectorFilter, searchQuery, sortBy]);
+  }, [screenerFilters, typeFiltered, sectorFilter, searchQuery, sortBy]);
 
   return (
     <div className="min-h-screen pt-24 pb-16 px-4">
@@ -300,7 +317,7 @@ export default function ResearchPage() {
             Research
           </p>
           <h1 className="text-3xl font-semibold tracking-tight mb-3">
-            Stock Analysis
+            {typeFilter === "etf" ? "ETF Analysis" : typeFilter === "fund" ? "Fund Analysis" : typeFilter === "stock" ? "Stock Analysis" : "Market Research"}
           </h1>
           <p className="text-text-secondary text-sm">
             {archetype
@@ -310,11 +327,34 @@ export default function ResearchPage() {
           </p>
         </div>
 
+        {/* Type filter tabs */}
+        <div className="flex gap-2 mb-5">
+          {([
+            { key: "all" as const, label: "All", count: stocks.length },
+            { key: "stock" as const, label: "Stocks", count: stockCount },
+            { key: "etf" as const, label: "ETFs", count: etfCount },
+            { key: "fund" as const, label: "Funds", count: fundCount },
+          ]).map((tab) => (
+            <button
+              key={tab.key}
+              onClick={() => { setTypeFilter(tab.key); setSectorFilter("all"); }}
+              className={`text-xs px-4 py-2 rounded-lg font-medium transition-colors ${
+                typeFilter === tab.key
+                  ? "bg-green text-white"
+                  : "bg-surface border border-border text-text-secondary hover:text-text-primary"
+              }`}
+            >
+              {tab.label}
+              <span className="ml-1.5 font-mono">{tab.count}</span>
+            </button>
+          ))}
+        </div>
+
         {/* Quick stats */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
           <div className="bg-surface border border-border rounded-lg p-3 text-center">
-            <p className="text-lg font-mono font-bold">{stocks.length}</p>
-            <p className="text-xs text-text-muted">Stocks</p>
+            <p className="text-lg font-mono font-bold">{typeFiltered.length}</p>
+            <p className="text-xs text-text-muted">{typeFilter === "etf" ? "ETFs" : typeFilter === "fund" ? "Funds" : typeFilter === "stock" ? "Stocks" : "Instruments"}</p>
           </div>
           <div className="bg-surface border border-border rounded-lg p-3 text-center">
             <p className={`text-lg font-mono font-bold ${avgScore >= 70 ? "text-green" : "text-gold"}`}>
@@ -328,7 +368,7 @@ export default function ResearchPage() {
           </div>
           <div className="bg-surface border border-border rounded-lg p-3 text-center">
             <p className="text-lg font-mono font-bold">{sectorNames.length}</p>
-            <p className="text-xs text-text-muted">Sectors</p>
+            <p className="text-xs text-text-muted">{typeFilter === "all" ? "Sectors" : "Categories"}</p>
           </div>
         </div>
 
@@ -395,10 +435,10 @@ export default function ResearchPage() {
                 : "text-text-muted hover:text-text-secondary"
             }`}
           >
-            All ({stocks.length})
+            All ({typeFiltered.length})
           </button>
           {sectorNames.map((name) => {
-            const count = stocks.filter((s) => s.sector === name).length;
+            const count = typeFiltered.filter((s) => s.sector === name).length;
             const sector = sectors.find((s) => s.name === name);
             return (
               <button

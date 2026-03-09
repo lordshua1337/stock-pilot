@@ -1,9 +1,14 @@
 import { extendedStocks } from "./stock-data-extended";
+import { etfUniverse } from "./etf-data";
+import { fundUniverse } from "./fund-data";
+
+export type InstrumentType = "stock" | "etf" | "fund";
 
 export interface Stock {
   ticker: string;
   name: string;
   sector: string;
+  type: InstrumentType;
   price: number;
   change: number;
   changePercent: number;
@@ -19,6 +24,9 @@ export interface Stock {
   thesis: string;
   risks: string[];
   catalysts: string[];
+  expenseRatio?: number; // ETFs and mutual funds only
+  aum?: string; // Assets under management -- ETFs and funds
+  holdings?: number; // Number of holdings -- ETFs and funds
 }
 
 export interface Sector {
@@ -43,6 +51,7 @@ export const stocks: Stock[] = [
     ticker: "AAPL",
     name: "Apple Inc.",
     sector: "Technology",
+    type: "stock" as const,
     price: 237.49,
     change: 3.21,
     changePercent: 1.37,
@@ -72,6 +81,7 @@ export const stocks: Stock[] = [
     ticker: "NVDA",
     name: "NVIDIA Corporation",
     sector: "Technology",
+    type: "stock" as const,
     price: 141.28,
     change: 5.47,
     changePercent: 4.03,
@@ -101,6 +111,7 @@ export const stocks: Stock[] = [
     ticker: "MSFT",
     name: "Microsoft Corporation",
     sector: "Technology",
+    type: "stock" as const,
     price: 442.57,
     change: 1.89,
     changePercent: 0.43,
@@ -130,6 +141,7 @@ export const stocks: Stock[] = [
     ticker: "UNH",
     name: "UnitedHealth Group",
     sector: "Healthcare",
+    type: "stock" as const,
     price: 524.18,
     change: -2.31,
     changePercent: -0.44,
@@ -159,6 +171,7 @@ export const stocks: Stock[] = [
     ticker: "JPM",
     name: "JPMorgan Chase & Co.",
     sector: "Finance",
+    type: "stock" as const,
     price: 268.04,
     change: 1.15,
     changePercent: 0.43,
@@ -188,6 +201,7 @@ export const stocks: Stock[] = [
     ticker: "AMZN",
     name: "Amazon.com Inc.",
     sector: "Consumer",
+    type: "stock" as const,
     price: 219.37,
     change: 2.14,
     changePercent: 0.98,
@@ -217,6 +231,7 @@ export const stocks: Stock[] = [
     ticker: "XOM",
     name: "Exxon Mobil Corporation",
     sector: "Energy",
+    type: "stock" as const,
     price: 107.82,
     change: -0.93,
     changePercent: -0.86,
@@ -246,6 +261,7 @@ export const stocks: Stock[] = [
     ticker: "V",
     name: "Visa Inc.",
     sector: "Finance",
+    type: "stock" as const,
     price: 328.92,
     change: 0.74,
     changePercent: 0.23,
@@ -275,6 +291,7 @@ export const stocks: Stock[] = [
     ticker: "COST",
     name: "Costco Wholesale",
     sector: "Consumer",
+    type: "stock" as const,
     price: 1018.37,
     change: 4.22,
     changePercent: 0.42,
@@ -304,6 +321,7 @@ export const stocks: Stock[] = [
     ticker: "GOOGL",
     name: "Alphabet Inc.",
     sector: "Technology",
+    type: "stock" as const,
     price: 186.42,
     change: 2.87,
     changePercent: 1.56,
@@ -333,6 +351,7 @@ export const stocks: Stock[] = [
     ticker: "META",
     name: "Meta Platforms Inc.",
     sector: "Technology",
+    type: "stock" as const,
     price: 612.38,
     change: 4.51,
     changePercent: 0.74,
@@ -362,6 +381,7 @@ export const stocks: Stock[] = [
     ticker: "LLY",
     name: "Eli Lilly and Company",
     sector: "Healthcare",
+    type: "stock" as const,
     price: 825.67,
     change: -8.32,
     changePercent: -1.0,
@@ -391,6 +411,7 @@ export const stocks: Stock[] = [
     ticker: "BRK.B",
     name: "Berkshire Hathaway",
     sector: "Finance",
+    type: "stock" as const,
     price: 478.52,
     change: 1.23,
     changePercent: 0.26,
@@ -420,6 +441,7 @@ export const stocks: Stock[] = [
     ticker: "AVGO",
     name: "Broadcom Inc.",
     sector: "Technology",
+    type: "stock" as const,
     price: 224.18,
     change: 6.73,
     changePercent: 3.1,
@@ -449,6 +471,7 @@ export const stocks: Stock[] = [
     ticker: "TSLA",
     name: "Tesla Inc.",
     sector: "Consumer",
+    type: "stock" as const,
     price: 342.18,
     change: -5.47,
     changePercent: -1.57,
@@ -478,6 +501,7 @@ export const stocks: Stock[] = [
     ticker: "HD",
     name: "The Home Depot",
     sector: "Consumer",
+    type: "stock" as const,
     price: 402.85,
     change: 1.93,
     changePercent: 0.48,
@@ -507,6 +531,7 @@ export const stocks: Stock[] = [
     ticker: "JNJ",
     name: "Johnson & Johnson",
     sector: "Healthcare",
+    type: "stock" as const,
     price: 158.42,
     change: 0.31,
     changePercent: 0.2,
@@ -536,6 +561,7 @@ export const stocks: Stock[] = [
     ticker: "PG",
     name: "Procter & Gamble",
     sector: "Consumer",
+    type: "stock" as const,
     price: 172.31,
     change: 0.52,
     changePercent: 0.3,
@@ -565,6 +591,7 @@ export const stocks: Stock[] = [
     ticker: "CRM",
     name: "Salesforce Inc.",
     sector: "Technology",
+    type: "stock" as const,
     price: 298.45,
     change: 3.12,
     changePercent: 1.06,
@@ -597,6 +624,7 @@ export const stocks: Stock[] = [
     ticker: "NEE",
     name: "NextEra Energy Inc.",
     sector: "Energy",
+    type: "stock" as const,
     price: 76.83,
     change: 0.92,
     changePercent: 1.21,
@@ -629,6 +657,7 @@ export const stocks: Stock[] = [
     ticker: "CAT",
     name: "Caterpillar Inc.",
     sector: "Industrial",
+    type: "stock" as const,
     price: 372.15,
     change: -2.84,
     changePercent: -0.76,
@@ -658,6 +687,7 @@ export const stocks: Stock[] = [
     ticker: "HON",
     name: "Honeywell International",
     sector: "Industrial",
+    type: "stock" as const,
     price: 214.67,
     change: 1.33,
     changePercent: 0.62,
@@ -690,6 +720,7 @@ export const stocks: Stock[] = [
     ticker: "AMT",
     name: "American Tower Corp.",
     sector: "Real Estate",
+    type: "stock" as const,
     price: 198.42,
     change: 2.15,
     changePercent: 1.10,
@@ -719,6 +750,7 @@ export const stocks: Stock[] = [
     ticker: "PLD",
     name: "Prologis Inc.",
     sector: "Real Estate",
+    type: "stock" as const,
     price: 112.56,
     change: -0.78,
     changePercent: -0.69,
@@ -751,6 +783,7 @@ export const stocks: Stock[] = [
     ticker: "SO",
     name: "Southern Company",
     sector: "Utilities",
+    type: "stock" as const,
     price: 88.94,
     change: 0.45,
     changePercent: 0.51,
@@ -780,6 +813,7 @@ export const stocks: Stock[] = [
     ticker: "DUK",
     name: "Duke Energy Corp.",
     sector: "Utilities",
+    type: "stock" as const,
     price: 112.38,
     change: -0.22,
     changePercent: -0.20,
@@ -809,6 +843,7 @@ export const stocks: Stock[] = [
     ticker: "ABBV",
     name: "AbbVie Inc.",
     sector: "Healthcare",
+    type: "stock" as const,
     price: 182.34,
     change: 1.87,
     changePercent: 1.04,
@@ -838,6 +873,7 @@ export const stocks: Stock[] = [
     ticker: "GS",
     name: "Goldman Sachs Group",
     sector: "Finance",
+    type: "stock" as const,
     price: 591.22,
     change: 8.45,
     changePercent: 1.45,
@@ -867,6 +903,7 @@ export const stocks: Stock[] = [
     ticker: "CVX",
     name: "Chevron Corp.",
     sector: "Energy",
+    type: "stock" as const,
     price: 156.89,
     change: -1.33,
     changePercent: -0.84,
@@ -896,6 +933,7 @@ export const stocks: Stock[] = [
     ticker: "RTX",
     name: "RTX Corp.",
     sector: "Industrial",
+    type: "stock" as const,
     price: 127.44,
     change: 0.96,
     changePercent: 0.76,
@@ -925,6 +963,7 @@ export const stocks: Stock[] = [
     ticker: "NFLX",
     name: "Netflix Inc.",
     sector: "Technology",
+    type: "stock" as const,
     price: 854.23,
     change: 12.67,
     changePercent: 1.51,
@@ -954,6 +993,7 @@ export const stocks: Stock[] = [
     ticker: "WMT",
     name: "Walmart Inc.",
     sector: "Consumer",
+    type: "stock" as const,
     price: 92.15,
     change: 0.43,
     changePercent: 0.47,
@@ -983,6 +1023,7 @@ export const stocks: Stock[] = [
     ticker: "DE",
     name: "Deere & Co.",
     sector: "Industrial",
+    type: "stock" as const,
     price: 442.87,
     change: -3.21,
     changePercent: -0.72,
@@ -1012,6 +1053,7 @@ export const stocks: Stock[] = [
     ticker: "ISRG",
     name: "Intuitive Surgical Inc.",
     sector: "Healthcare",
+    type: "stock" as const,
     price: 538.76,
     change: 5.42,
     changePercent: 1.02,
@@ -1041,6 +1083,7 @@ export const stocks: Stock[] = [
     ticker: "ADBE",
     name: "Adobe Inc.",
     sector: "Technology",
+    type: "stock" as const,
     price: 418.53,
     change: -6.82,
     changePercent: -1.6,
@@ -1070,6 +1113,7 @@ export const stocks: Stock[] = [
     ticker: "KO",
     name: "The Coca-Cola Company",
     sector: "Consumer",
+    type: "stock" as const,
     price: 62.87,
     change: 0.28,
     changePercent: 0.45,
@@ -1099,6 +1143,7 @@ export const stocks: Stock[] = [
     ticker: "BA",
     name: "The Boeing Company",
     sector: "Industrial",
+    type: "stock" as const,
     price: 178.42,
     change: 3.15,
     changePercent: 1.8,
@@ -1128,6 +1173,7 @@ export const stocks: Stock[] = [
     ticker: "SCHW",
     name: "Charles Schwab Corporation",
     sector: "Finance",
+    type: "stock" as const,
     price: 79.34,
     change: 1.48,
     changePercent: 1.9,
@@ -1157,6 +1203,7 @@ export const stocks: Stock[] = [
     ticker: "T",
     name: "AT&T Inc.",
     sector: "Utilities",
+    type: "stock" as const,
     price: 22.18,
     change: 0.12,
     changePercent: 0.54,
@@ -1183,38 +1230,10 @@ export const stocks: Stock[] = [
     ],
   },
   {
-    ticker: "AMT",
-    name: "American Tower",
-    sector: "Real Estate",
-    price: 218.45,
-    change: 1.87,
-    changePercent: 0.86,
-    marketCap: "$102B",
-    peRatio: 58.2,
-    dividendYield: 2.93,
-    fiftyTwoHigh: 233.50,
-    fiftyTwoLow: 175.20,
-    analystRating: "Buy",
-    aiScore: 74,
-    beta: 0.55,
-    description: "Largest global cell tower REIT with 225,000+ wireless communication sites",
-    thesis:
-      "American Tower is the global leader in wireless tower infrastructure with 224K+ sites across 25 countries. 5G densification and emerging market mobile adoption create a multi-decade demand runway. Long-term contracts with built-in escalators provide highly predictable revenue. The data center expansion through CoreSite adds a second growth vector.",
-    risks: [
-      "Rising interest rates pressure the high-debt REIT structure",
-      "India operations facing pricing pressure from carrier consolidation",
-      "Elevated valuation at 58x earnings requires sustained growth execution",
-    ],
-    catalysts: [
-      "5G small cell deployments driving domestic lease-up rates",
-      "Emerging market tower demand in Africa and Latin America accelerating",
-      "CoreSite data center integration opening cross-sell opportunities with carriers",
-    ],
-  },
-  {
     ticker: "SLB",
     name: "Schlumberger",
     sector: "Energy",
+    type: "stock" as const,
     price: 52.78,
     change: -0.64,
     changePercent: -1.20,
@@ -1244,6 +1263,7 @@ export const stocks: Stock[] = [
     ticker: "ELV",
     name: "Elevance Health",
     sector: "Healthcare",
+    type: "stock" as const,
     price: 468.30,
     change: -1.95,
     changePercent: -0.41,
@@ -1269,36 +1289,9 @@ export const stocks: Stock[] = [
       "Valuation re-rating potential as Carelon contribution becomes more visible",
     ],
   },
-  {
-    ticker: "COST",
-    name: "Costco Wholesale",
-    sector: "Consumer",
-    price: 935.22,
-    change: -2.45,
-    changePercent: -0.26,
-    marketCap: "$415B",
-    peRatio: 54.6,
-    dividendYield: 0.49,
-    fiftyTwoHigh: 980.00,
-    fiftyTwoLow: 672.50,
-    analystRating: "Buy",
-    aiScore: 77,
-    beta: 0.75,
-    description: "Membership warehouse retailer with 130M+ cardholders and 93% renewal rates",
-    thesis:
-      "Costco's membership model creates a moat that competitors cannot replicate -- 93% renewal rates and 130M+ cardholders generate predictable high-margin revenue. The treasure hunt shopping experience and Kirkland brand loyalty drive traffic that no e-commerce threat has dented. International expansion in Japan, Korea, and China still early. The membership fee increase cadence provides periodic earnings step-ups.",
-    risks: [
-      "Elevated P/E at 54x leaves stock vulnerable to any growth deceleration",
-      "Wage inflation in warehouse operations pressuring SG&A margins",
-      "E-commerce grocery competition from Amazon Fresh and Walmart+",
-    ],
-    catalysts: [
-      "Next membership fee increase expected to add $500M+ in pure profit",
-      "International same-store sales growing faster than domestic",
-      "E-commerce penetration still low with significant digital growth runway",
-    ],
-  },
   ...extendedStocks,
+  ...etfUniverse,
+  ...fundUniverse,
 ];
 
 // ─── Market Benchmarks ────────────────────────────────────────────────
@@ -1382,6 +1375,22 @@ export function getStockByTicker(ticker: string): Stock | undefined {
 
 export function getStocksBySector(sector: string): Stock[] {
   return stocks.filter((s) => s.sector === sector);
+}
+
+export function getStocksByType(type: InstrumentType): Stock[] {
+  return stocks.filter((s) => s.type === type);
+}
+
+export function getStocksOnly(): Stock[] {
+  return stocks.filter((s) => s.type === "stock");
+}
+
+export function getETFs(): Stock[] {
+  return stocks.filter((s) => s.type === "etf");
+}
+
+export function getFunds(): Stock[] {
+  return stocks.filter((s) => s.type === "fund");
 }
 
 export interface SectorMetrics {
