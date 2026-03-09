@@ -188,7 +188,7 @@ export default function DNAResultsPage() {
     ? ARCHETYPE_INFO[displaySecondaryKey as ArchetypeKey]
     : null;
   const accentColor =
-    ARCHETYPE_COLORS[displayArchetypeKey] ?? "#006DD8";
+    ARCHETYPE_COLORS[displayArchetypeKey] ?? "#2E8BEF";
 
   const activeBiases = [...displayBiasFlags]
     .filter((f) => f.severity > 0)

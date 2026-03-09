@@ -72,7 +72,7 @@ function getPersonalityFit(
 }
 
 const FIT_COLORS = {
-  great: { bg: "rgba(0, 109, 216, 0.12)", text: "#006DD8", label: "Great Fit" },
+  great: { bg: "rgba(46, 139, 239, 0.12)", text: "#2E8BEF", label: "Great Fit" },
   caution: {
     bg: "rgba(255, 215, 64, 0.12)",
     text: "#FFD740",

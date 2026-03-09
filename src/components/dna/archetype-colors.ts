@@ -8,7 +8,7 @@ export const ARCHETYPE_COLORS: Record<ArchetypeKey, string> = {
   reassurance_seeker: "#E040FB",
   analytical_skeptic: "#40C4FF",
   diy_controller: "#FF6E40",
-  collaborative_partner: "#006DD8",
+  collaborative_partner: "#2E8BEF",
   big_picture_optimist: "#4DA3F0",
   trend_sensitive_explorer: "#FFD740",
   avoider_under_stress: "#FF5252",

@@ -8,10 +8,10 @@
   --color-text-primary: #F5F5F5;
   --color-text-secondary: #A0A0A0;
   --color-text-muted: #666666;
-  --color-green: #006DD8;
-  --color-green-light: #4DA3F0;
-  --color-green-dark: #0058B0;
-  --color-green-bg: rgba(0, 109, 216, 0.1);
+  --color-green: #2E8BEF;
+  --color-green-light: #64AEFA;
+  --color-green-dark: #1A7AE0;
+  --color-green-bg: rgba(46, 139, 239, 0.12);
   --color-red: #FF5252;
   --color-red-bg: rgba(255, 82, 82, 0.1);
   --color-blue: #448AFF;
@@ -87,7 +87,7 @@
 .card-hover:hover {
   background-color: var(--color-surface-hover);
   transform: translateY(-2px);
-  box-shadow: 0 4px 20px rgba(0, 109, 216, 0.06);
+  box-shadow: 0 4px 20px rgba(46, 139, 239, 0.06);
 }
 
 /* Section rhythm -- alternate backgrounds */
@@ -107,7 +107,7 @@
   transform: translateX(-50%);
   width: 600px;
   height: 400px;
-  background: radial-gradient(ellipse, rgba(0, 109, 216, 0.08) 0%, transparent 70%);
+  background: radial-gradient(ellipse, rgba(46, 139, 239, 0.08) 0%, transparent 70%);
   pointer-events: none;
   z-index: 0;
 }
@@ -154,12 +154,12 @@
   transition: text-shadow 0.3s ease;
 }
 .sp-stat-glow:hover {
-  text-shadow: 0 0 20px rgba(0, 109, 216, 0.4);
+  text-shadow: 0 0 20px rgba(46, 139, 239, 0.4);
 }
 
 /* CTA section gradient */
 .sp-cta-gradient {
-  background: linear-gradient(to bottom, transparent, rgba(0, 109, 216, 0.03));
+  background: linear-gradient(to bottom, transparent, rgba(46, 139, 239, 0.03));
 }
 
 /* Mini sparkline chart placeholder */

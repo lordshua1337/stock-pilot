@@ -71,7 +71,7 @@ function ScoreRing({ score }: { score: number }) {
   const pct = score / 100;
   const circumference = 2 * Math.PI * 20;
   const dashOffset = circumference * (1 - pct);
-  const color = score >= 80 ? "#006DD8" : score >= 60 ? "#FFD740" : "#FF5252";
+  const color = score >= 80 ? "#2E8BEF" : score >= 60 ? "#FFD740" : "#FF5252";
 
   return (
     <div className="relative w-14 h-14 flex-shrink-0">

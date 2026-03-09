@@ -185,7 +185,7 @@ export function BuildTab({
   }));
 
   const positionColors = [
-    "#006DD8", "#448AFF", "#FFD740", "#FF6E40", "#E040FB",
+    "#2E8BEF", "#448AFF", "#FFD740", "#FF6E40", "#E040FB",
     "#40C4FF", "#FF5252", "#4DA3F0", "#FF80AB", "#B388FF",
   ];
   const positionDonutSegments = portfolio.map((item, i) => ({

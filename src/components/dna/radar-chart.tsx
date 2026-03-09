@@ -46,7 +46,7 @@ function ringPoints(
 // Component
 // ---------------------------------------------------------------------------
 
-export function RadarChart({ dimensions, accentColor = "#006DD8" }: RadarChartProps) {
+export function RadarChart({ dimensions, accentColor = "#2E8BEF" }: RadarChartProps) {
   const size = 340;
   const cx = size / 2;
   const cy = size / 2;
@@ -187,7 +187,7 @@ export function RadarChart({ dimensions, accentColor = "#006DD8" }: RadarChartPr
 
 export function RadarChartStatic({
   dimensions,
-  accentColor = "#006DD8",
+  accentColor = "#2E8BEF",
 }: RadarChartProps) {
   const size = 300;
   const cx = size / 2;

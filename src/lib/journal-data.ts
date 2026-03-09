@@ -49,7 +49,7 @@ export const EMOTIONAL_STATES: Record<
   EmotionalState,
   { readonly label: string; readonly color: string; readonly icon: string }
 > = {
-  calm: { label: "Calm", color: "#006DD8", icon: "leaf" },
+  calm: { label: "Calm", color: "#2E8BEF", icon: "leaf" },
   confident: { label: "Confident", color: "#448AFF", icon: "shield" },
   anxious: { label: "Anxious", color: "#FFD740", icon: "alert-triangle" },
   excited: { label: "Excited", color: "#E040FB", icon: "zap" },
@@ -109,7 +109,7 @@ export const ACTION_INFO: Record<
   JournalAction,
   { readonly label: string; readonly color: string }
 > = {
-  buy: { label: "Buy", color: "#006DD8" },
+  buy: { label: "Buy", color: "#2E8BEF" },
   sell: { label: "Sell", color: "#FF5252" },
   hold: { label: "Hold", color: "#448AFF" },
   watchlist: { label: "Watchlist", color: "#FFD740" },

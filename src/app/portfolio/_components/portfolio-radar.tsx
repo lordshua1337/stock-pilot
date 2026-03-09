@@ -128,14 +128,14 @@ export function PortfolioRadar({ portfolio, portfolioStocks, signals }: Portfoli
         {/* Data polygon */}
         <polygon
           points={dataPoints.map((p) => `${p.x},${p.y}`).join(" ")}
-          fill="rgba(0, 109, 216, 0.15)"
-          stroke="#006DD8"
+          fill="rgba(46, 139, 239, 0.15)"
+          stroke="#2E8BEF"
           strokeWidth="2"
         />
 
         {/* Data dots */}
         {dataPoints.map((p, i) => (
-          <circle key={i} cx={p.x} cy={p.y} r="4" fill="#006DD8" />
+          <circle key={i} cx={p.x} cy={p.y} r="4" fill="#2E8BEF" />
         ))}
 
         {/* Labels */}

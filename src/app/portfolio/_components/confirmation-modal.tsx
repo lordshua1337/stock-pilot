@@ -26,7 +26,7 @@ function SubScoreRing({ score, label }: { score: number; label: string }) {
   const pct = score / 100;
   const circumference = 2 * Math.PI * 16;
   const dashOffset = circumference * (1 - pct);
-  const color = score >= 70 ? "#006DD8" : score >= 45 ? "#FFD740" : "#FF5252";
+  const color = score >= 70 ? "#2E8BEF" : score >= 45 ? "#FFD740" : "#FF5252";
 
   return (
     <div className="flex flex-col items-center gap-1">
