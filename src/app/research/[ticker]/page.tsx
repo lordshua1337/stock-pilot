@@ -15,6 +15,14 @@ import {
   Sparkles,
 } from "lucide-react";
 import { getStockByTicker, getStocksBySector, type Stock } from "@/lib/stock-data";
+import {
+  computeLensScore,
+  computeDimensions,
+  loadSelectedPersonas,
+  PERSONAS,
+  type PersonaKey,
+  type DimensionScores,
+} from "@/lib/lens-scoring";
 import { HoldingInsightCard } from "@/components/insight-card";
 import { AIInsightCard } from "@/components/copilot/ai-insight-card";
 import { loadDNAProfile } from "@/lib/dna-storage";
@@ -103,12 +111,73 @@ export default function StockDetailPage() {
   const params = useParams();
   const ticker = (params.ticker as string).toUpperCase();
 
-  const stock = useMemo(() => getStockByTicker(ticker), [ticker]);
+  const staticStock = useMemo(() => getStockByTicker(ticker), [ticker]);
+
+  // Live price state
+  const [livePrice, setLivePrice] = useState<{
+    price: number;
+    change_amount: number;
+    change_percent: number;
+  } | null>(null);
+  const [priceAge, setPriceAge] = useState("");
+
+  // Fetch live price for this ticker
+  useEffect(() => {
+    let mounted = true;
+    async function fetchPrice() {
+      try {
+        const res = await fetch(`/api/market?ticker=${ticker}`);
+        if (!res.ok) return;
+        const data = await res.json();
+        if (mounted && data.stock) {
+          setLivePrice({
+            price: data.stock.price,
+            change_amount: data.stock.change_amount,
+            change_percent: data.stock.change_percent,
+          });
+          const age = Math.round(
+            (Date.now() - new Date(data.stock.last_refreshed).getTime()) / 60000
+          );
+          setPriceAge(age <= 1 ? "just now" : `${age}m ago`);
+        }
+      } catch {
+        // Fall back to static
+      }
+    }
+    fetchPrice();
+    const interval = setInterval(fetchPrice, 5 * 60 * 1000);
+    return () => { mounted = false; clearInterval(interval); };
+  }, [ticker]);
+
+  // Merge live price into static stock data
+  const stock = useMemo(() => {
+    if (!staticStock) return null;
+    if (!livePrice) return staticStock;
+    return {
+      ...staticStock,
+      price: livePrice.price,
+      change: livePrice.change_amount,
+      changePercent: livePrice.change_percent,
+    };
+  }, [staticStock, livePrice]);
+
   const peers = useMemo(() => {
     if (!stock) return [];
     return getStocksBySector(stock.sector).filter(
       (s) => s.ticker !== stock.ticker
     );
+  }, [stock]);
+
+  // Lens scoring
+  const [selectedLenses] = useState<PersonaKey[]>(() => loadSelectedPersonas());
+  const lensResult = useMemo(() => {
+    if (!stock || selectedLenses.length === 0) return null;
+    return computeLensScore(stock, selectedLenses);
+  }, [stock, selectedLenses]);
+
+  const dimensionScores = useMemo(() => {
+    if (!stock) return null;
+    return computeDimensions(stock);
   }, [stock]);
 
   const [archetype, setArchetype] = useState<ArchetypeKey | null>(null);
@@ -180,11 +249,51 @@ export default function StockDetailPage() {
             <p className="text-text-secondary">{stock.name}</p>
             <p className="text-xs text-text-muted mt-1">{stock.sector}</p>
           </div>
-          <ScoreRing score={stock.aiScore} />
+          <div className="flex items-center gap-3">
+            {lensResult && (
+              <div className="text-center">
+                <p className="text-[10px] text-text-muted mb-1">Lens</p>
+                <div
+                  className={`w-14 h-14 rounded-full flex items-center justify-center ${
+                    lensResult.lensScore >= 80
+                      ? "bg-green-bg"
+                      : lensResult.lensScore >= 60
+                        ? "bg-[rgba(255,215,64,0.1)]"
+                        : "bg-red-bg"
+                  }`}
+                >
+                  <span
+                    className={`text-xl font-bold font-mono ${
+                      lensResult.lensScore >= 80
+                        ? "text-green"
+                        : lensResult.lensScore >= 60
+                          ? "text-gold"
+                          : "text-red"
+                    }`}
+                  >
+                    {lensResult.lensScore}
+                  </span>
+                </div>
+                <p className="text-[9px] text-text-muted mt-1">
+                  {selectedLenses.map((k) => PERSONAS[k].name).join(" + ")}
+                </p>
+              </div>
+            )}
+            <div className="text-center">
+              <p className="text-[10px] text-text-muted mb-1">AI Score</p>
+              <ScoreRing score={stock.aiScore} />
+            </div>
+          </div>
         </div>
 
         {/* Price */}
         <div className="bg-surface rounded-xl border border-border p-5 mb-6">
+          {priceAge && (
+            <div className="flex items-center gap-2 mb-3 text-[10px] text-text-muted">
+              <span className="w-1.5 h-1.5 rounded-full bg-green animate-pulse" />
+              Live price updated {priceAge}
+            </div>
+          )}
           <div className="flex items-end gap-3">
             <span className="text-4xl font-bold font-mono">
               ${stock.price.toFixed(2)}
@@ -253,6 +362,35 @@ export default function StockDetailPage() {
             icon={<Zap className="w-3.5 h-3.5" />}
           />
         </div>
+
+        {/* Lens Dimension Breakdown */}
+        {lensResult && dimensionScores && (
+          <div className="bg-surface rounded-xl border border-border p-5 mb-6">
+            <h3 className="text-sm font-semibold mb-4">
+              Lens Breakdown: {selectedLenses.map((k) => PERSONAS[k].name).join(" + ")}
+            </h3>
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+              {(Object.entries(dimensionScores) as [keyof DimensionScores, number][]).map(
+                ([dim, score]) => (
+                  <div key={dim} className="text-center">
+                    <div className="relative h-1.5 bg-surface-alt rounded-full overflow-hidden mb-1.5">
+                      <div
+                        className={`absolute inset-y-0 left-0 rounded-full ${
+                          score >= 70 ? "bg-green" : score >= 45 ? "bg-gold" : "bg-red"
+                        }`}
+                        style={{ width: `${score}%` }}
+                      />
+                    </div>
+                    <p className="text-[10px] text-text-muted uppercase tracking-wider">
+                      {dim}
+                    </p>
+                    <p className="text-sm font-mono font-semibold">{score}</p>
+                  </div>
+                )
+              )}
+            </div>
+          </div>
+        )}
 
         {/* AI Copilot Insight */}
         <AIInsightCard pageId="research" ticker={stock.ticker} className="mb-4" />
